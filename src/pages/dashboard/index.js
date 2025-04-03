@@ -7,7 +7,7 @@ import Listing from "@/components/dashboard/sidebarcomponents/Listing/Listing";
 import Payout from "@/components/dashboard/sidebarcomponents/Payout";
 import Purchases from "@/components/dashboard/sidebarcomponents/Purchases";
 import Settings from "@/components/dashboard/sidebarcomponents/Settings/Settings";
-import Store from "@/components/dashboard/sidebarcomponents/Store";
+import Store from "@/components/dashboard/sidebarcomponents/Store/Store";
 import React from "react";
 
 export default function index() {

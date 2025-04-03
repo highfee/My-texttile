@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const Tshirt = () => {
+const Denim = () => {
   const tshirtData = [
     {
       id: 1,
@@ -146,4 +146,4 @@ const Tshirt = () => {
   );
 };
 
-export default Tshirt;
+export default Denim;

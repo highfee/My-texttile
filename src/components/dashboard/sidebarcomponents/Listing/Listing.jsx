@@ -6,6 +6,10 @@ import Tshirt from './Tshirt';
 import { CiFilter } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
+import Hoodies from './Hoodies';
+import Turtleneck from './Turtleneck';
+import Polo from './Polo';
+import Denim from './Demin';
 
 const Listing = () => {
   const [activeTab, setActiveTab] = useState('T-shirt');
@@ -40,21 +44,18 @@ const Listing = () => {
               <p className="text-xs sm:text-sm hidden lg:flex">Filter</p>
               <IoIosArrowDown className="hidden lg:flex" />
             </div>
-            {/* Grid Icon */}
             <div className="border border-black rounded-md p-1">
               <IoGridOutline className="text-[16px] sm:text-[20px]" />
             </div>
           </div>
         </div>
       </div>
-
-      {/* Content Section */}
       <div className="mt-4">
         {activeTab === 'T-shirt' && <Tshirt />}
-        {activeTab === 'Hoodies' && <Hoodies />}
-        {activeTab === 'Turtle necks' && <Turtlenecks />}
-        {activeTab === 'Polos' && <Polos />}
-        {activeTab === 'Denim' && <Denim />}
+        {activeTab === 'Hoodies' && <Hoodies/> }
+        {activeTab === 'Turtle necks' && <Turtleneck/> }
+        {activeTab === 'Polos' && <Polo/> }
+        {activeTab === 'Denim' && <Denim/> }
         {activeTab === 'Ordered' && <Ordered />}
       </div>
     </div>

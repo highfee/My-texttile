@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import FAQ from './FAQ';
 import Payout from './Payout';
+import GettingStarted from './GettingStarted';
+import Marketing from './Marketing';
+import Store from './Store';
 
 const Navbar = () => {
   const [activeTab, setActiveTab] = useState('FAQs');
@@ -29,10 +32,10 @@ const Navbar = () => {
       {/* Render Selected Component */}
       <div className="mt-4">
         {activeTab === 'FAQs' && <FAQ />}
-        {activeTab === 'Getting Started' && <GettingStarted />}
+        {activeTab === 'Getting Started' && <GettingStarted/> }
         {activeTab === 'Payout' && <Payout />}
-        {activeTab === 'Store' && <Store />}
-        {activeTab === 'Marketing' && <Marketing />}
+        {activeTab === 'Store' && <Store/> }
+        {activeTab === 'Marketing' && <Marketing/> }
       </div>
     </div>
   );

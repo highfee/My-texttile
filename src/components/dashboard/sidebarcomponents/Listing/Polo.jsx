@@ -2,45 +2,12 @@
 
 import { useState } from "react";
 
-const Tshirt = () => {
+const Polo = () => {
   const tshirtData = [
     {
       id: 1,
       name: "Girls Classic T-Shirts",
-      img: "/dashboard/img1.png",
-      sold: "120Pcs",
-      sizes: ["M", "L"],
-      genders: ["F", "M"],
-      colors: ["#ff69b4", "#fdd835"], // Pink, Yellow
-      price: "$25.99",
-      available: "80Pcs",
-    },
-    {
-      id: 2,
-      name: "Girls Classic T-Shirts",
-      img: "/dashboard/temp6.png",
-      sold: "120Pcs",
-      sizes: ["M", "L"],
-      genders: ["F", "M"],
-      colors: ["#ff69b4", "#fdd835"],
-      price: "$25.99",
-      available: "80Pcs",
-    },
-    {
-      id: 3,
-      name: "Girls Classic T-Shirts",
       img: "/dashboard/img7.png",
-      sold: "120Pcs",
-      sizes: ["M", "L"],
-      genders: ["F", "M"],
-      colors: ["#ff69b4", "#fdd835"],
-      price: "$25.99",
-      available: "80Pcs",
-    },
-    {
-      id: 4,
-      name: "Girls Classic T-Shirts",
-      img: "/dashboard/img4.png",
       sold: "120Pcs",
       sizes: ["M", "L"],
       genders: ["F", "M"],
@@ -65,14 +32,9 @@ const Tshirt = () => {
               alt={shirt.name}
               className="w-full h-48 object-cover rounded-lg"
             />
-
-            {/* Name & Sold */}
             <h3 className="font-semibold text-lg mt-2">{shirt.name}</h3>
             <p className="text-sm text-gray-500">Sold {shirt.sold}</p>
-
-            {/* Dropdowns */}
             <div className="grid grid-cols-3 items-center gap-x-4 mt-2">
-              {/* Size */}
               <div className="flex flex-col space-y-1 w-full">
                 <label className="text-xs text-gray-500">Size</label>
                 <select
@@ -101,8 +63,6 @@ const Tshirt = () => {
                   ))}
                 </select>
               </div>
-
-              {/* Custom Color Dropdown */}
               <div className="flex flex-col space-y-1 relative w-full">
                 <label className="text-xs text-gray-500">Color</label>
                 <button
@@ -114,8 +74,6 @@ const Tshirt = () => {
                     style={{ backgroundColor: selectedColor }}
                   ></span>
                 </button>
-
-                {/* Dropdown Options */}
                 {colorDropdown && (
                   <div className="absolute top-10 left-0 bg-white border rounded-md shadow-md p-2 flex-col flex z-10">
                     {shirt.colors.map((color) => (
@@ -133,8 +91,6 @@ const Tshirt = () => {
                 )}
               </div>
             </div>
-
-            {/* Price & Availability */}
             <div className="flex items-center justify-between mt-3">
               <p className="text-lg font-semibold">{shirt.price}</p>
               <p className="text-sm text-gray-500">Avail. {shirt.available}</p>
@@ -146,4 +102,4 @@ const Tshirt = () => {
   );
 };
 
-export default Tshirt;
+export default Polo;

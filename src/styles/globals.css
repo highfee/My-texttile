@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-landing {
+  background-image: url('/landingpage/background.svg');
+  background-size: cover;
+  background-position: center;
+}
+.bg-ambassador {
+  background-image: url('/landingpage/componentimg.svg');
+  background-size: cover;
+  background-position: center;
+}
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+.overflow-x-auto {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}

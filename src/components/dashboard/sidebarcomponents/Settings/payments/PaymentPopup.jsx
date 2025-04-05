@@ -87,8 +87,6 @@ const PaymentPopup = ({ isOpen, onClose, plan, isMonthly }) => {
   };
 
   const currentPlan = planDetails[plan] || planDetails["Tier 3"];
-
-  // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       const popup = document.querySelector(".popup-container");
@@ -193,8 +191,7 @@ const PaymentPopup = ({ isOpen, onClose, plan, isMonthly }) => {
           {renderPaymentMethod()}
           <button
             onClick={handlePayment}
-            className="w-full py-2 bg-bluebutton text-white rounded font-bold hover:bg-blue-700 transition duration-200 mt-4"
-          >
+            className="w-full py-2 bg-bluebutton text-white rounded font-bold hover:bg-bluebutton transition duration-200 mt-4">
             Make payment
           </button>
         </div>

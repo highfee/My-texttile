@@ -14,7 +14,6 @@ const Navbar = () => {
 
   return (
     <div className=" lg:px-16">
-      {/* Navbar */}
       <div className="flex space-x-4 sm:space-x-6 pb-2 overflow-x-auto justify-center sm:justify-start">
         {tabs.map((tab) => (
           <button
@@ -28,8 +27,6 @@ const Navbar = () => {
           </button>
         ))}
       </div>
-
-      {/* Render Selected Component */}
       <div className="mt-4">
         {activeTab === 'FAQs' && <FAQ />}
         {activeTab === 'Getting Started' && <GettingStarted/> }

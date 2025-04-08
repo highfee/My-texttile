@@ -5,6 +5,7 @@ import useMediaQuery from "@/components/hook/usemediaquery";
 import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
+import AffiliateProgram from "./Headercomponents/AfiliateProgram";
 export default function Dashboardlayout({ children }) {
   const [activeComponent, setActiveComponent] = useState("Home");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function Dashboardlayout({ children }) {
   // Add header dropdown components that might not be in sidebar
   const allComponents = {
     ...componentsMap,
-    "Affiliate Program": <div>Affiliate Program Component</div>,
+    "Affiliate Program": <AffiliateProgram/>,
     Campaign: <Campaign/> ,
     Account: <Account/>
   };

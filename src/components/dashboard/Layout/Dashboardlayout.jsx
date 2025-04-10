@@ -6,10 +6,10 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
-import Design from "../designCanvasComponents/Design";
+import Design from "../design/Main";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 
-export default function Dashboardlayout({ children }) {
+export default function ssDashboardlayout({ children }) {
   // const [activeComponent, setActiveComponent] = useState("Home");
 
   // use store instead of useState
@@ -63,11 +63,14 @@ export default function Dashboardlayout({ children }) {
         ></div>
       )}
       <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
-        <Header
-          toggleSidebar={toggleSidebar}
-          setActiveComponent={setActiveComponent}
-        />
-        <div className="flex-1 p-4 overflow-y-auto">
+        {activeComponent.toLowerCase() !== "design" && (
+          <Header
+            toggleSidebar={toggleSidebar}
+            setActiveComponent={setActiveComponent}
+          />
+        )}
+
+        <div className="flex-1 p-4 overflow-y-auto relative">
           {allComponents[activeComponent] || (
             <div>Component "{activeComponent}" not found</div>
           )}

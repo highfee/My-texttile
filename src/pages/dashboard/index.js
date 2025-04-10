@@ -1,4 +1,4 @@
-import Design from "@/components/dashboard/designCanvasComponents/Design";
+import Design from "@/components/dashboard/design/Main";
 import Dashboardlayout from "@/components/dashboard/Layout/Dashboardlayout";
 import Home from "@/components/dashboard/Layout/Home";
 import Analytics from "@/components/dashboard/sidebarcomponents/Analytics";
@@ -23,6 +23,7 @@ export default function index() {
       <Listing name="Listing" />
       <Settings name="Settings" />
       <Store name="Store" />
+
       <Design name="Design" />
     </Dashboardlayout>
   );

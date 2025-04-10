@@ -1,9 +1,12 @@
+import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
 export default function Home() {
   // State to track if the sidebar is collapsed
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const { setActiveComponent } = useDashboardComponentStore();
 
   // Ref for the main content container
   const contentRef = useRef(null);
@@ -182,7 +185,12 @@ export default function Home() {
               <IoIosArrowDown className="lg:w-5  text-white" />
             </div>
           </button>
-          <button className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2">
+          <button
+            className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2"
+            onClick={() => {
+              setActiveComponent("Design");
+            }}
+          >
             <img
               src="/dashboard/leaf.png"
               alt="Magic Wand"
@@ -216,7 +224,9 @@ export default function Home() {
                   className="w-full h-auto rounded-lg"
                 />
               </div>
-              <h2 className="text-[12px] lg:text-[14px] font-semibold ">{project.name}</h2>
+              <h2 className="text-[12px] lg:text-[14px] font-semibold ">
+                {project.name}
+              </h2>
               <p className="text-sm text-graycolor opacity-[0.44] ">
                 {project.description}
               </p>
@@ -235,10 +245,8 @@ export default function Home() {
                 <p className="text-lg font-bold text-graycolor px-2">
                   {project.price}
                 </p>
-                
               </div>
               <p className="text-graycolor opacity-[0.44]">S - XXL</p>
-              
             </div>
           ))}
         </div>
@@ -266,7 +274,9 @@ export default function Home() {
                   className="w-full lg:h-[200px] rounded-lg"
                 />
               </div>
-              <h2 className="text-[12px] lg:text-[14px] font-semibold ">{project.name}</h2>
+              <h2 className="text-[12px] lg:text-[14px] font-semibold ">
+                {project.name}
+              </h2>
               <p className="text-sm text-graycolor opacity-[0.44] ">
                 {project.description}
               </p>

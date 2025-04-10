@@ -6,8 +6,15 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
+import Design from "../designCanvasComponents/Design";
+import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+
 export default function Dashboardlayout({ children }) {
-  const [activeComponent, setActiveComponent] = useState("Home");
+  // const [activeComponent, setActiveComponent] = useState("Home");
+
+  // use store instead of useState
+  const { activeComponent, setActiveComponent } = useDashboardComponentStore();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
@@ -21,7 +28,7 @@ export default function Dashboardlayout({ children }) {
     }
   };
   const componentsMap = {};
-  Children.forEach(children, child => {
+  Children.forEach(children, (child) => {
     if (child.props && child.props.name) {
       componentsMap[child.props.name] = child;
     }
@@ -30,9 +37,10 @@ export default function Dashboardlayout({ children }) {
   // Add header dropdown components that might not be in sidebar
   const allComponents = {
     ...componentsMap,
-    "Affiliate Program": <AffiliateProgram/>,
-    Campaign: <Campaign/> ,
-    Account: <Account/>
+    "Affiliate Program": <AffiliateProgram />,
+    Campaign: <Campaign />,
+    Account: <Account />,
+    Design: <Design />,
   };
 
   return (
@@ -55,8 +63,8 @@ export default function Dashboardlayout({ children }) {
         ></div>
       )}
       <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
-        <Header 
-          toggleSidebar={toggleSidebar} 
+        <Header
+          toggleSidebar={toggleSidebar}
           setActiveComponent={setActiveComponent}
         />
         <div className="flex-1 p-4 overflow-y-auto">
@@ -65,9 +73,7 @@ export default function Dashboardlayout({ children }) {
           )}
         </div>
       </div>
-      {isMobile && (
-        <BottomBar setActiveComponent={setActiveComponent} />
-      )}
+      {isMobile && <BottomBar setActiveComponent={setActiveComponent} />}
     </div>
   );
 }

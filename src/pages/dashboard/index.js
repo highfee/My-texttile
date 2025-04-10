@@ -1,3 +1,4 @@
+import Design from "@/components/dashboard/designCanvasComponents/Design";
 import Dashboardlayout from "@/components/dashboard/Layout/Dashboardlayout";
 import Home from "@/components/dashboard/Layout/Home";
 import Analytics from "@/components/dashboard/sidebarcomponents/Analytics";
@@ -12,16 +13,17 @@ import React from "react";
 
 export default function index() {
   return (
-   <Dashboardlayout>
-      <Home name="Home"/>
-      <Purchases name="Purchase"/>
-      <Analytics name="Analytics"/>
-      <BrandComponent name="Brand"/>
-      <Payout name="Payout"/>
-      <HelpCenter name="HelpCenter"/>
-      <Listing name="Listing"/>
-      <Settings name="Settings"/>
-      <Store name="Store"/>
+    <Dashboardlayout>
+      <Home name="Home" />
+      <Purchases name="Purchase" />
+      <Analytics name="Analytics" />
+      <BrandComponent name="Brand" />
+      <Payout name="Payout" />
+      <HelpCenter name="HelpCenter" />
+      <Listing name="Listing" />
+      <Settings name="Settings" />
+      <Store name="Store" />
+      <Design name="Design" />
     </Dashboardlayout>
   );
 }

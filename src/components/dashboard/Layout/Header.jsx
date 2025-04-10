@@ -86,7 +86,10 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
             )}
           </div>
 
-          <button className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2">
+          <button
+            className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
+            onClick={() => handleSelectOption("Design")}
+          >
             <img
               src="/dashboard/magic wand.svg"
               alt="Magic Wand"

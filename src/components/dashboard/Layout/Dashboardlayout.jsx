@@ -6,6 +6,7 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
+<<<<<<< HEAD
 import Createaccount from "@/components/signup/Createaccount";
 import { CreateCampaign } from "./Headercomponents/CreateCampaign";
 import Store from "../sidebarcomponents/Store/Store";
@@ -14,6 +15,17 @@ import StoreEditor from "../sidebarcomponents/Store/StoreEditor";
 export default function DashboardLayout({ children }) {
   const [activeComponent, setActiveComponent] = useState("Home");
   const [componentProps, setComponentProps] = useState({});
+=======
+import Design from "../design/Main";
+import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+
+export default function ssDashboardlayout({ children }) {
+  // const [activeComponent, setActiveComponent] = useState("Home");
+
+  // use store instead of useState
+  const { activeComponent, setActiveComponent } = useDashboardComponentStore();
+
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCampaignPopup, setShowCampaignPopup] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
@@ -31,6 +43,15 @@ export default function DashboardLayout({ children }) {
       setComponentProps({});
     }
   };
+<<<<<<< HEAD
+=======
+  const componentsMap = {};
+  Children.forEach(children, (child) => {
+    if (child.props && child.props.name) {
+      componentsMap[child.props.name] = child;
+    }
+  });
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
 
   const componentsMap = React.useMemo(() => {
     const map = {};
@@ -45,6 +66,7 @@ export default function DashboardLayout({ children }) {
   const allComponents = {
     ...componentsMap,
     "Affiliate Program": <AffiliateProgram />,
+<<<<<<< HEAD
     "Campaign": <Campaign />,
     "Account": <Account />,
     "Store": <Store setActiveComponent={handleSetActiveComponent} />,
@@ -57,6 +79,11 @@ export default function DashboardLayout({ children }) {
     } else {
       setShowCanvas(true);
     }
+=======
+    Campaign: <Campaign />,
+    Account: <Account />,
+    Design: <Design />,
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   };
 
   return (
@@ -75,6 +102,7 @@ export default function DashboardLayout({ children }) {
         <div 
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
           onClick={closeSidebar}
+<<<<<<< HEAD
         />
       )}
 
@@ -106,6 +134,25 @@ export default function DashboardLayout({ children }) {
           </div>
         </div>
       )}
+=======
+        ></div>
+      )}
+      <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
+        {activeComponent.toLowerCase() !== "design" && (
+          <Header
+            toggleSidebar={toggleSidebar}
+            setActiveComponent={setActiveComponent}
+          />
+        )}
+
+        <div className="flex-1 p-4 overflow-y-auto relative">
+          {allComponents[activeComponent] || (
+            <div>Component "{activeComponent}" not found</div>
+          )}
+        </div>
+      </div>
+      {isMobile && <BottomBar setActiveComponent={setActiveComponent} />}
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
     </div>
   );
 }

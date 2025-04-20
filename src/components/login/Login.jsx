@@ -22,6 +22,7 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
+<<<<<<< HEAD
   // Handle login button click
   const handleLogin = () => {
     if (email.toLowerCase().includes("admin")) {
@@ -31,12 +32,16 @@ const Login = () => {
     }
   };
 
+=======
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   return (
     <div className="flex flex-row items-stretch rounded-lg shadow-md overflow-hidden sm:w-[600px] md:w-[700px] lg:w-[850px] h-auto sm:h-[400px] md:h-[450px] lg:h-[572px]">
       {/* Left Section (Login Form) */}
       <div className="flex flex-col items-start px-2 sm:px-6 py-6 sm:py-8 md:py-10 w-full md:w-1/2">
         <div className="py-4 lg:py-8">
-          <p className="font-bold text-black text-[16px] lg:text-[30px]">Login</p>
+          <p className="font-bold text-black text-[16px] lg:text-[30px]">
+            Login
+          </p>
           <p className="text-[#121212] text-[8px] md:text-[14px] lg:text-[14px]">
             Welcome back, please Login
           </p>
@@ -73,15 +78,25 @@ const Login = () => {
               </span>
             </div>
             {/* Password validation message */}
-            <p className={`text-sm ${passwordValid ? "text-green-500" : "text-red-500"}`}>
-              {passwordValid ? "Password correct" : "Password must be at least 8 characters"}
+            <p
+              className={`text-sm ${
+                passwordValid ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {passwordValid
+                ? "Password correct"
+                : "Password must be at least 8 characters"}
             </p>
           </div>
 
           {/* Login Button */}
           <button
             className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+<<<<<<< HEAD
             onClick={handleLogin}
+=======
+            onClick={() => router.push("/dashboard")}
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
           >
             Login
           </button>

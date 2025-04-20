@@ -1,11 +1,27 @@
 import { IoIosLink } from "react-icons/io";
+import { FiEdit2 } from "react-icons/fi";
+import { useState } from "react";
 
-export default function MainStoreview({ setActiveComponent, showOverlay, setShowOverlay, showOverlay1, setShowOverlay1 }) {
+export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [showOverlay1, setShowOverlay1] = useState(false);
+
+  const handleImageClick = (viewType) => {
+    if (onEditorOpen) {
+      onEditorOpen(viewType);
+    } else {
+      setActiveComponent({
+        name: "StoreEditor",
+        props: { initialView: viewType }
+      });
+    }
+  };
+
   return (
     <div className="px-2 lg:px-10">
       <div className="border p-2 rounded-lg shadow-md">
         <div className="flex flex-col lg:flex-row items-center gap-4">
-          <img src="/dashboard/appearance/Modelight.png" />
+          <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
           <div>
             <a href="#" className="text-blue-600 underline">
               https://www.my-store-1029a69b.com
@@ -31,6 +47,7 @@ export default function MainStoreview({ setActiveComponent, showOverlay, setShow
           </div>
         </div>
       </div>
+      
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-10 mt-4">
         <div className="border p-4 rounded-md text-center space-y-4">
           <div className="flex justify-center">
@@ -62,59 +79,60 @@ export default function MainStoreview({ setActiveComponent, showOverlay, setShow
           </p>
         </div>
       </div>
+
       <div className="flex flex-col lg:flex-row justify-center gap-10 mt-4">
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <h3 className="text-lg font-semibold text-left">Desktop View</h3>
           <p className="opacity-[0.44]">Manage your earnings efficiently</p>
-
           <div
-            className="relative flex justify-center py-4"
+            className="relative flex justify-center py-4 cursor-pointer"
             onMouseEnter={() => setShowOverlay1(true)}
             onMouseLeave={() => setShowOverlay1(false)}
+            onClick={() => handleImageClick("desktop")}
           >
             <img
               src="/dashboard/store/desktop.png"
               alt="Desktop View"
-              width={600}
-              height={400}
+              className="w-full max-w-2xl border border-gray-200 rounded-lg"
             />
-
             <div
-              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 lg:hidden ${
-                showOverlay1 ? "" : "hidden"
+              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
+                showOverlay1 ? "opacity-100" : "opacity-0"
               }`}
             >
-              <h3 className="text-sm font-semibold">For Better Experience, Edit</h3>
-              <p className="text-lg font-bold">Store On Desktop</p>
-              <p className="underline">Visit store on Desktop</p>
+              <div className="bg-white text-black p-3 rounded-full mb-2">
+                <FiEdit2 className="text-lg" />
+              </div>
+              <h3 className="text-sm font-semibold">Edit Desktop View</h3>
+              <p className="text-xs mt-1">Click to customize your store's desktop appearance</p>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1">
           <h3 className="text-lg font-semibold text-left">Mobile View</h3>
           <p className="opacity-[0.44]">Manage your earnings efficiently</p>
-
           <div
-            className="relative flex justify-center py-4"
+            className="relative flex justify-center py-4 cursor-pointer"
             onMouseEnter={() => setShowOverlay(true)}
             onMouseLeave={() => setShowOverlay(false)}
+            onClick={() => handleImageClick("mobile")}
           >
             <img
               src="/dashboard/store/mobile.png"
               alt="Mobile View"
-              width={300}
-              height={500}
+              className="w-full max-w-xs border border-gray-200 rounded-lg"
             />
-
             <div
-              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 lg:hidden ${
-                showOverlay ? "" : "hidden"
+              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
+                showOverlay ? "opacity-100" : "opacity-0"
               }`}
             >
-              <h3 className="text-sm font-semibold">For Better Experience, Edit</h3>
-              <p className="text-lg font-bold">Store On Desktop</p>
-              <p className="underline">Visit store on Desktop</p>
+              <div className="bg-white text-black p-3 rounded-full mb-2">
+                <FiEdit2 className="text-lg" />
+              </div>
+              <h3 className="text-sm font-semibold">Edit Mobile View</h3>
+              <p className="text-xs mt-1">Click to customize your store's mobile appearance</p>
             </div>
           </div>
         </div>

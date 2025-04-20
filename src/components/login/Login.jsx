@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const Login = () => {
   const router = useRouter(); // Initialize router
+  const [email, setEmail] = useState(""); // State for email input
   const [password, setPassword] = useState(""); // State for password input
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [passwordValid, setPasswordValid] = useState(false); // State for password validation
@@ -21,7 +22,14 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
- 
+  // Handle login button click
+  const handleLogin = () => {
+    if (email.toLowerCase().includes("admin")) {
+      router.push("/adminportal");
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <div className="flex flex-row items-stretch rounded-lg shadow-md overflow-hidden sm:w-[600px] md:w-[700px] lg:w-[850px] h-auto sm:h-[400px] md:h-[450px] lg:h-[572px]">
@@ -40,6 +48,8 @@ const Login = () => {
             <input
               type="email"
               placeholder="example@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-2 py-1 lg:py-2 border border-[#12121270] rounded-lg focus:outline-none"
             />
           </div>
@@ -70,11 +80,11 @@ const Login = () => {
 
           {/* Login Button */}
           <button
-  className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
-  onClick={() => router.push("/dashboard")}
->
-  Login
-</button>
+            className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
+            onClick={handleLogin}
+          >
+            Login
+          </button>
         </div>
       </div>
 

@@ -19,15 +19,15 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
-<<<<<<< HEAD
+
 /* Add in global styles.css if needed */
 .toggle-switch {
   @apply appearance-none w-10 h-5 bg-gray-300 rounded-full relative transition;
 }
 
-.toggle-switch:checked {
+/* .toggle-switch:checked {
   @apply bg-blue-600;
-}
+} */
 
 .toggle-switch::before {
   content: "";
@@ -36,7 +36,7 @@
 
 .toggle-switch:checked::before {
   @apply translate-x-5;
-=======
+}
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -110,5 +110,4 @@
   body {
     @apply bg-background text-foreground;
   }
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
 }

@@ -6,17 +6,15 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
-<<<<<<< HEAD
 import Createaccount from "@/components/signup/Createaccount";
 import { CreateCampaign } from "./Headercomponents/CreateCampaign";
 import Store from "../sidebarcomponents/Store/Store";
 import StoreEditor from "../sidebarcomponents/Store/StoreEditor";
+import Design from "../design/Main";
 
 export default function DashboardLayout({ children }) {
   const [activeComponent, setActiveComponent] = useState("Home");
   const [componentProps, setComponentProps] = useState({});
-=======
-import Design from "../design/Main";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 
 export default function ssDashboardlayout({ children }) {
@@ -25,7 +23,6 @@ export default function ssDashboardlayout({ children }) {
   // use store instead of useState
   const { activeComponent, setActiveComponent } = useDashboardComponentStore();
 
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCampaignPopup, setShowCampaignPopup] = useState(false);
   const [showCanvas, setShowCanvas] = useState(false);
@@ -43,15 +40,12 @@ export default function ssDashboardlayout({ children }) {
       setComponentProps({});
     }
   };
-<<<<<<< HEAD
-=======
-  const componentsMap = {};
-  Children.forEach(children, (child) => {
-    if (child.props && child.props.name) {
-      componentsMap[child.props.name] = child;
-    }
-  });
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
+  // const componentsMap = {};
+  // Children.forEach(children, (child) => {
+  //   if (child.props && child.props.name) {
+  //     componentsMap[child.props.name] = child;
+  //   }
+  // });
 
   const componentsMap = React.useMemo(() => {
     const map = {};
@@ -66,7 +60,6 @@ export default function ssDashboardlayout({ children }) {
   const allComponents = {
     ...componentsMap,
     "Affiliate Program": <AffiliateProgram />,
-<<<<<<< HEAD
     "Campaign": <Campaign />,
     "Account": <Account />,
     "Store": <Store setActiveComponent={handleSetActiveComponent} />,
@@ -79,11 +72,9 @@ export default function ssDashboardlayout({ children }) {
     } else {
       setShowCanvas(true);
     }
-=======
-    Campaign: <Campaign />,
-    Account: <Account />,
-    Design: <Design />,
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
+    // Campaign: <Campaign />,
+    // Account: <Account />,
+    // Design: <Design />,
   };
 
   return (

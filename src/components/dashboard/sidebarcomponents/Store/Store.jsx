@@ -2,14 +2,19 @@ import { useState } from "react";
 import Activate1 from "./Activate1";
 import Activate2 from "./Activate2";
 import MainStoreview from "./MainStoreview";
+import StoreEditor from "./StoreEditor";
 
-export default function Store() {
-  const [activeComponent, setActiveComponent] = useState(null);
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [showOverlay1, setShowOverlay1] = useState(false);
+export default function Store({ setActiveComponent }) {
+  const [activeComponent, setActiveComponentInternal] = useState(null);
+  const [editorViewType, setEditorViewType] = useState("desktop");
 
   const handleBack = () => {
-    setActiveComponent(null);
+    setActiveComponentInternal(null);
+  };
+
+  const handleEditorOpen = (viewType) => {
+    setEditorViewType(viewType);
+    setActiveComponentInternal("editor");
   };
 
   switch (activeComponent) {
@@ -17,14 +22,13 @@ export default function Store() {
       return <Activate1 onBack={handleBack} />;
     case "domain2":
       return <Activate2 onBack={handleBack} />;
+    case "editor":
+      return <StoreEditor onBack={handleBack} initialView={editorViewType} />;
     default:
       return (
         <MainStoreview
-          setActiveComponent={setActiveComponent}
-          showOverlay={showOverlay}
-          setShowOverlay={setShowOverlay}
-          showOverlay1={showOverlay1}
-          setShowOverlay1={setShowOverlay1}
+          setActiveComponent={setActiveComponent || setActiveComponentInternal}
+          onEditorOpen={handleEditorOpen}
         />
       );
   }

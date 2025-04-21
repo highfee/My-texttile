@@ -1,23 +1,44 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChartNoAxesColumn, Layers, Palette, Store } from "lucide-react";
 import { LayoutDashboard, WalletMinimal } from "lucide-react";
-import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
+import { IoIosArrowDown } from "react-icons/io";
+import { Bell } from "lucide-react";
 
-const Sidebar = ({ setActiveComponent, isMobile }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false); // State to manage sidebar collapse
-  const [activeItem, setActiveItem] = useState("Home"); // State to manage active sidebar item
-  const sidebarRef = useRef(null); // Ref for detecting clicks outside the sidebar
+const Sidebar = ({ setActiveComponent, isMobile, onClose }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeItem, setActiveItem] = useState("Home");
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  
+  const sidebarRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
 
-  // Function to handle clicks outside the sidebar
+  // Handle clicks outside sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setIsCollapsed(true); // Collapse sidebar when clicking outside
+        setIsCollapsed(true);
+        if (isMobile) onClose();
       }
     };
 
-    // Only add the event listener if not on mobile
     if (!isMobile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, onClose]);
+
+  // Handle clicks outside mobile dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+        setIsMobileDropdownOpen(false);
+      }
+    };
+
+    if (isMobile) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
@@ -26,17 +47,15 @@ const Sidebar = ({ setActiveComponent, isMobile }) => {
     };
   }, [isMobile]);
 
-  // Function to handle sidebar item clicks
   const handleSidebarItemClick = (componentName) => {
-    console.log("Clicked:", componentName); // Debugging log
-    setActiveItem(componentName); // Set the active sidebar item
-    setActiveComponent(componentName); // Update the active component in the parent
+    setActiveItem(componentName);
+    setActiveComponent(componentName);
     if (isCollapsed && !isMobile) {
-      setIsCollapsed(false); // Expand sidebar if collapsed (only on non-mobile screens)
+      setIsCollapsed(false);
     }
+    if (isMobile) onClose();
   };
 
-  // Sidebar items data
   const sidebarItems = [
     { name: "Home", icon: <LayoutDashboard className="mr-2" /> },
     { name: "Purchase", icon: <WalletMinimal className="mr-2" /> },
@@ -76,9 +95,8 @@ const Sidebar = ({ setActiveComponent, isMobile }) => {
     },
   ];
 
-  // Filter sidebar items for mobile
   const mobileSidebarItems = sidebarItems.filter((item) =>
-    ["Analytics", "Store", "Brand", "Learn", "Settings"].includes(item.name)
+    ["Analytics", "Store", "Brand", "Settings"].includes(item.name)
   );
 
   return (
@@ -96,49 +114,112 @@ const Sidebar = ({ setActiveComponent, isMobile }) => {
       >
         {isCollapsed && !isMobile ? (
           <img
-            src="/landingpage/logo-f.svg" // Path to the collapsed logo
+            src="/landingpage/logo-f.svg"
             alt="Collapsed Logo"
-            className="" // Adjust size as needed
+            className="w-8 h-8"
           />
         ) : (
           <img
-            src="/dashboard/completelogo.svg" // Path to the expanded logo
+            src="/dashboard/completelogo.svg"
             alt="Expanded Logo"
-            className="hidden lg:block" // Adjust size as needed
+            className="hidden lg:block h-8"
           />
         )}
       </div>
-      <div className="flex flex-col items-center justify-center gap-2 lg:hidden w-full py-6">
-        {/* First Row: Bell and User Profile */}
-        <div className="flex flex-row items-center justify-center gap-1">
-          {/* User Profile with Arrow */}
-          <div className="w-full cursor-pointer flex items-center gap-2 ">
-            <img
-              src="/dashboard/Profile-pic.svg"
-              alt="Profile"
-              className=" rounded-full object-cover"
-            />
-            <div className="flex flex-col items-start justify-center">
-              <p>Ahmad</p>
-              <p className="opacity-[0.44]">Ahmad@gmail.com</p>
-            </div>
-            <IoIosArrowDown className="w-5 h-5 text-white opacity-[0.44]" />
-          </div>
-        </div>
 
-        {/* Second Row: New Design Button */}
-        <button className="bg-white font-bold text-black px-10 py-2 rounded-md transition-colors flex items-center gap-2">
-          <img
-            src="/dashboard/magic wand.svg"
-            alt="Magic Wand"
-            className="w-5 h-5"
-          />
-          <span>New Design</span>
-        </button>
-      </div>
+      {/* Mobile Profile Section */}
+      {isMobile && (
+        <div className="flex flex-col items-center justify-center gap-2 w-full py-6 px-4">
+          <div className="flex flex-row items-center justify-between w-full">
+            {/* Notification Bell */}
+            <div className="relative cursor-pointer bg-[#282828] rounded-full p-2">
+              <Bell className="w-5 h-5 text-white" />
+              <span className="absolute top-0 right-0 bg-bluebutton text-white text-xs rounded-full w-2 h-2 flex items-center justify-center"></span>
+            </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative flex-1 ml-4" ref={mobileDropdownRef}>
+              <div
+                className="cursor-pointer flex items-center gap-2"
+                onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+              >
+                <img
+                  src="/dashboard/Profile-pic.svg"
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex flex-col items-start justify-center">
+                  <p className="text-sm">Ahmad</p>
+                  <p className="text-xs opacity-[0.44]">Ahmad@gmail.com</p>
+                </div>
+                <IoIosArrowDown className={`w-4 h-4 text-white opacity-[0.44] transition-transform ${
+                  isMobileDropdownOpen ? "transform rotate-180" : ""
+                }`} />
+              </div>
+
+              {/* Mobile Dropdown Menu */}
+              {isMobileDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-full bg-white border border-gray-300 shadow-lg rounded-md z-50">
+                  <ul className="py-2">
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black text-sm"
+                      onClick={() => {
+                        handleSidebarItemClick("Account");
+                        setIsMobileDropdownOpen(false);
+                      }}
+                    >
+                      Profile
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black text-sm"
+                      onClick={() => {
+                        handleSidebarItemClick("Affiliate Program");
+                        setIsMobileDropdownOpen(false);
+                      }}
+                    >
+                      Affiliate Program
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black text-sm"
+                      onClick={() => {
+                        handleSidebarItemClick("Store");
+                        setIsMobileDropdownOpen(false);
+                      }}
+                    >
+                      Store
+                    </li>
+                    <li
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black text-sm"
+                      onClick={() => {
+                        handleSidebarItemClick("Campaign");
+                        setIsMobileDropdownOpen(false);
+                      }}
+                    >
+                      Campaign
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* New Design Button */}
+          <button 
+            className="bg-white font-bold text-black px-10 py-2 rounded-md transition-colors flex items-center gap-2 w-full justify-center mt-4"
+            onClick={() => handleSidebarItemClick("Canvas")}
+          >
+            <img
+              src="/dashboard/magic wand.svg"
+              alt="Magic Wand"
+              className="w-5 h-5"
+            />
+            <span>New Design</span>
+          </button>
+        </div>
+      )}
 
       {/* Sidebar Items */}
-      <div className="space-y-4 w-full">
+      <div className="space-y-4 w-full overflow-y-auto">
         {(isMobile ? mobileSidebarItems : sidebarItems).map((item) => (
           <div
             key={item.name}
@@ -152,7 +233,6 @@ const Sidebar = ({ setActiveComponent, isMobile }) => {
             onClick={() => handleSidebarItemClick(item.name)}
           >
             {item.icon}
-            {/* Always show text on mobile, conditionally show on desktop */}
             <p className={`${isCollapsed && !isMobile ? "hidden" : "block"}`}>
               {item.name}
             </p>

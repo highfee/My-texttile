@@ -1,15 +1,16 @@
-import { Share2 } from "lucide-react";
 import { useState } from "react";
+import { Share2 } from "lucide-react";
 import { FiUsers } from "react-icons/fi";
 import { LuSquareArrowUp } from "react-icons/lu";
 
-export function CampaignCards() {
+export function CampaignCards({ onCardClick }) {
   const [activeTab, setActiveTab] = useState("Active");
 
   const campaignData = {
     Active: [
       {
-        title: "Campaign Title",
+        id: "1",
+        title: "Summer Promotion",
         votes: "234",
         participants: "2,345",
         community: "Robuma",
@@ -19,7 +20,8 @@ export function CampaignCards() {
         image: "/dashboard/campaign/cardimg.png",
       },
       {
-        title: "Campaign Title",
+        id: "2",
+        title: "Product Launch",
         votes: "189",
         participants: "1,876",
         community: "Robuma",
@@ -31,7 +33,8 @@ export function CampaignCards() {
     ],
     Completed: [
       {
-        title: "Completed Campaign",
+        id: "3",
+        title: "Winter Sale",
         votes: "500",
         participants: "3,200",
         community: "Robuma",
@@ -42,7 +45,8 @@ export function CampaignCards() {
     ],
     Cancelled: [
       {
-        title: "Cancelled Campaign ",
+        id: "4",
+        title: "Spring Event",
         votes: "120",
         participants: "890",
         community: "Robuma",
@@ -56,10 +60,10 @@ export function CampaignCards() {
   const tabs = ["Active", "Completed", "Cancelled"];
 
   return (
-    <div className="bg-white p-2 lg:p-6 rounded-lg shadow">
-      <div className="flex lg:flex-row flex-col justify-between items-center mb-4">
+    <div className="bg-white p-6 rounded-lg shadow">
+      <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
         <h2 className="text-xl font-semibold">Campaigns</h2>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -76,47 +80,54 @@ export function CampaignCards() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        {campaignData[activeTab] && campaignData[activeTab].length > 0 ? (
-          campaignData[activeTab].map((campaign, index) => (
+      <div className="flex flex-col gap-4 mt-6">
+        {campaignData[activeTab].length > 0 ? (
+          campaignData[activeTab].map((campaign) => (
             <div
-              key={index}
-              className="bg-white p-1 lg:p-4 rounded-lg shadow-sm border border-gray-200"
+              key={campaign.id}
+              className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => onCardClick(campaign)}
             >
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex flex-row gap-x-4">
-                  <p className="text-xs text-gray-500">
-                    Duration {campaign.duration}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    End {campaign.endDate}
-                  </p>
+              <div className="flex justify-between items-center">
+                <div className="flex gap-4">
+                  <p className="text-xs text-gray-500">Duration {campaign.duration}</p>
+                  <p className="text-xs text-gray-500">End {campaign.endDate}</p>
                 </div>
-                <button className="flex items-center gap-1 bg-bluebutton p-2 rounded-md text-white text-xs">
+                <button 
+                  className="flex items-center gap-1 bg-blue-500 p-2 rounded-md text-white text-xs"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Share2 className="w-3 h-3" />
                   Share Link
                 </button>
               </div>
 
-              <div className="mb-4 flex flex-col lg:flex-row items-center justify-between">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-4 py-4">
                 <div className="flex items-center gap-4">
-                  <img src={campaign.image} className="rounded-lg  " />
+                  {campaign.image && (
+                    <img 
+                      src={campaign.image} 
+                      alt={campaign.title} 
+                      className="rounded-lg w-16 h-16 object-cover" 
+                    />
+                  )}
                   <h3 className="text-lg font-semibold">{campaign.title}</h3>
                 </div>
                 <div className="flex gap-4">
-                  <p className="text-sm px-2 py-2 rounded-md flex flex-row gap-x-2 bg-[#016FDE1A] ">
-                    {campaign.votes} Votes <LuSquareArrowUp className=" items-baseline text-xl" />
-
-                  </p>
-                  <p className="text-sm px-2 py-2 rounded-md flex flex-row gap-x-2 bg-[#016FDE1A]">
-                    {campaign.participants} Participants <FiUsers className=" items-baseline text-xl" />
-                  </p>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-graycolor">
+                    <LuSquareArrowUp className="text-lg" />
+                    <span className="text-sm">{campaign.votes} Votes</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-graycolor">
+                    <FiUsers className="text-lg" />
+                    <span className="text-sm">{campaign.participants} Participants</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex text-sm text-gray-500">
-                <p className="mr-auto"><span className="text-graycolor font-semibold">Community:</span>  {campaign.community}</p>
-                <p><span className="text-graycolor font-semibold">Platform:</span>  {campaign.platform}</p>
+              <div className="flex flex-col sm:flex-row justify-between gap-2 text-sm text-gray-500 pt-2 border-t border-gray-100">
+                <p><span className="font-semibold text-gray-700">Community:</span> {campaign.community}</p>
+                <p><span className="font-semibold text-gray-700">Platform:</span> {campaign.platform}</p>
               </div>
             </div>
           ))

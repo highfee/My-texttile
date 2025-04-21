@@ -1,18 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Bell, Search } from "lucide-react";
 import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
 
-const Header = ({ setActiveComponent, toggleSidebar }) => {
+const Header = ({ 
+  setActiveComponent, 
+  toggleSidebar, 
+  currentComponent,
+  onMainButtonClick,
+  isSidebarOpen
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSelectOption = (option) => {
-    setActiveComponent(option); // Set active component when clicked
-    setIsDropdownOpen(false); // Close dropdown
+    setActiveComponent(option);
+    setIsDropdownOpen(false);
   };
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between py-3 px-3 gap-x-6 lg:gap-x-0">
+        {/* Mobile menu button - always visible on mobile */}
         <div className="lg:hidden">
           <button
             onClick={toggleSidebar}
@@ -21,6 +43,8 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
             <IoIosMenu className="w-6 h-6" />
           </button>
         </div>
+
+        {/* Search bar - always centered */}
         <div className="flex-1 flex items-center justify-center">
           <div className="relative w-full max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -33,6 +57,8 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
             />
           </div>
         </div>
+
+        {/* Desktop controls - hidden on mobile */}
         <div className="items-center justify-end gap-4 hidden lg:flex">
           <div className="relative cursor-pointer bg-[#282828] rounded-full p-1">
             <Bell className="w-6 h-6 text-white" />
@@ -40,7 +66,7 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
           </div>
 
           {/* Profile Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <div
               className="cursor-pointer flex items-center gap-2"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -50,12 +76,14 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
               />
-              <IoIosArrowDown className="w-5 h-5 text-gray-600" />
+              <IoIosArrowDown className={`w-5 h-5 text-gray-600 transition-transform ${
+                isDropdownOpen ? "transform rotate-180" : ""
+              }`} />
             </div>
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md">
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
                 <ul className="py-2">
                   <li
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -86,18 +114,26 @@ const Header = ({ setActiveComponent, toggleSidebar }) => {
             )}
           </div>
 
+<<<<<<< HEAD
+          <button 
+            className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
+            onClick={onMainButtonClick}
+=======
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
             onClick={() => handleSelectOption("Design")}
+>>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
           >
             <img
               src="/dashboard/magic wand.svg"
               alt="Magic Wand"
               className="w-5 h-5"
             />
-            <span>New Design</span>
+            <span>{currentComponent === "Campaign" ? "Start Campaign" : "New Design"}</span>
           </button>
         </div>
+
+        {/* Mobile controls - removed completely since they're in sidebar */}
       </div>
     </div>
   );

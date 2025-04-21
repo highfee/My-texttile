@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy to Server
 
 on:
   push:
@@ -10,40 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
-        # Create an askpass script
-        echo "#!/bin/bash" > ~/.ssh/askpass.sh
-        echo "echo '${{ secrets.SSH_PASSPHRASE }}'" >> ~/.ssh/askpass.sh
-        chmod +x ~/.ssh/askpass.sh
-
-        # Start the ssh-agent
-        eval $(ssh-agent -s)
-
-        # Use askpass for passphrase
-        export SSH_ASKPASS=~/.ssh/askpass.sh
-        ssh-add ~/.ssh/id_rsa < /dev/null
-
-        # Add server to known_hosts
-        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@v0.1.4
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        script: |
-          cd /root/my-textile-frontend/
-          git pull origin main
-          npm install
-          npm run build
-          pm2 restart next-frontend
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd /root/my-textile-frontend
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart next-frontend

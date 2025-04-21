@@ -531,7 +531,7 @@ const Sidebar = () => {
                   alt={upload.id}
                   width={300}
                   height={400}
-                  className="mb-1"
+                  className="mb-1 cursor-pointer"
                 />
               ))}
             </div>

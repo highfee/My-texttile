@@ -65,7 +65,7 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
               className="p-1 cursor-pointer relative"
             >
               <MdNotes className="w-5 h-5 text-graycolor border border-graycolor rounded-md" />
-              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+              <span className="absolute -top-1 -right-1 bg-bluebutton text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
                 0
               </span>
             </button>

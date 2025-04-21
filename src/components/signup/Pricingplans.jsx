@@ -132,7 +132,7 @@ function PlanCard({
 }) {
   return (
     <div className="rounded-lg flex flex-col items-center text-center">
-      <div className={`rounded-lg w-full p-4 ${tier === "tier2" ? "bg-blue-500" : "bg-bluebg"}`}>
+      <div className={`rounded-lg w-full p-4 ${tier === "tier2" ? "bg-bluebutton" : "bg-bluebg"}`}>
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-col text-left">
             <p className={`text-[14px] font-semibold ${tier === "tier2" ? "text-white" : "text-black"}`}>{title}</p>

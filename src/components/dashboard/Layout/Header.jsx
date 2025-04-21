@@ -114,15 +114,9 @@ const Header = ({
             )}
           </div>
 
-<<<<<<< HEAD
-          <button 
-            className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
-            onClick={onMainButtonClick}
-=======
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
             onClick={() => handleSelectOption("Design")}
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
           >
             <img
               src="/dashboard/magic wand.svg"

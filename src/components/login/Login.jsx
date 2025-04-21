@@ -22,18 +22,14 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
-<<<<<<< HEAD
-  // Handle login button click
   const handleLogin = () => {
-    if (email.toLowerCase().includes("admin")) {
+    if (email === "admin@gmail.com" && password === "admin") {
       router.push("/adminportal");
     } else {
       router.push("/dashboard");
     }
   };
 
-=======
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   return (
     <div className="flex flex-row items-stretch rounded-lg shadow-md overflow-hidden sm:w-[600px] md:w-[700px] lg:w-[850px] h-auto sm:h-[400px] md:h-[450px] lg:h-[572px]">
       {/* Left Section (Login Form) */}
@@ -91,12 +87,8 @@ const Login = () => {
 
           {/* Login Button */}
           <button
-            className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
-<<<<<<< HEAD
+            className="w-full text-center bg-bluebutton hover:bg-blue-700 text-white py-2 rounded"
             onClick={handleLogin}
-=======
-            onClick={() => router.push("/dashboard")}
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
           >
             Login
           </button>

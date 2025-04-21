@@ -6,16 +6,6 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
-<<<<<<< HEAD
-import Createaccount from "@/components/signup/Createaccount";
-import { CreateCampaign } from "./Headercomponents/CreateCampaign";
-import Store from "../sidebarcomponents/Store/Store";
-import StoreEditor from "../sidebarcomponents/Store/StoreEditor";
-
-export default function DashboardLayout({ children }) {
-  const [activeComponent, setActiveComponent] = useState("Home");
-  const [componentProps, setComponentProps] = useState({});
-=======
 import Design from "../design/Main";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 
@@ -25,9 +15,9 @@ export default function ssDashboardlayout({ children }) {
   // use store instead of useState
   const { activeComponent, setActiveComponent } = useDashboardComponentStore();
 
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCampaignPopup, setShowCampaignPopup] = useState(false);
+  const [componentProps, setComponentProps] = useState({});
   const [showCanvas, setShowCanvas] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
@@ -42,16 +32,7 @@ export default function ssDashboardlayout({ children }) {
       setActiveComponent(component);
       setComponentProps({});
     }
-  };
-<<<<<<< HEAD
-=======
-  const componentsMap = {};
-  Children.forEach(children, (child) => {
-    if (child.props && child.props.name) {
-      componentsMap[child.props.name] = child;
-    }
-  });
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
+  }
 
   const componentsMap = React.useMemo(() => {
     const map = {};
@@ -66,24 +47,9 @@ export default function ssDashboardlayout({ children }) {
   const allComponents = {
     ...componentsMap,
     "Affiliate Program": <AffiliateProgram />,
-<<<<<<< HEAD
-    "Campaign": <Campaign />,
-    "Account": <Account />,
-    "Store": <Store setActiveComponent={handleSetActiveComponent} />,
-    "StoreEditor": <StoreEditor onBack={() => handleSetActiveComponent("Store")} {...componentProps} />
-  };
-
-  const handleMainButtonClick = () => {
-    if (activeComponent === "Campaign") {
-      setShowCampaignPopup(true);
-    } else {
-      setShowCanvas(true);
-    }
-=======
     Campaign: <Campaign />,
     Account: <Account />,
     Design: <Design />,
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
   };
 
   return (
@@ -102,39 +68,6 @@ export default function ssDashboardlayout({ children }) {
         <div 
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
           onClick={closeSidebar}
-<<<<<<< HEAD
-        />
-      )}
-
-      <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
-        <Header
-          toggleSidebar={toggleSidebar}
-          setActiveComponent={handleSetActiveComponent}
-          currentComponent={activeComponent}
-          onMainButtonClick={handleMainButtonClick}
-          isSidebarOpen={isSidebarOpen}
-        />
-
-        <div className="flex-1 p-4 overflow-y-auto">
-          {React.isValidElement(allComponents[activeComponent]) ? 
-            React.cloneElement(allComponents[activeComponent], componentProps) : 
-            allComponents[activeComponent] || (
-              <div className="text-center py-10">Component not found</div>
-            )
-          }
-        </div>
-      </div>
-
-      {isMobile && <BottomBar setActiveComponent={handleSetActiveComponent} />}
-
-      {showCampaignPopup && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <CreateCampaign onClose={() => setShowCampaignPopup(false)} />
-          </div>
-        </div>
-      )}
-=======
         ></div>
       )}
       <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
@@ -152,7 +85,6 @@ export default function ssDashboardlayout({ children }) {
         </div>
       </div>
       {isMobile && <BottomBar setActiveComponent={setActiveComponent} />}
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
     </div>
   );
 }

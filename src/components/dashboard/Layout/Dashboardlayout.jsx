@@ -6,12 +6,7 @@ import BottomBar from "./BottomBar";
 import Account from "../sidebarcomponents/Settings/Account";
 import Campaign from "./Headercomponents/Campaign";
 import AffiliateProgram from "./Headercomponents/AfiliateProgram";
-// Removed unused import for Createaccount
-import { CreateCampaign } from "./Headercomponents/CreateCampaign";
-import Store from "../sidebarcomponents/Store/Store";
-import StoreEditor from "../sidebarcomponents/Store/StoreEditor";
-// Removed unused import for Design
-
+import Design from "../design/Main";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 
 export default function DashboardLayout({ children }) {
@@ -22,13 +17,14 @@ export default function DashboardLayout({ children }) {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showCampaignPopup, setShowCampaignPopup] = useState(false);
-  // Removed unused state for showCanvas
+  const [componentProps, setComponentProps] = useState({});
+  const [showCanvas, setShowCanvas] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => isMobile && setIsSidebarOpen(false);
 
-  const [componentProps, setComponentProps] = useState({});
+  // const [componentProps, setComponentProps] = useState({});
 
   const handleSetActiveComponent = (component) => {
     if (typeof component === "object" && component.name) {
@@ -39,12 +35,6 @@ export default function DashboardLayout({ children }) {
       setComponentProps({});
     }
   };
-  // const componentsMap = {};
-  // Children.forEach(children, (child) => {
-  //   if (child.props && child.props.name) {
-  //     componentsMap[child.props.name] = child;
-  //   }
-  // });
 
   const componentsMap = React.useMemo(() => {
     const map = {};
@@ -61,24 +51,7 @@ export default function DashboardLayout({ children }) {
     "Affiliate Program": <AffiliateProgram />,
     Campaign: <Campaign />,
     Account: <Account />,
-    Store: <Store setActiveComponent={handleSetActiveComponent} />,
-    StoreEditor: (
-      <StoreEditor
-        onBack={() => handleSetActiveComponent("Store")}
-        {...componentProps}
-      />
-    ),
-  };
-
-  const handleMainButtonClick = () => {
-    if (activeComponent === "Campaign") {
-      setShowCampaignPopup(true);
-    } else {
-      setShowCanvas(true);
-    }
-    // Campaign: <Campaign />,
-    // Account: <Account />,
-    // Design: <Design />,
+    Design: <Design />,
   };
 
   return (
@@ -99,36 +72,23 @@ export default function DashboardLayout({ children }) {
         <div
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
           onClick={closeSidebar}
-        />
+        ></div>
       )}
+      <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
+        {activeComponent.toLowerCase() !== "design" && (
+          <Header
+            toggleSidebar={toggleSidebar}
+            setActiveComponent={setActiveComponent}
+          />
+        )}
 
-      <div className="flex-1 flex flex-col bg-[#fffbfbcc] relative">
-        <Header
-          toggleSidebar={toggleSidebar}
-          setActiveComponent={handleSetActiveComponent}
-          currentComponent={activeComponent}
-          onMainButtonClick={handleMainButtonClick}
-          isSidebarOpen={isSidebarOpen}
-        />
-
-        <div className="flex-1 p-4 overflow-y-auto">
-          {React.isValidElement(allComponents[activeComponent])
-            ? React.cloneElement(allComponents[activeComponent], componentProps)
-            : allComponents[activeComponent] || (
-                <div className="text-center py-10">Component not found</div>
-              )}
+        <div className="flex-1 p-4 overflow-y-auto relative">
+          {allComponents[activeComponent] || (
+            <div>Component "{activeComponent}" not found</div>
+          )}
         </div>
       </div>
-
-      {isMobile && <BottomBar setActiveComponent={handleSetActiveComponent} />}
-
-      {showCampaignPopup && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <CreateCampaign onClose={() => setShowCampaignPopup(false)} />
-          </div>
-        </div>
-      )}
+      {isMobile && <BottomBar setActiveComponent={setActiveComponent} />}
     </div>
   );
 }

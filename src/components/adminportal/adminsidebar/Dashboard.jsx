@@ -238,7 +238,7 @@ const TableWidget = ({ title, data, columns, imageKey }) => {
                 key={item.name}
                 className={`bg-white border-b border-gray-200 cursor-pointer transition-colors duration-200
                   hover:bg-blue-100
-                  ${clickedRow === item.name ? "bg-blue-300" : ""}`}
+                  ${clickedRow === item.name ? "" : ""}`}
                 onClick={() => handleRowClick(item.name)}
               >
                 {columns.map((column) => (

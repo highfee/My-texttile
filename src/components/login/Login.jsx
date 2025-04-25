@@ -22,9 +22,8 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
-  // Handle login button click
   const handleLogin = () => {
-    if (email.toLowerCase().includes("admin")) {
+    if (email === "admin@gmail.com" && password === "admin") {
       router.push("/adminportal");
     } else {
       router.push("/dashboard");
@@ -88,8 +87,8 @@ const Login = () => {
 
           {/* Login Button */}
           <button
-            className="w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
-            onClick={() => router.push("/dashboard")}
+            className="w-full text-center bg-bluebutton hover:bg-blue-700 text-white py-2 rounded"
+            onClick={handleLogin}
           >
             Login
           </button>

@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { TiSocialFacebook } from "react-icons/ti";
 import Continuewithemail from "./Continuewithemail"; // Import the Continuewithemail component
-import { Mail } from 'lucide-react';
+import { Mail } from "lucide-react";
 import Link from "next/link";
 
 const Loginoptions = () => {
   const [isChecked, setIsChecked] = useState(false);
-  const [showContinueWithEmail, setShowContinueWithEmail] = useState(false); 
+  const [showContinueWithEmail, setShowContinueWithEmail] = useState(false);
+
   const handleContinueWithEmail = () => {
     setShowContinueWithEmail(true);
   };
@@ -17,11 +18,20 @@ const Loginoptions = () => {
       {!showContinueWithEmail ? (
         <>
           <div className="flex flex-col items-start px-2 sm:px-6 py-6 sm:py-8 md:py-10 w-full md:w-1/2">
-            <h2 className="text-base text-[11px] md:text-xl lg:text-2xl font-bold">Log in or sign up in seconds</h2>
+            <h2 className="text-base text-[11px] md:text-xl lg:text-2xl font-bold">
+              Log in or sign up in seconds
+            </h2>
             <p className="text-[#121212] text-[8px]  md:text-[14px] lg:text-[16px]  ">
-              The platform is coming Live July 2025! Stay informed - sign up for our <Link href="/newsletter" className=" text-bluebutton">newsletter</Link>.
+              The platform is coming Live July 2025! Stay informed - sign up for
+              our{" "}
+              <Link href="/newsletter" className=" text-bluebutton">
+                newsletter
+              </Link>
+              .
             </p>
-            <p className="text-[#121212] text-[8px] md:text-[14px] lg:text-[16px] font-bold">(It's free)</p>
+            <p className="text-[#121212] text-[8px] md:text-[14px] lg:text-[16px] font-bold">
+              (It's free)
+            </p>
             <div className="w-full space-y-2 sm:space-y-3 py-4 sm:py-6 md:py-16 px-1 sm:px-4 mt-2">
               <button className="flex items-center justify-start w-full px-2 sm:px-3 py-1 sm:py-2 border border-[#12121270] rounded-lg">
                 <span className="flex items-center justify-center w-5 sm:w-6">
@@ -70,13 +80,33 @@ const Loginoptions = () => {
                     </div>
                   )}
                 </div>
-                <label htmlFor="terms" className="text-[6px] md:text-[14px] lg:text-[15px]">
-                  By continuing, you agree to <span className="font-bold">Mytextil</span> Terms of Use.
+                <label
+                  htmlFor="terms"
+                  className="text-[6px] md:text-[14px] lg:text-[15px]"
+                >
+                  By continuing, you agree to{" "}
+                  <span className="font-bold">Mytextil</span> Terms of Use.
                 </label>
               </div>
               <p className="mt-1">Read our Privacy Policy</p>
-              <p>Want to be a creator sign up <Link href="https://forms.gle/XxvEKrLzjzvPJJRu" className="underline text-graycolor opacity-[0.70] font-semibold">Here</Link></p>
-              <p>Join our ambassador program <Link href="https://forms.gle/Yv9qJTK6sGGVybXr9" className="underline text-graycolor opacity-[0.70] font-semibold">Here</Link></p>
+              <p>
+                Want to be a creator sign up{" "}
+                <Link
+                  href="https://forms.gle/XxvEKrLzjzvPJJRu"
+                  className="underline text-graycolor opacity-[0.70] font-semibold"
+                >
+                  Here
+                </Link>
+              </p>
+              <p>
+                Join our ambassador program{" "}
+                <Link
+                  href="https://forms.gle/Yv9qJTK6sGGVybXr9"
+                  className="underline text-graycolor opacity-[0.70] font-semibold"
+                >
+                  Here
+                </Link>
+              </p>
             </div>
           </div>
           <div className="w-full md:w-1/2">

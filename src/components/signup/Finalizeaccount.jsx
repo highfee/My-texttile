@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import Securitylayer from "./Securitylayer";
+import Pricingplans from "./Pricingplans";
 
 const Finalizeaccount = ({ onBack }) => {
   const [showCreateAccount, setShowCreateAccount] = useState(false);
@@ -10,7 +11,8 @@ const Finalizeaccount = ({ onBack }) => {
   };
 
   if (showCreateAccount) {
-    return <Securitylayer onBack={() => setShowCreateAccount(false)} />;
+    return <Pricingplans onBack={() => setShowCreateAccount(false)} />;
+    // return <Securitylayer onBack={() => setShowCreateAccount(false)} />;
   }
 
   return (
@@ -20,7 +22,7 @@ const Finalizeaccount = ({ onBack }) => {
         <div>
           <FaArrowLeftLong
             className="text-black cursor-pointer"
-            onClick={onBack} 
+            onClick={onBack}
           />
         </div>
         <div className="py-2 lg:py-8 md:py-10">

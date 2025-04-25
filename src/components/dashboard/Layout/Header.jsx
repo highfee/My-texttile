@@ -2,15 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import { Bell, Search } from "lucide-react";
 import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
 
-const Header = ({ 
-  setActiveComponent, 
-  toggleSidebar, 
+import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+
+const Header = ({
+  // setActiveComponent,
+  toggleSidebar,
   currentComponent,
   onMainButtonClick,
-  isSidebarOpen
+  isSidebarOpen,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { setActiveComponent } = useDashboardComponentStore();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -76,9 +79,11 @@ const Header = ({
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover"
               />
-              <IoIosArrowDown className={`w-5 h-5 text-gray-600 transition-transform ${
-                isDropdownOpen ? "transform rotate-180" : ""
-              }`} />
+              <IoIosArrowDown
+                className={`w-5 h-5 text-gray-600 transition-transform ${
+                  isDropdownOpen ? "transform rotate-180" : ""
+                }`}
+              />
             </div>
 
             {/* Dropdown Menu */}
@@ -114,22 +119,20 @@ const Header = ({
             )}
           </div>
 
-<<<<<<< HEAD
-          <button 
-            className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
-            onClick={onMainButtonClick}
-=======
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
-            onClick={() => handleSelectOption("Design")}
->>>>>>> e6c1b235cab7c31ac2ebba12b3189200702a1830
+            onClick={() => setActiveComponent("Design")}
           >
             <img
               src="/dashboard/magic wand.svg"
               alt="Magic Wand"
               className="w-5 h-5"
             />
-            <span>{currentComponent === "Campaign" ? "Start Campaign" : "New Design"}</span>
+            <span>
+              {currentComponent === "Campaign"
+                ? "Start Campaign"
+                : "New Design"}
+            </span>
           </button>
         </div>
 

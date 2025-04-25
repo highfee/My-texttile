@@ -1,6 +1,12 @@
+"use client";
+
 import React from "react";
+import dynamic from "next/dynamic";
 import Sidebar from "./Sidebar";
-import Canvas from "./Canvas";
+
+const Canvas = dynamic(() => import("./Canvas"), {
+  ssr: false,
+});
 
 const Main = () => {
   return (

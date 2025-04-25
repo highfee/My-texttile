@@ -121,7 +121,8 @@ const Navbar = () => {
       {isLoginPopupOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          onClick={() => setIsLoginPopupOpen(false)}
+          // onClick={() => setIsLoginPopupOpen(false)}
+          // ife: clicking outside the main modal component should not close the Dialog box, as user can lose progress, else states are persisted
         >
           <button
             className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"

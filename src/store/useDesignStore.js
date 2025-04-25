@@ -1,252 +1,295 @@
-// store/useDesignStore.js
+// store/designStore.js
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
+import { nanoid } from "nanoid";
+import { persist } from "zustand/middleware";
 
-const initialState = {
-  product: {
-    type: "tshirt",
-    color: "#FFFFFF",
-    size: "M",
-    variant: "unisex",
-    view: "front", // 'front', 'back', 'left', 'right'
-    mockup: null,
-  },
-  canvas: {
-    width: 800,
-    height: 600,
-    zoom: 100,
-    offsetX: 0,
-    offsetY: 0,
-  },
-  elements: [],
-  brandKit: {
-    logos: {
-      main: null,
-      alternative: null,
-      transparent: null,
-    },
-    colors: [],
-    fonts: ["Helvetica"],
-    templates: [],
-  },
-  ui: {
-    activeTool: null,
-    activePanel: "design",
-    isLoading: false,
-    isSaving: false,
-    error: null,
-  },
-  history: {
-    past: [],
-    present: null,
-    future: [],
-  },
-  selectedElements: [],
-  groups: {},
-};
+export const useDesignStore = create(
+  persist(
+    (set, get) => ({
+      // Canvas properties
+      canvasSize: { width: 450, height: 425 },
+      canvasBackground: "white",
+      zoomLevel: 1,
+      currentView: "front", // front, back, arm
 
-const createHistorySnapshot = (state) => ({
-  product: JSON.parse(JSON.stringify(state.product)),
-  elements: JSON.parse(JSON.stringify(state.elements)),
-  canvas: JSON.parse(JSON.stringify(state.canvas)),
-});
+      // Selected element
+      selectedElement: null,
 
-const useDesignStore = create(
-  devtools(
-    persist(
-      immer((set, get) => ({
-        ...initialState,
+      // Design elements on canvas
+      elements: [],
 
-        actions: {
-          // Product actions
-          setProductColor: (color) =>
-            set((state) => {
-              state.product.color = color;
-              state.history.past.push(createHistorySnapshot(state));
-            }),
+      // History for undo/redo
+      history: [],
+      historyIndex: -1,
 
-          setProductView: (view) =>
-            set((state) => {
-              state.product.view = view;
-              // Reset canvas position for new view
-              state.canvas.offsetX = 0;
-              state.canvas.offsetY = 0;
-              state.history.past.push(createHistorySnapshot(state));
-            }),
+      // Colors
+      selectedProductColor: "#000000",
 
-          uploadMockup: (file) => {
-            const reader = new FileReader();
-            reader.onload = () =>
-              set((state) => {
-                state.product.mockup = reader.result;
-                state.history.past.push(createHistorySnapshot(state));
-              });
-            reader.readAsDataURL(file);
-          },
+      // Active brand kit
+      activeBrandKit: null,
 
-          // Canvas actions
-          setCanvasZoom: (zoom) =>
-            set((state) => {
-              state.canvas.zoom = zoom;
-            }),
+      // Actions
+      addElement: (elementType, properties) => {
+        const element = {
+          id: nanoid(),
+          type: elementType,
+          ...properties,
+          draggable: true,
+        };
 
-          panCanvas: (dx, dy) =>
-            set((state) => {
-              state.canvas.offsetX += dx;
-              state.canvas.offsetY += dy;
-            }),
+        set((state) => {
+          const newElements = [...state.elements, element];
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
 
-          // Element actions
-          addElement: (element) =>
-            set((state) => {
-              const newElement = {
-                ...element,
-                id: crypto.randomUUID(),
-                view: state.product.view, // Track which view the element belongs to
-                createdAt: Date.now(),
-              };
-              state.elements.push(newElement);
-              state.selectedElements = [newElement.id];
-              state.history.past.push(createHistorySnapshot(state));
-            }),
+          return {
+            elements: newElements,
+            history: [...newHistory, { elements: newElements }],
+            historyIndex: state.historyIndex + 1,
+            selectedElement: element.id,
+          };
+        });
 
-          updateElement: (id, updates) =>
-            set((state) => {
-              const element = state.elements.find((el) => el.id === id);
-              if (element) {
-                Object.assign(element, updates);
-                state.history.past.push(createHistorySnapshot(state));
-              }
-            }),
+        return element.id;
+      },
 
-          deleteElement: (id) =>
-            set((state) => {
-              state.elements = state.elements.filter((el) => el.id !== id);
-              state.selectedElements = state.selectedElements.filter(
-                (elId) => elId !== id
-              );
-              state.history.past.push(createHistorySnapshot(state));
-            }),
+      selectElement: (id) => {
+        set({ selectedElement: id });
+      },
 
-          // View-specific elements filter
-          getViewElements: () => {
-            const currentView = get().product.view;
-            return get().elements.filter((el) => el.view === currentView);
-          },
+      updateElement: (id, properties) => {
+        set((state) => {
+          const elements = state.elements.map((el) =>
+            el.id === id ? { ...el, ...properties } : el
+          );
 
-          // Multi-select
-          selectElement: (id) =>
-            set((state) => {
-              state.selectedElements = [id];
-            }),
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
 
-          addToSelection: (id) =>
-            set((state) => {
-              if (!state.selectedElements.includes(id)) {
-                state.selectedElements.push(id);
-              }
-            }),
+          return {
+            elements,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
 
-          clearSelection: () =>
-            set((state) => {
-              state.selectedElements = [];
-            }),
+      deleteElement: (id) => {
+        set((state) => {
+          const elements = state.elements.filter((el) => el.id !== id);
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
 
-          // History management
-          undo: () =>
-            set((state) => {
-              if (state.history.past.length === 0) return;
-              const snapshot = state.history.past.pop();
-              state.history.future.push(createHistorySnapshot(state));
-              Object.assign(state, snapshot);
-            }),
+          return {
+            elements,
+            selectedElement: null,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
 
-          redo: () =>
-            set((state) => {
-              if (state.history.future.length === 0) return;
-              const snapshot = state.history.future.pop();
-              state.history.past.push(createHistorySnapshot(state));
-              Object.assign(state, snapshot);
-            }),
+      clearCanvas: () => {
+        set((state) => {
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
 
-          // Brand kit actions
-          uploadLogo: (type, file) => {
-            const reader = new FileReader();
-            reader.onload = () =>
-              set((state) => {
-                state.brandKit.logos[type] = reader.result;
-              });
-            reader.readAsDataURL(file);
-          },
+          return {
+            elements: [],
+            selectedElement: null,
+            history: [...newHistory, { elements: [] }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
 
-          applyBrandColor: (color) =>
-            set((state) => {
-              state.product.color = color;
-              state.history.past.push(createHistorySnapshot(state));
-            }),
+      // Undo and redo functions
+      canUndo: () => get().historyIndex > 0,
+      canRedo: () => get().historyIndex < get().history.length - 1,
 
-          // Async operations
-          saveDesign: async (name) => {
-            try {
-              set((state) => {
-                state.ui.isSaving = true;
-              });
-
-              const design = {
-                name,
-                ...createHistorySnapshot(get()),
-                createdAt: new Date().toISOString(),
-              };
-
-              // Simulate API call
-              await new Promise((resolve) => setTimeout(resolve, 1000));
-
-              set((state) => {
-                state.ui.isSaving = false;
-                state.brandKit.templates.push(design);
-              });
-            } catch (error) {
-              set((state) => {
-                state.ui.error = error.message;
-                state.ui.isSaving = false;
-              });
-            }
-          },
-
-          reset: () =>
-            set((state) => {
-              Object.assign(state, initialState);
-            }),
-        },
-      })),
-      {
-        name: "design-store-v2",
-        partialize: (state) => ({
-          product: state.product,
-          elements: state.elements,
-          brandKit: state.brandKit,
-        }),
-        version: 2,
-        migrate: (persistedState, version) => {
-          if (version < 2) {
-            // Migration logic for previous versions
-            persistedState.product.view = "front";
-            persistedState.selectedElements = [];
+      undo: () => {
+        set((state) => {
+          if (state.historyIndex > 0) {
+            const newIndex = state.historyIndex - 1;
+            return {
+              elements: state.history[newIndex].elements,
+              historyIndex: newIndex,
+              selectedElement: null,
+            };
           }
-          return persistedState;
-        },
-      }
-    )
+          return state;
+        });
+      },
+
+      redo: () => {
+        set((state) => {
+          if (state.historyIndex < state.history.length - 1) {
+            const newIndex = state.historyIndex + 1;
+            return {
+              elements: state.history[newIndex].elements,
+              historyIndex: newIndex,
+              selectedElement: null,
+            };
+          }
+          return state;
+        });
+      },
+
+      // Product color
+      setProductColor: (color) => {
+        set({ selectedProductColor: color });
+      },
+
+      // View switching
+      setCurrentView: (view) => {
+        set({ currentView: view });
+      },
+
+      // Zoom control
+      setZoomLevel: (level) => {
+        set({ zoomLevel: level });
+      },
+
+      // Brand kit
+      setActiveBrandKit: (kitId) => {
+        set({ activeBrandKit: kitId });
+      },
+
+      // Template handling
+      applyTemplate: (template) => {
+        set((state) => {
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+          return {
+            elements: template.elements,
+            selectedElement: null,
+            history: [...newHistory, { elements: template.elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
+
+      // Element position
+      bringForward: (id) => {
+        set((state) => {
+          const elements = [...state.elements];
+          const index = elements.findIndex((el) => el.id === id);
+
+          if (index < elements.length - 1) {
+            const element = elements[index];
+            elements.splice(index, 1);
+            elements.splice(index + 1, 0, element);
+
+            const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+            return {
+              elements,
+              history: [...newHistory, { elements }],
+              historyIndex: state.historyIndex + 1,
+            };
+          }
+
+          return state;
+        });
+      },
+
+      sendBackward: (id) => {
+        set((state) => {
+          const elements = [...state.elements];
+          const index = elements.findIndex((el) => el.id === id);
+
+          if (index > 0) {
+            const element = elements[index];
+            elements.splice(index, 1);
+            elements.splice(index - 1, 0, element);
+
+            const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+            return {
+              elements,
+              history: [...newHistory, { elements }],
+              historyIndex: state.historyIndex + 1,
+            };
+          }
+
+          return state;
+        });
+      },
+
+      // Text alignment functions
+      alignElementLeft: (id) => {
+        set((state) => {
+          const elements = state.elements.map((el) =>
+            el.id === id ? { ...el, align: "left" } : el
+          );
+
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+          return {
+            elements,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
+
+      alignElementCenter: (id) => {
+        set((state) => {
+          const elements = state.elements.map((el) =>
+            el.id === id ? { ...el, align: "center" } : el
+          );
+
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+          return {
+            elements,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
+
+      alignElementRight: (id) => {
+        set((state) => {
+          const elements = state.elements.map((el) =>
+            el.id === id ? { ...el, align: "right" } : el
+          );
+
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+          return {
+            elements,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
+
+      // Add rotation function
+      rotateElement: (id, degrees) => {
+        set((state) => {
+          const elements = state.elements.map((el) => {
+            if (el.id === id) {
+              const currentRotation = el.rotation || 0;
+              return { ...el, rotation: currentRotation + degrees };
+            }
+            return el;
+          });
+
+          const newHistory = state.history.slice(0, state.historyIndex + 1);
+
+          return {
+            elements,
+            history: [...newHistory, { elements }],
+            historyIndex: state.historyIndex + 1,
+          };
+        });
+      },
+    }),
+    {
+      name: "design-storage",
+      partialize: (state) => ({
+        elements: state.elements,
+        canvasBackground: state.canvasBackground,
+        selectedProductColor: state.selectedProductColor,
+        currentView: state.currentView,
+      }),
+    }
   )
 );
-
-// Hook aliases for better DX
-export const useProduct = () => useDesignStore((state) => state.product);
-export const useCanvas = () => useDesignStore((state) => state.canvas);
-export const useElements = () =>
-  useDesignStore((state) => state.actions.getViewElements());
-export const useSelectedElements = () =>
-  useDesignStore((state) => state.selectedElements);
-export const useBrandKit = () => useDesignStore((state) => state.brandKit);
-export const useDesignActions = () => useDesignStore((state) => state.actions);

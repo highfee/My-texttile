@@ -1,22 +1,28 @@
 import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import Finalizeaccount from "./Finalizeaccount";
-const Reference = ({ onBack }) => {
-     const [showCreateAccount, setShowCreateAccount] = useState(false);
-        const handleContinue = () => {
-          setShowCreateAccount(true); 
-        };
-        if (showCreateAccount) {
-          return <Finalizeaccount onBack={() => setShowCreateAccount(false)} />;
-        }
-  return (
+import Securitylayer from "./Securitylayer";
 
+const Reference = ({ onBack }) => {
+  const [showCreateAccount, setShowCreateAccount] = useState(false);
+  const handleContinue = () => {
+    setShowCreateAccount(true);
+  };
+
+  // if (showCreateAccount) {
+  //   return <Finalizeaccount onBack={() => setShowCreateAccount(false)} />;
+  // }
+
+  if (showCreateAccount) {
+    return <Securitylayer onBack={() => setShowCreateAccount(false)} />;
+  }
+  return (
     <div className="flex flex-row items-stretch rounded-lg shadow-md overflow-hidden sm:w-[600px] md:w-[700px] lg:w-[850px] h-auto sm:h-[400px] md:h-[450px] lg:h-[572px] ">
       <div className="flex flex-col items-start px-2 sm:px-6 py-6 sm:py-8 md:py-10 w-full md:w-1/2">
         <div>
           <FaArrowLeftLong
             className="text-black cursor-pointer"
-            onClick={onBack} 
+            onClick={onBack}
           />
         </div>
         <div className="py-4 lg:py-12">
@@ -43,7 +49,10 @@ const Reference = ({ onBack }) => {
             </div>
           </div>
           <div className="w-full py-2">
-            <button onClick={handleContinue} className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg">
+            <button
+              onClick={handleContinue}
+              className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg"
+            >
               <p>Continue</p>
             </button>
           </div>

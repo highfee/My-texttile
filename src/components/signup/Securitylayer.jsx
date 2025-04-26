@@ -9,6 +9,8 @@ import * as z from "zod";
 import { useRegisterStore } from "@/store/registerStore";
 import Finalizeaccount from "./Finalizeaccount";
 
+import axios from "axios";
+
 const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters long")
@@ -36,6 +38,18 @@ const Securitylayer = ({ onBack }) => {
   const [showPricingPlans, setShowPricingPlans] = useState(false);
 
   const {
+    setPassword,
+    email,
+    password,
+    phoneNumber,
+    referralCode,
+    setUserData,
+    setLoading,
+    setError,
+    loading,
+  } = useRegisterStore();
+
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -47,9 +61,35 @@ const Securitylayer = ({ onBack }) => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data) => {
-    console.log("Form data:", data);
-    setShowPricingPlans(true);
+  const onSubmit = async (data) => {
+    setPassword(data.password);
+    const user_data = {
+      email,
+      first_name: "test1",
+      last_name: "test2",
+      password,
+      referred_by: referralCode,
+      phone_number: phoneNumber,
+      country_code: "+1",
+      username: "Highfee12",
+      // profile_photo: "http://example.com",
+    };
+    try {
+      setLoading(true);
+
+      const data = await axios.post(
+        "http://23.88.47.163/dev/api/v1/users/register/",
+        user_data
+      );
+      setUserData(data.data);
+      setLoading(false);
+      setError(null);
+      data.status === 200 && setShowPricingPlans(true);
+    } catch (error) {
+      setLoading(false);
+      setError(error.response.data.message);
+      console.log(error);
+    }
   };
 
   if (showPricingPlans) {
@@ -131,12 +171,12 @@ const Securitylayer = ({ onBack }) => {
               type="submit"
               className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg hover:bg-blue-600 transition duration-300"
             >
-              <p>Submit</p>
+              <p>{loading ? "Pls wait" : "Submit"}</p>
             </button>
-            <p className="text-[#121212] opacity-[0.44] text-[10px] lg:text-[14px] mt-2">
+            {/* <p className="text-[#121212] opacity-[0.44] text-[10px] lg:text-[14px] mt-2">
               Didn’t get a code? Resend in{" "}
               <span className="font-bold">24 seconds</span>
-            </p>
+            </p> */}
           </div>
         </form>
       </div>

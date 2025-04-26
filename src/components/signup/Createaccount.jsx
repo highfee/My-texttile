@@ -48,7 +48,7 @@ const Createaccount = ({ onBack }) => {
     setIsDropdownOpen(false);
   };
 
-  const { setPassword } = useRegisterStore();
+  const { setPhoneNumber } = useRegisterStore();
 
   const schema = z.object({
     phoneNumber: z
@@ -70,7 +70,7 @@ const Createaccount = ({ onBack }) => {
   };
 
   const onSubmit = (data) => {
-    setPassword(data.phoneNumber);
+    setPhoneNumber(data.phoneNumber);
     handleContinue();
   };
 

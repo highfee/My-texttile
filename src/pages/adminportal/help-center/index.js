@@ -87,7 +87,7 @@ export default function HelpCenterPage() {
           <div className="flex flex-col gap-6">
             {filteredTickets.length > 0 ? (
               filteredTickets.map((ticket) => (
-                <Link href={`/helpcenter/livechat/${ticket.chatId}`} key={`${ticket.id}-${ticket.status}`}>
+                <Link href={``}>
                   <div className="bg-white p-3 lg:p-6 rounded-xl shadow-md border flex flex-col gap-4 hover:shadow-lg transition-shadow cursor-pointer">
                     <div className="flex flex-row justify-between items-center text-sm text-graycolor">
                       <div className="flex items-center gap-2">
@@ -132,10 +132,10 @@ export default function HelpCenterPage() {
                           <IoIosAttach className="opacity-50" />
                           <span>{ticket.comments}</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <Link href="/chathelp" className="flex items-center gap-1">
                           <FaRegComments className="opacity-50" />
                           <span>{ticket.views}</span>
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   </div>

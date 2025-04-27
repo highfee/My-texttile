@@ -1,6 +1,7 @@
 import { IoIosLink } from "react-icons/io";
 import { FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -48,12 +49,12 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             >
               Setup store
             </button>
-            <button
+            <Link href="/creatorsstore"
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
-              onClick={() => setActiveComponent("viewSites")}
+              
             >
               View stores
-            </button>
+            </Link>
           </div>
         </div>
       </div>

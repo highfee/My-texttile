@@ -32,7 +32,7 @@ const index = () => {
   };
 
   return (
-    <div className="lg:p-6 space-y-4 min-h-screen"style={{
+    <div className="lg:p-6 space-y-4 min-h-screen" style={{
         overflowY: "auto",
         scrollbarWidth: "none" /* Firefox */,
         msOverflowStyle: "none" /* IE and Edge */,

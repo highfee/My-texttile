@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import FAQ from './FAQ';
-import Payout from './Payout';
-import GettingStarted from './GettingStarted';
-import Marketing from './Marketing';
-import Store from './Store';
+import FAQ from '@/components/dashboard/sidebarcomponents/HelpCenter/FAQ';
+import Payout from '@/components/dashboard/sidebarcomponents/Payout';
+import GettingStarted from '@/components/dashboard/sidebarcomponents/HelpCenter/GettingStarted';
+import Marketing from '@/components/dashboard/sidebarcomponents/HelpCenter/Marketing';
+import Store from '@/components/dashboard/sidebarcomponents/HelpCenter/Store';
 
-const Navbar = () => {
+const index = () => {
   const [activeTab, setActiveTab] = useState('FAQs');
 
   const tabs = ['FAQs', 'Getting Started', 'Payout', 'Store', 'Marketing'];
@@ -38,4 +38,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default index;

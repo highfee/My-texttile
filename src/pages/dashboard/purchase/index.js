@@ -3,51 +3,12 @@ import { CiCalendar, CiFilter } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
 import { GoArrowDownLeft } from "react-icons/go";
-import Purchasesdetail from "./Purchasesdetail";
+import PurchasesDetail from "@/components/dashboard/sidebarcomponents/Purchasesdetail";
+import { productOrders } from "@/data/adminData/userData/purchases";
 
 export default function Purchases() {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-
-  const productOrders = [
-    {
-      customer: "NonLee",
-      product: "Classic Tee",
-      amount: "$150",
-      qty: 2,
-      status: "Delivered",
-    },
-    {
-      customer: "NonLee",
-      product: "Classic Tee",
-      amount: "$150",
-      qty: 2,
-      status: "Delivered",
-    },
-    {
-      customer: "NonLee",
-      product: "Graphic Tee",
-      amount: "$400",
-      qty: 5,
-      status: "Pending",
-    },
-    {
-      customer: "NonLee",
-      product: "Vintage Tee",
-      amount: "$2,500",
-      qty: 2,
-      status: "Processing",
-    },
-    {
-      customer: "NonLee",
-      product: "Basic Tee",
-      amount: "$250",
-      qty: 1,
-      status: "Processing",
-    },
-  ];
-
-  // Function to determine status color
   const getStatusColor = (status) => {
     switch (status) {
       case "Delivered":
@@ -60,17 +21,13 @@ export default function Purchases() {
         return "text-black"; // Default color
     }
   };
-
-  // Handle row click
   const handleRowClick = (order) => {
     setSelectedOrder(order);
     setShowDetail(true);
   };
-
-  // If showDetail is true, render the PurchasesDetail component
   if (showDetail) {
     return (
-      <Purchasesdetail
+      <PurchasesDetail
         order={selectedOrder}
         onBack={() => setShowDetail(false)}
       />
@@ -110,13 +67,10 @@ export default function Purchases() {
           <IoIosArrowDown className="" />
         </div>
       </div>
-
-      {/* Outer Border with Custom CSS Variable */}
       <div
-        className="relative rounded-lg p-4"
+        className="relative rounded-lg p-2"
         style={{ border: "1px solid var(--FadeColor, #12121270)" }}
       >
-        {/* Inner Content */}
         <div className="p-2 whitespace-nowrap overflow-x-auto md:overflow-x-visible">
           <div className="grid grid-cols-5 gap-2 font-medium text-graycolor opacity-[0.44] pb-4 px-4 min-w-[600px]">
             <div className="col-span-1">Customer</div>
@@ -125,7 +79,7 @@ export default function Purchases() {
             <div className="col-span-1">Qty</div>
             <div className="col-span-1">Status</div>
           </div>
-          <div className="space-y-4 px-4 min-w-[600px]">
+          <div className="space-y-4 px-2 min-w-[600px]">
             {productOrders.map((order, index) => (
               <div
                 key={index}
@@ -156,22 +110,17 @@ export default function Purchases() {
         </div>
       </div>
       <div className="mt-6">
-        {/* Transaction History Heading */}
         <p className="text-graycolor opacity-[0.44] text-[14px] mb-2">
           Transaction History
         </p>
-
-        {/* Transaction Card */}
         <div
           className="relative flex flex-row justify-between items-center rounded-lg p-4"
           style={{ border: "1px solid var(--FadeColor, #12121270)" }}
         >
-          {/* Left Section: Icon and Text */}
           <div className="flex flex-row items-center space-x-3">
             <div className="bg-[#F0F3F4] rounded-full p-1">
               <GoArrowDownLeft className="text-[#10B981] text-[20px] font-bold  " />
             </div>
-            {/* Arrow icon */}
             <div className="flex flex-col">
               <p className="text-sm font-medium text-gray-800">
                 Tier 3 creator plan
@@ -181,8 +130,6 @@ export default function Purchases() {
               </p>
             </div>
           </div>
-
-          {/* Right Section: Amount */}
           <div>
             <p className="text-sm font-medium text-gray-800">$65.76</p>
           </div>

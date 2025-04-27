@@ -1,66 +1,12 @@
 import { useState } from "react";
-import { FaDownload } from "react-icons/fa";
-import { BsArrowUpRight } from "react-icons/bs";
-import { AiOutlineCalendar, AiOutlinePercentage } from "react-icons/ai";
+import { AiOutlineCalendar } from "react-icons/ai";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { BiDollar } from "react-icons/bi";
 import { HiDownload } from "react-icons/hi";
 import { PiBankBold } from "react-icons/pi";
+import { payoutData } from "@/data/adminData/userData/payout";
 
-const payoutData = {
-  currentPayout: "$2,200",
-  overview: [
-    {
-      label: "Sales",
-      value: "$2,345",
-      change: "15%",
-      icon: <BsArrowUpRight className="text-[#77CEB4]" />,
-      bgColor: "bg-[#E6F9F2]",
-    },
-    {
-      label: "Balance",
-      value: "$2,000",
-      change: "13.65%",
-      icon: <BiDollar className="text-bluebutton" />,
-      bgColor: "bg-[#D2E1F1]",
-    },
-    {
-      label: "Affiliate earnings",
-      value: "$200",
-      change: "-0.65%",
-      icon: <AiOutlinePercentage className="text-bluebutton" />,
-      bgColor: "bg-[#D2E1F1]",
-    },
-    {
-      label: "Fees",
-      value: "$200",
-      icon: <BsArrowUpRight className="text-[#FF5789]" />,
-      bgColor: "bg-[#FEECDC]",
-    },
-  ],
-  history: [
-    {
-      name: "Men’s T-shirt collection",
-      fees: "$59.99",
-      payout: "$500.99",
-      date: "20th Oct. 2024",
-    },
-    {
-      name: "Men’s T-shirt collection",
-      fees: "$59.99",
-      payout: "$500.99",
-      date: "20th Oct. 2024",
-    },
-    {
-      name: "Men’s T-shirt collection",
-      fees: "$59.99",
-      payout: "$500.99",
-      date: "20th Oct. 2024",
-    },
-  ],
-};
-
-export default function Payout() {
+export default function index() {
   const [showHistory, setShowHistory] = useState(true);
 
   return (

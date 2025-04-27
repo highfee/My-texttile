@@ -26,7 +26,7 @@ const Login = () => {
     if (email === "admin@gmail.com" && password === "admin") {
       router.push("/adminportal/dashboard");
     } else {
-      router.push("/dashboard");
+      router.push("/dashboard/home");
     }
   };
 

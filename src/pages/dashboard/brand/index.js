@@ -3,7 +3,7 @@ import { Palette } from "lucide-react";
 import { CiFilter } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
-const BrandComponent = () => {
+const index = () => {
   return (
     <div className="w-full flex flex-col gap-4 lg:px-10 px-4">
       <div className="relative w-full h-40">
@@ -66,4 +66,4 @@ const BrandComponent = () => {
     </div>
   );
 };
-export default BrandComponent;
+export default index;

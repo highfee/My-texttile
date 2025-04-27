@@ -1,26 +1,22 @@
 'use client';
-
 import { useState } from 'react';
-import Ordered from './Ordered';
-import Tshirt from './Tshirt';
+import Ordered from '@/components/dashboard/sidebarcomponents/Listing/Ordered';
+import Tshirt from '@/components/dashboard/sidebarcomponents/Listing/Tshirt';
 import { CiFilter } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
-import Hoodies from './Hoodies';
-import Turtleneck from './Turtleneck';
-import Polo from './Polo';
-import Denim from './Demin';
-
-const Listing = () => {
+import Hoodies from '@/components/dashboard/sidebarcomponents/Listing/Hoodies';
+import Turtleneck from '@/components/dashboard/sidebarcomponents/Listing/Turtleneck';
+import Polo from '@/components/dashboard/sidebarcomponents/Listing/Polo';
+import Denim from '@/components/dashboard/sidebarcomponents/Listing/Demin';
+const index = () => {
   const [activeTab, setActiveTab] = useState('T-shirt');
 
   const tabs = ['T-shirt', 'Hoodies', 'Turtle necks', 'Polos', 'Denim', 'Ordered'];
 
   return (
     <div className="lg:px-16">
-      {/* Tabs and Filters Wrapper */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full">
-        {/* Tabs Section */}
         <div className="flex flex-wrap shadow-md rounded-lg w-full lg:w-auto">
           {tabs.map((tab) => (
             <button
@@ -34,8 +30,6 @@ const Listing = () => {
             </button>
           ))}
         </div>
-
-        {/* Filters Section - Moves Below on Small Screens */}
         <div className="flex justify-end w-full lg:w-auto mt-2 lg:mt-0">
           <div className="flex items-center space-x-2">
             {/* Filter Button */}
@@ -62,4 +56,4 @@ const Listing = () => {
   );
 };
 
-export default Listing;
+export default index;

@@ -1,28 +1,20 @@
+import { ProjectTemplates, recentProjects } from "@/data/adminData/userData/home";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
-export default function Home() {
-  // State to track if the sidebar is collapsed
+export default function index() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const { setActiveComponent } = useDashboardComponentStore();
-
-  // Ref for the main content container
   const contentRef = useRef(null);
-
-  // Effect to observe the width of the content container
   useEffect(() => {
     const contentElement = contentRef.current;
 
     if (!contentElement) return;
-
-    // Create a ResizeObserver to detect width changes
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const { width } = entry.contentRect;
-
-        // Adjust the threshold based on your layout
         if (width > 1200) {
           setIsSidebarCollapsed(true); // Sidebar is collapsed
         } else {
@@ -30,106 +22,11 @@ export default function Home() {
         }
       }
     });
-
-    // Start observing the content container
     resizeObserver.observe(contentElement);
-
-    // Cleanup observer on unmount
     return () => {
       resizeObserver.unobserve(contentElement);
     };
   }, []);
-
-  // Sample data for recent projects
-  const recentProjects = [
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img1.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img2.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img3.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img4.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img5.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img6.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img7.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/img8.png",
-    },
-  ];
-  const ProjectTemplates = [
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp1.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp2.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp3.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp4.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp5.png",
-    },
-    {
-      name: "UNISEX CLASSIC T-SHIRT",
-      description: "Classic fit, 100% Cotton",
-      price: " $25.99",
-      image: "/dashboard/temp6.png",
-    },
-  ];
-
   return (
     <div className=" flex flex-col ">
       <div
@@ -155,8 +52,6 @@ export default function Home() {
             className="w-full rounded-lg shadow-md"
           />
         </div>
-
-        {/* Buttons with Horizontal Scroll on Mobile */}
         <div className="flex overflow-x-auto whitespace-nowrap pb-2 sm:justify-center space-x-4">
           <button className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0">
             <img

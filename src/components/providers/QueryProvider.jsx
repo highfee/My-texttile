@@ -1,13 +1,14 @@
-import "@/styles/globals.css";
+// components/providers/QueryProvider.tsx
+"use client";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import getQueryClient from "@/lib/client";
+import getQueryClient from "@/lib/queryClient";
 
-export default function App({ Component, pageProps }) {
+export default function QueryProvider({ children }) {
   return (
     <QueryClientProvider client={getQueryClient()}>
-      <Component {...pageProps} />
+      {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

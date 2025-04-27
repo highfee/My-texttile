@@ -31,7 +31,6 @@ export default function index() {
         <Listing name="Listing" />
         <Settings name="Settings" />
         <Store name="Store" />
-
         <Design name="Design" />
       </Dashboardlayout>
     </>

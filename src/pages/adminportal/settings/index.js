@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import SubscriptionTiers from "./settings/SubscriptionTiers";
-import Campaignsettings from "./settings/Campaignsettings";
-import Payments from "./settings/Payments";
-import Support from "./settings/Support";
-import General from "./settings/General";
+import SubscriptionTiers from "@/components/adminportal/adminsidebar/setting/SubscriptionTiers";
+import Campaignsettings from "@/components/adminportal/adminsidebar/setting/Campaignsettings";
+import Payments from "@/components/adminportal/adminsidebar/setting/Payments";
+import Support from "@/components/adminportal/adminsidebar/setting/Support";
+import General from "@/components/adminportal/adminsidebar/setting/General";
 
 const tabs = [
   { key: "general", label: "General" },
@@ -13,7 +13,7 @@ const tabs = [
   { key: "support", label: "Support" },
 ];
 
-const Settings = () => {
+const index = () => {
   const [activeTab, setActiveTab] = useState("general");
 
   const renderTab = () => {
@@ -68,4 +68,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default index;

@@ -78,7 +78,7 @@ const SubscriptionTiers = () => {
                   {feature.availability.map((available, idx) => (
                     <td key={idx} className="px-4 py-2">
                       {available ? (
-                        <FaCheckSquare className="text-blue-600" />
+                        <FaCheckSquare className="text-bluebutton" />
                       ) : (
                         <FaRegTimesCircle className="text-pink-600" />
                       )}

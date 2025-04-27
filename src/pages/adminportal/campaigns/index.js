@@ -1,23 +1,17 @@
 import React, { useState, useRef } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoIosArrowDown } from "react-icons/io";
-import { MdDeleteOutline, MdOutlineReportProblem } from "react-icons/md";
-import { CiPause1, CiPlay1, CiCalendar, CiMedicalCross } from "react-icons/ci";
-import { IoRocketOutline } from "react-icons/io5";
-import { FiEdit } from "react-icons/fi";
-import { GoCopy } from "react-icons/go";
+import { CiPause1, CiMedicalCross } from "react-icons/ci";
 import { FaRegSquareCheck, FaSquarePlus } from "react-icons/fa6";
-import CreateCampaignForm from "./details/CreateCampaignForm";
+import CreateCampaignForm from "@/components/adminportal/adminsidebar/details/CreateCampaignForm";
 import { HiOutlineMegaphone } from "react-icons/hi2";
 import { FaRunning } from "react-icons/fa";
 import { GiSandsOfTime } from "react-icons/gi";
 import { TiTickOutline } from "react-icons/ti";
-import Pagination from "./Pagination";
-import Search from "./Search";
+import Pagination from "@/components/adminportal/adminsidebar/Pagination";
+import Search from "@/components/adminportal/adminsidebar/Search";
 
 
 
-export default function Campaigns() {
+export default function index() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedCampaigns, setSelectedCampaigns] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -138,10 +132,10 @@ export default function Campaigns() {
     setCurrentPage(page);
   };
   if (showCreateForm) {
-    return <CreateCampaignForm onBack={() => setShowCreateForm(false)} />;
+    return <CreateCa    mpaignForm onBack={() => setShowCreateForm(false)} />;
   }
   return (
-    <div className="p-4"style={{
+    <div className="lg:p-4"style={{
       overflowY: "auto",
       scrollbarWidth: "none" /* Firefox */,
       msOverflowStyle: "none" /* IE and Edge */,

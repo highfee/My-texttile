@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { FiArrowLeft } from 'react-icons/fi';
-
 const CreateCampaignForm = () => {
   const [formData, setFormData] = useState({
     creator: '',
@@ -25,10 +23,9 @@ const CreateCampaignForm = () => {
     e.preventDefault();
     console.log('Form submitted:', formData);
   };
-
   return (
     <div className="bg-white rounded-lg max-w-3xl mx-auto p-6">
-      <div className="bg-blue-600 text-white p-4 rounded-md">
+      <div className="bg-bluebutton text-white p-4 rounded-md">
         <h1 className="text-xl font-semibold">Create a Campaign</h1>
         <p className="text-sm opacity-[0.66]">
           Optimize your product for visibility, sharing, and sales. Completing them ensures your product is well-presented,
@@ -50,7 +47,6 @@ const CreateCampaignForm = () => {
               className="w-1/2 border border-graycolor rounded-md p-2"
             >
               <option value="">email</option>
-              {/* Add options if needed */}
             </select>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

@@ -1,24 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  FaSearch,
-  FaChevronLeft,
-  FaChevronRight,
-  FaCalendarAlt,
-} from "react-icons/fa";
+import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import Details from "./details/Details";
-import { CiPause1, CiPlay1 } from "react-icons/ci";
-import { IoRocketOutline } from "react-icons/io5";
-import { MdOutlineReportProblem, MdDeleteOutline } from "react-icons/md";
-import { FiEdit } from "react-icons/fi";
-import { CiCalendar } from "react-icons/ci";
-import { FaRegSquareCheck } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
-import { GoCopy } from "react-icons/go";
-import Pagination from "./Pagination";
-import Search from "./Search";
-
+import Details from "@/components/adminportal/adminsidebar/details/Details";
+import Pagination from "@/components/adminportal/adminsidebar/Pagination";
+import Search from "@/components/adminportal/adminsidebar/Search";
 const creatorsData = [
   {
     id: 1,
@@ -120,32 +105,18 @@ const creatorsData = [
     tier: "Tier 2",
   },
 ];
-
 const PAGE_SIZE = 10;
 const ROW_HEIGHT = 50;
-
-
-const Creator = () => {
+const index = () => {
   const [selected, setSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState(null);
-  const [showActionDropdown, setShowActionDropdown] = useState(null);
-  const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
-  const [showTierDropdown, setShowTierDropdown] = useState(false);
-
-  const actionDropdownRef = useRef(null);
-  const calendarDropdownRef = useRef(null);
-  const tierDropdownRef = useRef(null);
-
-  
-
   const totalPages = Math.ceil(creatorsData.length / PAGE_SIZE);
   const paginatedData = creatorsData.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE
   );
-
   const toggleCheckbox = (id) => {
     setSelected((prevSelected) =>
       prevSelected.includes(id)
@@ -153,7 +124,6 @@ const Creator = () => {
         : [...prevSelected, id]
     );
   };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -161,13 +131,10 @@ const Creator = () => {
     setSelectedCreator(creator);
     setShowDetails(true);
   };
-
   const closeDetails = () => {
     setShowDetails(false);
     setSelectedCreator(null);
   };
-
-
   const handleRowClick = (creator, e) => {
     if (e.target.tagName === "INPUT" || e.target.closest("button")) {
       return;
@@ -214,9 +181,7 @@ const Creator = () => {
               </button>
             </div>
           </div>
-         <Search/>
-
-          {/* Table */}
+          <Search />
           <div className="overflow-x-auto w-full">
             <table className="min-w-[1000px] text-sm text-left">
               <thead className="font-normal border-b text-graycolor whitespace-nowrap">
@@ -302,13 +267,11 @@ const Creator = () => {
               </tbody>
             </table>
           </div>
-
-          {/* Pagination */}
           <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  goToPage={handlePageChange}
-/>
+            currentPage={currentPage}
+            totalPages={totalPages}
+            goToPage={handlePageChange}
+          />
         </div>
       ) : (
         selectedCreator && (
@@ -320,5 +283,4 @@ const Creator = () => {
     </div>
   );
 };
-
-export default Creator;
+export default index;

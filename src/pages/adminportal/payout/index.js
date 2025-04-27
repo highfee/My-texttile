@@ -1,15 +1,10 @@
-// PayoutTabs.jsx
 import React, { useState } from "react";
-import All from "./payout/All";
-import FlaggedIssue from "./payout/FlaggedIssue";
-import Pendingrequests from "./payout/Pendingrequests";
-import History from "./payout/History";
-import Search from "./Search";
-
-
-
-
-const Payout = () => {
+import All from "@/components/adminportal/adminsidebar/payout/All";
+import FlaggedIssue from "@/components/adminportal/adminsidebar/payout/FlaggedIssue";
+import Pendingrequests from "@/components/adminportal/adminsidebar/payout/Pendingrequests";
+import History from "@/components/adminportal/adminsidebar/payout/History";
+import Search from "@/components/adminportal/adminsidebar/Search";
+const index = () => {
   const [activeTab, setActiveTab] = useState("All");
 
   const renderContent = () => {
@@ -26,7 +21,6 @@ const Payout = () => {
         return null;
     }
   };
-
   return (
     <div className=""style={{
         overflowY: "auto",
@@ -38,8 +32,6 @@ const Payout = () => {
             display: none;
           }
         `}</style>
-      {/* Top Bar */}
-      
       <div className="bg-bluebutton text-white p-4 flex items-center justify-between rounded-lg">
         <div className="flex gap-4">
           <div className="bg-[#DCE7F233] p-3 rounded-md">
@@ -57,8 +49,6 @@ const Payout = () => {
         </div>
         <button className="hidden lg:flex border border-white px-3 py-1 rounded items-center">. . .</button>
       </div>
-
-      {/* Tabs */}
       <div className=" flex gap-1 lg:gap-2 p-1 ">
         {["All", "Pending", "History", "FlaggedIssue"].map((tab) => (
           <button
@@ -79,10 +69,8 @@ const Payout = () => {
           </button>
         ))}
       </div>
-      
       <div className="bg-white"><Search/>{renderContent()}</div>
     </div>
   );
 };
-
-export default Payout;
+export default index;

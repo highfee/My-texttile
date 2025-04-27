@@ -15,7 +15,7 @@ const Notification = () => {
     <div className="w-full max-w-sm p-2 font-sans">
       <div className="flex justify-between items-center ">
         <h2 className="text-lg font-semibold">Notification</h2>
-        <span className="text-sm text-blue-600 font-medium cursor-pointer">
+        <span className="text-sm text-bluebutton font-medium cursor-pointer">
           Unread({unreadCount})
         </span>
       </div>
@@ -27,7 +27,7 @@ const Notification = () => {
               notif.unread ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
             }`}
           >
-            <div className=" text-blue-600 text-xl">
+            <div className=" text-bluebutton text-xl">
               <FiFileText />
             </div>
             <div>

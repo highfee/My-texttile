@@ -18,9 +18,9 @@ export default function Store({ setActiveComponent }) {
   };
 
   switch (activeComponent) {
-    case "domain1":
+    case "Activate1":
       return <Activate1 onBack={handleBack} />;
-    case "domain2":
+    case "Activate2":
       return <Activate2 onBack={handleBack} />;
     case "editor":
       return <StoreEditor onBack={handleBack} initialView={editorViewType} />;

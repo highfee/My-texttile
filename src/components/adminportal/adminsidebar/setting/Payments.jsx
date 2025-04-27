@@ -45,7 +45,7 @@ const Payments = () => {
                 checked={enabled24Hour}
                 onChange={setEnabled24Hour}
                 className={`${
-                  enabled24Hour ? 'bg-blue-600' : 'bg-gray-300'
+                  enabled24Hour ? 'bg-bluebutton' : 'bg-gray-300'
                 } relative inline-flex h-6 w-11 items-center rounded-full`}
               >
                 <span
@@ -62,7 +62,7 @@ const Payments = () => {
                 checked={manualPayout}
                 onChange={setManualPayout}
                 className={`${
-                  manualPayout ? 'bg-blue-600' : 'bg-gray-300'
+                  manualPayout ? 'bg-bluebutton' : 'bg-gray-300'
                 } relative inline-flex h-6 w-11 items-center rounded-full`}
               >
                 <span
@@ -79,7 +79,7 @@ const Payments = () => {
                 checked={tierCommission}
                 onChange={setTierCommission}
                 className={`${
-                  tierCommission ? 'bg-blue-600' : 'bg-gray-300'
+                  tierCommission ? 'bg-bluebutton' : 'bg-gray-300'
                 } relative inline-flex h-6 w-11 items-center rounded-full`}
               >
                 <span
@@ -135,7 +135,7 @@ const Payments = () => {
               checked={flagUnusual}
               onChange={setFlagUnusual}
               className={`${
-                flagUnusual ? 'bg-blue-600' : 'bg-gray-300'
+                flagUnusual ? 'bg-bluebutton' : 'bg-gray-300'
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -159,7 +159,7 @@ const Payments = () => {
               onClick={() => togglePaymentMethod(method)}
             >
               {paymentMethods[method] ? (
-                <FaCheckSquare className="text-blue-600" />
+                <FaCheckSquare className="text-bluebutton" />
               ) : (
                 <FaRegSquare className="text-gray-400" />
               )}

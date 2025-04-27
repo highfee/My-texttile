@@ -175,7 +175,7 @@ export default function Search() {
         <div className="relative" ref={actionDropdownRef}>
           <button
             onClick={toggleActionDropdown}
-            className="text-gray-700 border flex items-center gap-2 px-3 py-2 rounded-md text-sm whitespace-nowrap"
+            className="text-gray-700 border flex items-center gap-1 lg:gap-2 px-1 lg:px-3 py-2 rounded-md text-sm whitespace-nowrap"
           >
             <FaRegSquareCheck className="text-base" />
             Action

@@ -22,7 +22,7 @@ const Support = () => {
   return (
     <div className="lg:p-6 space-y-8">
       <div className='lg:w-1/2'>
-        <h2 className="text-lg font-semibold">Support & Moderation —</h2>
+        <h2 className="text-lg font-semibold">Support & Moderation</h2>
         <p className="text-sm text-gray-500 mb-4">Help us know you better.</p>
 
         <div className="space-y-4">
@@ -32,7 +32,7 @@ const Support = () => {
               checked={thirdPartySupport}
               onChange={setThirdPartySupport}
               className={`${
-                thirdPartySupport ? 'bg-blue-600' : 'bg-gray-300'
+                thirdPartySupport ? 'bg-bluebutton' : 'bg-gray-300'
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -49,7 +49,7 @@ const Support = () => {
               checked={thirdPartyChat}
               onChange={setThirdPartyChat}
               className={`${
-                thirdPartyChat ? 'bg-blue-600' : 'bg-gray-300'
+                thirdPartyChat ? 'bg-bluebutton' : 'bg-gray-300'
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -85,7 +85,7 @@ const Support = () => {
               checked={contentModeration}
               onChange={setContentModeration}
               className={`${
-                contentModeration ? 'bg-blue-600' : 'bg-gray-300'
+                contentModeration ? 'bg-bluebutton' : 'bg-gray-300'
               } relative inline-flex h-6 w-11 items-center rounded-full`}
             >
               <span
@@ -121,7 +121,7 @@ const Support = () => {
             checked={enableIntegrations}
             onChange={setEnableIntegrations}
             className={`${
-              enableIntegrations ? 'bg-blue-600' : 'bg-gray-300'
+              enableIntegrations ? 'bg-bluebutton' : 'bg-gray-300'
             } relative inline-flex h-6 w-11 items-center rounded-full`}
           >
             <span
@@ -150,7 +150,7 @@ const Support = () => {
                   {featureMatrix[i].map((enabled, j) => (
                     <td key={j} className="px-4 py-2">
                       {enabled ? (
-                        <FaCheckSquare className="text-blue-600" />
+                        <FaCheckSquare className="text-bluebutton" />
                       ) : (
                         <FaRegSquare className="text-pink-600" />
                       )}

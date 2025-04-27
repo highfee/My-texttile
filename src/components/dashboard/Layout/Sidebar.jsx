@@ -1,18 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/router";
 import { ChartNoAxesColumn, Layers, Palette, Store } from "lucide-react";
 import { LayoutDashboard, WalletMinimal } from "lucide-react";
 import { IoIosArrowDown } from "react-icons/io";
 import { Bell } from "lucide-react";
 
 const Sidebar = ({ setActiveComponent, isMobile, onClose }) => {
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeItem, setActiveItem] = useState("Home");
+  const [activeItem, setActiveItem] = useState(router.query.tab || "Home");
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   
   const sidebarRef = useRef(null);
   const mobileDropdownRef = useRef(null);
 
-  // Handle clicks outside sidebar
+  // Initialize active item from URL
+  useEffect(() => {
+    if (router.isReady && router.query.tab) {
+      setActiveItem(router.query.tab);
+    }
+  }, [router.isReady, router.query.tab]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -30,7 +38,6 @@ const Sidebar = ({ setActiveComponent, isMobile, onClose }) => {
     };
   }, [isMobile, onClose]);
 
-  // Handle clicks outside mobile dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
@@ -50,6 +57,13 @@ const Sidebar = ({ setActiveComponent, isMobile, onClose }) => {
   const handleSidebarItemClick = (componentName) => {
     setActiveItem(componentName);
     setActiveComponent(componentName);
+    
+    // Update URL
+    router.push({
+      pathname: router.pathname,
+      query: { tab: componentName }
+    }, undefined, { shallow: true });
+
     if (isCollapsed && !isMobile) {
       setIsCollapsed(false);
     }
@@ -156,8 +170,6 @@ const Sidebar = ({ setActiveComponent, isMobile, onClose }) => {
                   isMobileDropdownOpen ? "transform rotate-180" : ""
                 }`} />
               </div>
-
-              {/* Mobile Dropdown Menu */}
               {isMobileDropdownOpen && (
                 <div className="absolute left-0 mt-2 w-full bg-white border border-gray-300 shadow-lg rounded-md z-50">
                   <ul className="py-2">

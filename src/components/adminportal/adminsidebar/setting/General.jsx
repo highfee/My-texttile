@@ -3,7 +3,6 @@ import { IoImageOutline } from "react-icons/io5";
 const General = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 lg:px-8 gap-y-8 text-sm text-gray-800">
-      {/* Platform Branding */}
       <div className="space-y-4">
         <div>
           <h2 className="font-semibold">Platform Branding</h2>

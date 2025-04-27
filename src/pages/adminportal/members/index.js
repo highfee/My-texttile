@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import Search from "./Search";
+import Search from "@/components/adminportal/adminsidebar/Search";
 import { FaSquarePlus } from "react-icons/fa6";
 
 const membersData = [
@@ -25,7 +24,7 @@ const membersData = [
   // Add more member data here
 ];
 
-const Member = () => {
+const index = () => {
   const [selectedMembers, setSelectedMembers] = useState([]);
 
   const toggleCheckbox = (id) => {
@@ -112,4 +111,4 @@ const Member = () => {
   );
 };
 
-export default Member;
+export default index;

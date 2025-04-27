@@ -62,7 +62,7 @@ const Navbar = () => {
             className="hidden md:block bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
             onClick={() => setIsLoginPopupOpen(true)}
           >
-            Sign up
+            Sign In
           </button>
 
           <button

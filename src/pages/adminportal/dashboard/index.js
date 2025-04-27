@@ -156,13 +156,14 @@ const AffiliateProgramData = {
 
 const InfoCard = ({ icon, title, value, color }) => (
   <div
-    className={`rounded-md shadow-sm p-2 flex items-center space-x-2 py-2 lg:py-4`}
+    className="rounded-md shadow-sm p-2 flex items-center lg:space-x-2 "
     style={{ backgroundColor: color }}
   >
     <div
-      className={`w-12 h-12 rounded-full bg-white text-[${color}] flex items-center justify-center`}
+      className="w-12 h-12 rounded-full bg-white flex items-center justify-center"
+      style={{ color: color }}
     >
-      <p className="text-xl">{icon}</p>
+      <p className="text-md lg:text-xl">{icon}</p>
     </div>
     <div>
       <p className="text-sm text-[#12121280]">{title}</p>
@@ -171,8 +172,9 @@ const InfoCard = ({ icon, title, value, color }) => (
   </div>
 );
 
+
 const PieChartWidget = ({ data, colors, title }) => (
-  <div className="bg-white rounded-md shadow-sm p-4 flex flex-col">
+  <div className="bg-white rounded-md shadow-sm p-2 flex flex-col">
     <div className="flex justify-between items-center mb-3">
       <h2 className="text-lg font-semibold">{title}</h2>
       <button className="text-blue-500 text-sm">View more</button>
@@ -395,7 +397,8 @@ const AffiliateProgramWidget = ({ data }) => (
   </div>
 );
 
-const Dashboard = () => {
+
+const index = () => {
   return (
     <div className="flex flex-col gap-4 bg-[#F7F8FA] p-2 lg:p-6 "style={{
         overflowY: 'auto',
@@ -410,7 +413,7 @@ const Dashboard = () => {
         }
       `}</style>
       <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 ">
           <InfoCard
             icon={<HiOutlineUsers size={24} />}
             title="All Users"
@@ -470,4 +473,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default index;

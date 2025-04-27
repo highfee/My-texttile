@@ -1,54 +1,41 @@
-import React, { useState, Children } from "react";
+import React, { useState } from "react";
 import AdminSideBar from "./AdminSideBar";
 import AdminHeader from "./AdminHeader";
 import useMediaQuery from "@/components/hook/usemediaquery";
 import BottomBarAdmin from "../BottomBarAdmin";
+import { useRouter } from "next/router";
+import { Inter } from 'next/font/google'
+
+
+ 
+const inter = Inter({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+})
 
 export default function AdminDashboardLayout({ children }) {
-  const [activeComponent, setActiveComponent] = useState("Dashboard");
-  const [componentProps, setComponentProps] = useState({});
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => isMobile && setIsSidebarOpen(false);
 
-  const handleSetActiveComponent = (component, props = {}) => {
-    if (typeof component === 'object' && component.name) {
-      setActiveComponent(component.name);
-      setComponentProps(component.props || {});
-    } else {
-      setActiveComponent(component);
-      setComponentProps({});
-    }
-  };
-
-  const componentsMap = React.useMemo(() => {
-    const map = {};
-    React.Children.forEach(children, (child) => {
-      if (React.isValidElement(child) && child.props.name) {
-        map[child.props.name] = child;
-      }
-    });
-    return map;
-  }, [children]);
-
-  const allComponents = {
-    ...componentsMap,
-  };
+  // Extract current page name from path
+  const currentPage = router.pathname.split('/adminportal/').pop() || 'dashboard';
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen font-sans tracking-[-1px]">
+    <div className={`flex flex-col lg:flex-row h-screen tracking-[-1px] ${inter.className}`}>
       <div className={`fixed lg:static inset-y-0 left-0 z-20 transform ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       } transition-transform duration-300`}>
         <AdminSideBar 
-          setActiveComponent={handleSetActiveComponent}
           isMobile={isMobile}
           onClose={closeSidebar}
         />
       </div>
 
+      {/* Overlay for mobile */}
       {isSidebarOpen && isMobile && (
         <div 
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
@@ -56,28 +43,23 @@ export default function AdminDashboardLayout({ children }) {
         />
       )}
 
+      {/* Main content */}
       <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
         <AdminHeader
           toggleSidebar={toggleSidebar}
-          setActiveComponent={handleSetActiveComponent}
-          currentComponent={activeComponent}
+          currentComponent={currentPage}
           isSidebarOpen={isSidebarOpen}
         />
 
         <div className="flex-1 p-4 overflow-y-auto pb-16"> 
-          {React.isValidElement(allComponents[activeComponent]) ? 
-            React.cloneElement(allComponents[activeComponent], componentProps) : 
-            allComponents[activeComponent] || (
-              <div className="text-center py-10">Component not found</div>
-            )
-          }
+          {children}
         </div>
       </div>
 
+      {/* Mobile bottom bar */}
       {isMobile && (
         <BottomBarAdmin 
-          onItemClick={handleSetActiveComponent} 
-          activeItem={activeComponent}
+          activeItem={currentPage}
         />
       )}
     </div>

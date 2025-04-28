@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiUser } from "react-icons/fi";
+import { IoIosArrowDown } from "react-icons/io";
 import Loginoptions from "../signup/Loginoptions";
 import Link from "next/link";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const homeRef = useRef(null);
   const featuresRef = useRef(null);
@@ -16,25 +20,29 @@ const Navbar = () => {
       setIsOpen(false);
     }
   };
+
+  const handleNavigation = (path) => {
+    // Handle navigation logic here
+    setIsDropdownOpen(false);
+  };
+
   return (
     <>
       <nav className="w-full bg-white py-4">
         <div className="px-8 flex justify-between items-center">
           <div>
-            <div>
-              <Link href="/" className="flex items-center">
-                <img
-                  src="/mobile-logo.svg"
-                  alt="logo"
-                  className="h-10 w-auto md:hidden"
-                />
-                <img
-                  src="/mytexttile-logo.svg"
-                  alt="logo"
-                  className="h-10 w-auto hidden md:block"
-                />
-              </Link>
-            </div>
+            <Link href="/" className="flex items-center">
+              <img
+                src="/mobile-logo.svg"
+                alt="logo"
+                className="h-10 w-auto md:hidden"
+              />
+              <img
+                src="/mytexttile-logo.svg"
+                alt="logo"
+                className="h-10 w-auto hidden md:block"
+              />
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-8 text-[#121212]">
@@ -58,20 +66,84 @@ const Navbar = () => {
             </button>
           </div>
 
-          <button
-            className="hidden md:block bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
-            onClick={() => setIsLoginPopupOpen(true)}
-          >
-            Sign In
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Profile Dropdown - Visible on both mobile and desktop */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <img 
+                  src="/dashboard/Profile-pic.svg" 
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <IoIosArrowDown
+                  className={`w-4 h-4 transition-transform  ${
+                    isDropdownOpen ? "transform rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-          <button
-            className="md:hidden text-2xl shadow-md rounded-md p-1"
-            onClick={() => setIsOpen(true)}
-          >
-            <FiMenu />
-          </button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                  <ul className="py-1">
+                    <li>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => handleNavigation("account")}
+                      >
+                        Profile
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => handleNavigation("affiliateprogram")}
+                      >
+                        Affiliate Program
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => handleNavigation("store")}
+                      >
+                        Store
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => handleNavigation("campaign")}
+                      >
+                        Campaign
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Sign In Button - Hidden on mobile */}
+            <button
+              className="hidden md:flex bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
+              onClick={() => setIsLoginPopupOpen(true)}
+            >
+              Sign In
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-2xl shadow-md rounded-md p-1"
+              onClick={() => setIsOpen(true)}
+            >
+              <FiMenu />
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
         {isOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-50"
@@ -118,12 +190,10 @@ const Navbar = () => {
           </button>
         </div>
       </nav>
+
+      {/* Login Popup */}
       {isLoginPopupOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          // onClick={() => setIsLoginPopupOpen(false)}
-          // ife: clicking outside the main modal component should not close the Dialog box, as user can lose progress, else states are persisted
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <button
             className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"
             onClick={() => setIsLoginPopupOpen(false)}
@@ -131,7 +201,7 @@ const Navbar = () => {
             <FiX size={20} />
           </button>
           <div
-            className="relative max-w-6xl "
+            className="relative max-w-6xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Loginoptions />

@@ -89,7 +89,6 @@ const Finalizeaccount = ({ onBack }) => {
           onSubmit={handleSubmit(handleContinue)}
           className="flex flex-col gap-1 lg:gap-4 w-full"
         >
-          {/* Code Input */}
           <div className="w-full">
             <p className="font-bold py-2">Code</p>
             <div className="flex items-center px-2 sm:px-3 py-2 border border-[#12121270] rounded-lg">
@@ -103,13 +102,9 @@ const Finalizeaccount = ({ onBack }) => {
               <p className="text-red-500 text-xs mt-1">{errors.code.message}</p>
             )}
           </div>
-
-          {/* Error Message */}
           {errorMessage && (
             <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
           )}
-
-          {/* Submit Button */}
           <div className="w-full py-2">
             <button
               type="submit"
@@ -133,8 +128,6 @@ const Finalizeaccount = ({ onBack }) => {
           </div>
         </form>
       </div>
-
-      {/* Right Section (Image) */}
       <div className="w-full md:w-1/2">
         <img
           src="/signup/login.png"

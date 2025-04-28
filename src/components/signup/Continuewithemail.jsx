@@ -7,6 +7,7 @@ import { useRegisterStore } from "@/store/registerStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Namespopup from "./Namespopup";
 
 const Continuewithemail = ({ onBack }) => {
   const { setEmail } = useRegisterStore();
@@ -37,7 +38,7 @@ const Continuewithemail = ({ onBack }) => {
 
   // If showCreateAccount is true, render the Createaccount component
   if (showCreateAccount) {
-    return <Createaccount onBack={() => setShowCreateAccount(false)} />;
+    return <Namespopup onBack={() => setShowCreateAccount(false)} />;
   }
 
   return (

@@ -61,6 +61,7 @@ const Login = () => {
     onSuccess: (data) => {
       if (data["response status"] === "success") {
         router.push("/dashboard/home");
+        // router.reload();
       } else {
         setError(data["response description"] || "Registration failed");
       }

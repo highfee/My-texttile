@@ -1,13 +1,27 @@
-import { ProjectTemplates, recentProjects } from "@/data/adminData/userData/home";
-import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+import {
+  ProjectTemplates,
+  recentProjects,
+} from "@/data/adminData/userData/home";
+// import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { useQuery } from "@tanstack/react-query";
+import { httpClient } from "@/lib/httpClient";
 
 export default function index() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["recentProjects"],
+    queryFn: async () => {
+      const { data } = await httpClient.get("/designs/shop/view");
+      return data;
+    },
+  });
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const { setActiveComponent } = useDashboardComponentStore();
   const contentRef = useRef(null);
+
   useEffect(() => {
     const contentElement = contentRef.current;
 
@@ -27,6 +41,7 @@ export default function index() {
       resizeObserver.unobserve(contentElement);
     };
   }, []);
+
   return (
     <div className=" flex flex-col ">
       <div
@@ -80,11 +95,9 @@ export default function index() {
               <IoIosArrowDown className="lg:w-5  text-white" />
             </div>
           </button>
-          <button
+          <Link
+            href="/dashboard/design"
             className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2"
-            onClick={() => {
-              setActiveComponent("Design");
-            }}
           >
             <img
               src="/dashboard/leaf.png"
@@ -92,7 +105,7 @@ export default function index() {
               className="w-5 h-5"
             />
             <span className="pr-6 lg:pr-0">New Design</span>
-          </button>
+          </Link>
         </div>
         <div className="flex flex-row justify-between items-center sm:items-start mt-6">
           <p className="font-bold ">Recent Projects</p>
@@ -102,6 +115,8 @@ export default function index() {
             className=" sm:ml-4"
           />
         </div>
+
+        {/* recent products */}
         <div
           className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
             isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"

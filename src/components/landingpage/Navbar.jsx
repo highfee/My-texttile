@@ -2,13 +2,22 @@ import React, { useState, useRef } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import Loginoptions from "../signup/Loginoptions";
 import Link from "next/link";
-import { authService } from "@/lib/authService";
 import { ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import useAuthStore from "@/store/authStore"; // Import Zustand store
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+
+  const { session, clearSession } = useAuthStore(); // Access Zustand store
 
   const homeRef = useRef(null);
   const featuresRef = useRef(null);
@@ -21,29 +30,27 @@ const Navbar = () => {
     }
   };
 
-  const { getSession } = authService;
-
-  console.log(getSession());
+  const handleLogout = () => {
+    clearSession(); // Clear session using Zustand
+  };
 
   return (
     <>
       <nav className="w-full bg-white py-4">
         <div className="px-8 flex justify-between items-center">
           <div>
-            <div>
-              <Link href="/" className="flex items-center">
-                <img
-                  src="/mobile-logo.svg"
-                  alt="logo"
-                  className="h-10 w-auto md:hidden"
-                />
-                <img
-                  src="/mytexttile-logo.svg"
-                  alt="logo"
-                  className="h-10 w-auto hidden md:block"
-                />
-              </Link>
-            </div>
+            <Link href="/" className="flex items-center">
+              <img
+                src="/mobile-logo.svg"
+                alt="logo"
+                className="h-10 w-auto md:hidden"
+              />
+              <img
+                src="/mytexttile-logo.svg"
+                alt="logo"
+                className="h-10 w-auto hidden md:block"
+              />
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-8 text-[#121212]">
@@ -68,19 +75,50 @@ const Navbar = () => {
           </div>
 
           <div>
-            {getSession() ? (
+            {session ? (
               <div className="flex items-center gap-2">
-                <div className="hidden md:flex items-center relative cursor-pointer">
-                  <Avatar>
-                    <AvatarImage src={getSession()?.user?.profile_photo} />
-                    <AvatarFallback>
-                      {getSession()?.user.first_name[0].toUpperCase()}
-                      {getSession()?.user.last_name[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <ChevronDown color="#333" />
-                </div>
-                <p>{getSession()?.user?.first_name}</p>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <div className="hidden md:flex items-center relative cursor-pointer">
+                      <Avatar>
+                        <AvatarImage src={session?.user?.profile_photo} />
+                        <AvatarFallback>
+                          {session?.user.first_name[0].toUpperCase()}
+                          {session?.user.last_name[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <ChevronDown color="#333" size={16} />
+                    </div>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-[200px] bg-[#F3F6F8] ">
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200"></DropdownMenuSeparator>
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Affiliate Program
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200"></DropdownMenuSeparator>
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Store
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200"></DropdownMenuSeparator>
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Campaign
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200"></DropdownMenuSeparator>
+                    <DropdownMenuItem
+                      className="p-2 cursor-pointer"
+                      onClick={handleLogout} // Call handleLogout on click
+                    >
+                      Log out
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200"></DropdownMenuSeparator>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <p>{session?.user?.first_name}</p>
               </div>
             ) : (
               <button
@@ -148,11 +186,7 @@ const Navbar = () => {
       </nav>
 
       {isLoginPopupOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
-          // onClick={() => setIsLoginPopupOpen(false)}
-          // ife: clicking outside the main modal component should not close the Dialog box, as user can lose progress, else states are persisted
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <button
             className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"
             onClick={() => setIsLoginPopupOpen(false)}

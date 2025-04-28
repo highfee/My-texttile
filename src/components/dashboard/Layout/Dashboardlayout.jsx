@@ -22,10 +22,7 @@ export default function DashboardLayout({ children }) {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         } transition-transform duration-300`}
       >
-        <Sidebar
-          isMobile={isMobile}
-          onClose={closeSidebar}
-        />
+        <Sidebar isMobile={isMobile} onClose={closeSidebar} />
       </div>
 
       {/* Overlay for mobile */}
@@ -38,19 +35,15 @@ export default function DashboardLayout({ children }) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col bg-[#fffbfbcc]">
-        <Header
-          toggleSidebar={toggleSidebar}
-        />
-        
-        <div className="flex-1 p-4 overflow-y-auto relative">
-          {children}
-        </div>
+        {router.pathname !== "/dashboard/design" && (
+          <Header toggleSidebar={toggleSidebar} />
+        )}
+
+        <div className="flex-1 p-4 overflow-y-auto relative">{children}</div>
       </div>
 
       {/* Mobile bottom bar */}
-      {isMobile && (
-        <BottomBar />
-      )}
+      {isMobile && <BottomBar />}
     </div>
   );
 }

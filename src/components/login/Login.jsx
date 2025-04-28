@@ -46,9 +46,10 @@ const Login = () => {
   const handleLogin = () => {
     if (email === "admin@gmail.com" && password === "admin") {
       router.push("/adminportal/dashboard");
-    } else {
-      router.push("/dashboard/home");
     }
+    // else {
+    //   router.push("/dashboard/home");
+    // }
   };
 
   const loginMutation = useMutation({

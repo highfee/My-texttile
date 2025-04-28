@@ -1,6 +1,7 @@
 import { IoIosLink } from "react-icons/io";
 import { FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -18,12 +19,22 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   };
 
   return (
-    <div className="px-2 lg:px-10">
+    <div className="px-2 lg:px-10"style={{
+      overflowY: "auto",
+      scrollbarWidth: "none" /* Firefox */,
+      msOverflowStyle: "none" /* IE and Edge */,
+    }}
+  >
+    <style jsx global>{`
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    `}</style>
       <div className="border p-2 rounded-lg shadow-md">
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
           <div>
-            <a href="#" className="text-blue-600 underline">
+            <a href="#" className="text-bluebutton underline">
               https://www.my-store-1029a69b.com
             </a>
             <h2 className="text-xl font-bold">my-store-1029a69b</h2>
@@ -34,16 +45,16 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
           <div className="flex flex-row lg:flex-col gap-2 lg:ml-auto">
             <button
               className="bg-bluebutton text-white px-4 py-2 rounded"
-              onClick={() => setActiveComponent("setup")}
+              onClick={() => setActiveComponent("editor")}
             >
               Setup store
             </button>
-            <button
+            <Link href="/creatorsstore"
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
-              onClick={() => setActiveComponent("viewSites")}
+              
             >
               View stores
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -57,7 +68,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
           <p className="opacity-[0.44]">$12.9/year</p>
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded mt-2"
-            onClick={() => setActiveComponent("domain1")}
+            onClick={() => setActiveComponent("Activate1")}
           >
             Activate
           </button>
@@ -70,7 +81,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
           <p className="opacity-[0.44]">$12.0/year</p>
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded mt-2"
-            onClick={() => setActiveComponent("domain2")}
+            onClick={() => setActiveComponent("Activate2")}
           >
             Activate
           </button>

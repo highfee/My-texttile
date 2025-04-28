@@ -97,7 +97,7 @@ export default function NavigationBarEditor({ onSave, onCancel }) {
                 menuItemColor
               });
             }}
-            className="px-3 py-1 text-sm border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+            className="px-3 py-1 text-sm border border-transparent rounded-md shadow-sm text-white bg-bluebutton hover:bg-blue-700"
           >
             Save
           </button>

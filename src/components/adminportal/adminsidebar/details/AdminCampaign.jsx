@@ -1,12 +1,4 @@
 import React, { useState, useRef } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoIosArrowDown } from "react-icons/io";
-import { MdDeleteOutline, MdOutlineReportProblem } from "react-icons/md";
-import { CiPause1, CiPlay1, CiCalendar } from "react-icons/ci";
-import { IoRocketOutline } from "react-icons/io5";
-import { FiEdit } from "react-icons/fi";
-import { GoCopy } from "react-icons/go";
-import { FaRegSquareCheck } from "react-icons/fa6";
 import { TiTickOutline } from "react-icons/ti";
 import { CiMedicalCross } from "react-icons/ci";
 import Search from "../Search";

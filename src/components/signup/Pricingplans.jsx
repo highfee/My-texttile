@@ -31,7 +31,10 @@ export default function Pricingplans({ onBack }) {
         </div>
 
         {/* Right - Skip Button */}
-        <button className="text-[14px] cursor-pointer text-graycolor opacity-[0.44] pr-2">
+        <button
+          className="text-[14px] cursor-pointer text-graycolor opacity-[0.44] pr-2"
+          onClick={() => setShowCreateAccount(true)}
+        >
           Skip
         </button>
       </div>

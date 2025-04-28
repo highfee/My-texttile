@@ -5,8 +5,10 @@ import Pricingplans from "./Pricingplans";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import axios from "axios";
+
 import { useRegisterStore } from "@/store/registerStore";
+import { useMutation } from "@tanstack/react-query";
+import { httpClient } from "@/lib/httpClient";
 
 const codeSchema = z.object({
   code: z.string().min(6, "Code must be at least 6 characters"),
@@ -19,7 +21,23 @@ const Finalizeaccount = ({ onBack }) => {
 
   const { UserData } = useRegisterStore();
 
-  console.log(UserData);
+  const confirmCodeMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await httpClient.post("/users/activate/", data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data["response status"] === "success") {
+        setShowCreateAccount(true);
+      } else {
+        setError(data["response description"] || "Registration failed");
+      }
+    },
+    onError: (error) => {
+      setError(error.message || "Registration failed. Please try again.");
+      console.log(error);
+    },
+  });
 
   const {
     register,
@@ -30,22 +48,13 @@ const Finalizeaccount = ({ onBack }) => {
   });
 
   const handleContinue = async (data) => {
-    try {
-      const response = await axios.post(
-        "http://23.88.47.163/dev/api/v1/users/activate/",
-        {
-          code: data.code,
-          user_id: UserData["response data"].id,
-          resend_code: false,
-        }
-      );
-      if (response.status === 200) {
-        setShowCreateAccount(true);
-      }
-    } catch (error) {
-      setErrorMessage("Invalid code. Please try again.");
-      console.log(error);
-    }
+    const res = {
+      code: data.code,
+      user_id: UserData.id,
+      resend_code: false,
+    };
+
+    confirmCodeMutation.mutate(res);
   };
 
   const handleResendCode = () => {

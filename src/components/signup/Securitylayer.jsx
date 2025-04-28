@@ -10,6 +10,8 @@ import { useRegisterStore } from "@/store/registerStore";
 import Finalizeaccount from "./Finalizeaccount";
 
 import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { httpClient } from "@/lib/httpClient";
 
 const passwordSchema = z
   .string()
@@ -44,9 +46,10 @@ const Securitylayer = ({ onBack }) => {
     phoneNumber,
     referralCode,
     setUserData,
-    setLoading,
+    // setLoading,
     setError,
-    loading,
+    // loading,
+    error,
   } = useRegisterStore();
 
   const {
@@ -57,13 +60,33 @@ const Securitylayer = ({ onBack }) => {
     resolver: zodResolver(schema),
   });
 
+  const registerMutation = useMutation({
+    mutationFn: async (userData) => {
+      const response = await httpClient.post("/users/register/", userData);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data["response status"] === "success") {
+        // router.push("/login?registration=success");
+        setShowPricingPlans(true);
+        setUserData(data["response data"]);
+      } else {
+        setError(data["response description"] || "Registration failed");
+      }
+    },
+    onError: (error) => {
+      setError(error.message || "Registration failed. Please try again.");
+      console.log(error);
+    },
+  });
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const onSubmit = async (data) => {
     setPassword(data.password);
-    const user_data = {
+    const userData = {
       email,
       first_name: "test1",
       last_name: "test2",
@@ -74,22 +97,8 @@ const Securitylayer = ({ onBack }) => {
       username: "Highfee12",
       // profile_photo: "http://example.com",
     };
-    try {
-      setLoading(true);
 
-      const data = await axios.post(
-        "http://23.88.47.163/dev/api/v1/users/register/",
-        user_data
-      );
-      setUserData(data.data);
-      setLoading(false);
-      setError(null);
-      data.status === 200 && setShowPricingPlans(true);
-    } catch (error) {
-      setLoading(false);
-      setError(error.response.data.message);
-      console.log(error);
-    }
+    registerMutation.mutate(userData);
   };
 
   if (showPricingPlans) {
@@ -106,6 +115,13 @@ const Securitylayer = ({ onBack }) => {
             onClick={onBack}
           />
         </div>
+        <p>
+          {error && (
+            <p className="text-[#FF5789] text-[10px] lg:text-[14px] py-2">
+              {JSON.stringify(error)}
+            </p>
+          )}
+        </p>
         <div className="py-2 lg:py-4">
           <p className="font-bold text-black text-[14px] lg:text-[25px]">
             Let’s finalise your account
@@ -171,7 +187,7 @@ const Securitylayer = ({ onBack }) => {
               type="submit"
               className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg hover:bg-blue-600 transition duration-300"
             >
-              <p>{loading ? "Pls wait" : "Submit"}</p>
+              <p>{registerMutation.isPending ? "Pls wait" : "Submit"}</p>
             </button>
             {/* <p className="text-[#121212] opacity-[0.44] text-[10px] lg:text-[14px] mt-2">
               Didn’t get a code? Resend in{" "}

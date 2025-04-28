@@ -4,7 +4,7 @@ import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdNotes } from "react-icons/md";
 import { CiCalendar } from "react-icons/ci";
-import Notification from "./Notification"; // Import your Notification component
+import Notification from "./Notification";
 
 const AdminHeader = ({ toggleSidebar, currentComponent }) => {
   const [startDate, setStartDate] = useState("");
@@ -28,6 +28,21 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
+  };
+
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    setStartDate(newStartDate);
+    if (endDate && newStartDate > endDate) {
+      setEndDate("");
+    }
+  };
+
+  const handleEndDateChange = (e) => {
+    const newEndDate = e.target.value;
+    if (!startDate || newEndDate >= startDate) {
+      setEndDate(newEndDate);
+    }
   };
 
   return (
@@ -93,22 +108,23 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
         <button className="hidden lg:flex border border-[#12121270] rounded-full px-4 py-1 text-sm text-graycolor hover:bg-gray-100 transition">
           + add creator
         </button>
-        <div className="border border-[#12121270] rounded-full px-1 py-1 text-sm text-graycolor flex items-center  w-full lg:w-auto overflow-x-auto">
-          <CiCalendar className="text-graycolor text-lg font-bold whitespace-nowrap" />
+        <div className="border border-[#12121270] rounded-full px-3 py-1 text-sm text-graycolor flex items-center w-full lg:w-auto">
+          <CiCalendar className="text-graycolor text-lg mr-2" />
           <input
             type="date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="text-sm  px-2 py-1  "
+            onChange={handleStartDateChange}
+            className="text-sm bg-transparent focus:outline-none w-28"
           />
-          <p>-</p>
+          <span className="mx-1">-</span>
           <input
             type="date"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="text-sm  px-2 py-1  "
+            onChange={handleEndDateChange}
+            className="text-sm bg-transparent focus:outline-none w-28"
+            min={startDate || undefined}
+            disabled={!startDate}
           />
-          <IoIosArrowDown className="text-[#12121270] w-4 h-4" />
         </div>
       </div>
     </div>

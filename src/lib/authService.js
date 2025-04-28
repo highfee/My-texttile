@@ -1,37 +1,33 @@
-const AUTH_KEY = "auth";
+import getQueryClient from "./client";
+
+const AUTH_KEY = "auth-session";
+const queryClient = getQueryClient();
 
 export const authService = {
-  // Store tokens securely
-  setSession: (authData) => {
+  setSession: (response) => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(
-        AUTH_KEY,
-        JSON.stringify({
-          accessToken: authData.accessToken,
-          refreshToken: authData.refreshToken,
-          expiresAt: Date.now() + authData.expiresIn * 1000,
-        })
-      );
+      const sessionData = {
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token,
+        accessTokenExpiration: response.access_token_expiration,
+        refreshTokenExpiration: response.refresh_token_expiration,
+        user: response.user,
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(sessionData));
     }
   },
 
-  // Get current session
   getSession: () => {
     if (typeof window === "undefined") return null;
     const data = localStorage.getItem(AUTH_KEY);
     return data ? JSON.parse(data) : null;
   },
 
-  // Clear session on logout
   clearSession: () => {
     localStorage.removeItem(AUTH_KEY);
-    // Clear all cached queries
-    queryClient.clear();
-  },
-
-  // Check if token is valid
-  isAuthenticated: () => {
-    const session = this.getSession();
-    return !!session && session.expiresAt > Date.now();
+    // Clear query cache if using TanStack Query
+    if (typeof queryClient !== "undefined") {
+      queryClient.clear();
+    }
   },
 };

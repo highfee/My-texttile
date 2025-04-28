@@ -12,15 +12,19 @@ export default function Pricingplans({ onBack }) {
   }
 
   return (
-    <div className="flex flex-col items-center p-4 tracking-[-1px] leading-[19.6px] w-full font sm:w-[600px] md:w-[700px] lg:w-[850px]  h-[400px] md:h-[450px] lg:h-[572px] mx-auto overflow-y-auto
-          [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+    <div
+      className="flex flex-col items-center p-4 tracking-[-1px] leading-[19.6px] w-full font sm:w-[600px] md:w-[700px] lg:w-[850px]  h-[400px] md:h-[450px] lg:h-[572px] mx-auto overflow-y-auto
+          [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+    >
       <div className="flex items-center justify-between w-full">
         {/* Left - Back Arrow */}
-        <FaArrowLeftLong className="text-black cursor-pointer" onClick={onBack} />
+        {/* <FaArrowLeftLong className="text-black cursor-pointer" onClick={onBack} /> */}
 
         {/* Center - Title & Subtitle */}
         <div className="flex flex-col items-center">
-          <h2 className="text-[16px] lg:text-3xl font-bold">Enjoy the best of Owneet</h2>
+          <h2 className="text-[16px] lg:text-3xl font-bold">
+            Enjoy the best of Owneet
+          </h2>
           <p className="text-graycolor opacity-[0.44] text-[10px] lg:text-sm text-center">
             Tier 2 offers you the best of our platform and fuels your dreams
           </p>
@@ -29,6 +33,7 @@ export default function Pricingplans({ onBack }) {
         {/* Right - Skip Button */}
         <button
           className="text-[14px] cursor-pointer text-graycolor opacity-[0.44] pr-2"
+          onClick={() => setShowCreateAccount(true)}
         >
           Skip
         </button>
@@ -62,7 +67,7 @@ export default function Pricingplans({ onBack }) {
           features={[
             "Access to product creation tools (print-on-demand)",
             "Ability to list products in the store",
-            "Limited designs amount peaked at Starter creator tier."
+            "Limited designs amount peaked at Starter creator tier.",
           ]}
           idealFor="hobbyists"
           buttonText="Active"
@@ -83,7 +88,7 @@ export default function Pricingplans({ onBack }) {
             "Access to Affiliate Program",
             "Access to advanced design features",
             "Enhanced analytics dashboard",
-            "Early access to new platform features"
+            "Early access to new platform features",
           ]}
           idealFor="Entrepreneurs"
           buttonText={`Buy this plan for $${isMonthly ? "19" : "200"}`}
@@ -103,7 +108,7 @@ export default function Pricingplans({ onBack }) {
             "Everything from Emerging Creator tier.",
             "Unlimited design",
             "Ability to set promotional prices and create discount sales codes",
-            "Featured on platform as a top creator in relevant categories"
+            "Featured on platform as a top creator in relevant categories",
           ]}
           idealFor="Enterprises"
           buttonText={`Buy this plan for $${isMonthly ? "69.99" : "899"}`}
@@ -132,27 +137,71 @@ function PlanCard({
 }) {
   return (
     <div className="rounded-lg flex flex-col items-center text-center">
-      <div className={`rounded-lg w-full p-4 ${tier === "tier2" ? "bg-bluebutton" : "bg-bluebg"}`}>
+      <div
+        className={`rounded-lg w-full p-4 ${
+          tier === "tier2" ? "bg-bluebutton" : "bg-bluebg"
+        }`}
+      >
         <div className="flex items-center justify-between w-full">
           <div className="flex flex-col text-left">
-            <p className={`text-[14px] font-semibold ${tier === "tier2" ? "text-white" : "text-black"}`}>{title}</p>
-            <p className={`text-graycolor opacity-[0.44] text-[13px] ${tier === "tier2" ? "text-white" : "text-black"}`}>{subtitle}</p>
+            <p
+              className={`text-[14px] font-semibold ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {title}
+            </p>
+            <p
+              className={`text-graycolor opacity-[0.44] text-[13px] ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {subtitle}
+            </p>
           </div>
-          <h4 className={`text-3xl font-bold ${tier === "tier2" ? "text-white" : "text-black"}`}>{price}</h4>
+          <h4
+            className={`text-3xl font-bold ${
+              tier === "tier2" ? "text-white" : "text-black"
+            }`}
+          >
+            {price}
+          </h4>
         </div>
 
         <div className="flex flex-col items-start w-full text-left py-6 tracking-[-1px] leading-[19.6px]">
-          <p className={`text-[13px] opacity-[0.44] ${tier === "tier2" ? "text-white" : "text-black"}`}>{description}</p>
-          <p className={`text-[14px] font-semibold ${tier === "tier2" ? "text-white" : "text-black"}`}>{heading}</p>
+          <p
+            className={`text-[13px] opacity-[0.44] ${
+              tier === "tier2" ? "text-white" : "text-black"
+            }`}
+          >
+            {description}
+          </p>
+          <p
+            className={`text-[14px] font-semibold ${
+              tier === "tier2" ? "text-white" : "text-black"
+            }`}
+          >
+            {heading}
+          </p>
         </div>
 
-        {extraText && <p className={`text-[13px] font-semibold  ${tier === "tier2" ? "text-white" : "text-black"}`}>{extraText}</p>}
+        {extraText && (
+          <p
+            className={`text-[13px] font-semibold  ${
+              tier === "tier2" ? "text-white" : "text-black"
+            }`}
+          >
+            {extraText}
+          </p>
+        )}
 
         {/* Button with Conditional Styling */}
         <button
           onClick={() => setShowCreateAccount(true)} // Call setShowCreateAccount on click
           className={`w-full py-2 rounded font-semibold 
-            ${tier === "tier2" ? "bg-white text-black" : "bg-white text-black"}`}
+            ${
+              tier === "tier2" ? "bg-white text-black" : "bg-white text-black"
+            }`}
           disabled={buttonDisabled}
         >
           {buttonText}

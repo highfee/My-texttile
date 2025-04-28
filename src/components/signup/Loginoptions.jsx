@@ -4,10 +4,18 @@ import { TiSocialFacebook } from "react-icons/ti";
 import Continuewithemail from "./Continuewithemail"; // Import the Continuewithemail component
 import { Mail } from "lucide-react";
 import Link from "next/link";
+import Login from "../login/Login";
 
 const Loginoptions = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [showContinueWithEmail, setShowContinueWithEmail] = useState(false);
+
+  const [showLogin, setShowLogin] = useState(false); // State to toggle login component
+
+  // If showLogin is true, render the Login component
+  if (showLogin) {
+    return <Login onBack={() => setShowLogin(false)} />;
+  }
 
   const handleContinueWithEmail = () => {
     setShowContinueWithEmail(true);
@@ -62,6 +70,11 @@ const Loginoptions = () => {
                   Continue with email
                 </span>
               </button>
+
+              {/*  */}
+              <p onClick={() => setShowLogin(true)}>
+                Already have an account? Login
+              </p>
             </div>
 
             <div className="mt-2 sm:mt-4 text-[10px] sm:text-[11px] md:text-[12px] lg:text-[14px] text-gray-500">

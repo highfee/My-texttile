@@ -25,7 +25,9 @@ export default function Welcome({ onBack }) {
 
       {/* Text Section */}
       <div className="text-center py-6 lg:py-11">
-        <h2 className="text-[20px] lg:text-[40px] font-bold">Congratulations</h2>
+        <h2 className="text-[20px] lg:text-[40px] font-bold">
+          Congratulations
+        </h2>
         <p className="text-graycolor opacity-[0.44] text-[10px] lg:text-[13px]">
           Bring your Prints dreams to reality with Owneet
         </p>

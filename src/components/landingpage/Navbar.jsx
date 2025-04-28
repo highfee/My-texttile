@@ -3,12 +3,24 @@ import { FiMenu, FiX, FiUser } from "react-icons/fi";
 import { IoIosArrowDown } from "react-icons/io";
 import Loginoptions from "../signup/Loginoptions";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import useAuthStore from "@/store/authStore";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const { session, clearSession } = useAuthStore();
 
   const homeRef = useRef(null);
   const featuresRef = useRef(null);
@@ -19,6 +31,11 @@ const Navbar = () => {
       ref.current.scrollIntoView({ behavior: "smooth" });
       setIsOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    setIsDropdownOpen(false);
   };
 
   const handleNavigation = (path) => {
@@ -120,20 +137,74 @@ const Navbar = () => {
                         Campaign
                       </button>
                     </li>
+                    {session && (
+                      <li>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          onClick={handleLogout}
+                        >
+                          Log out
+                        </button>
+                      </li>
+                    )}
                   </ul>
                 </div>
               )}
             </div>
 
-            {/* Sign In Button - Hidden on mobile */}
-            <button
-              className="hidden md:flex bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
-              onClick={() => setIsLoginPopupOpen(true)}
-            >
-              Sign In
-            </button>
+            {session ? (
+              <div className="hidden md:flex items-center gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <div className="flex items-center relative cursor-pointer">
+                      <Avatar>
+                        <AvatarImage src={session?.user?.profile_photo} />
+                        <AvatarFallback>
+                          {session?.user.first_name[0].toUpperCase()}
+                          {session?.user.last_name[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <ChevronDown color="#333" size={16} />
+                    </div>
+                  </DropdownMenuTrigger>
 
-            {/* Mobile Menu Button */}
+                  <DropdownMenuContent className="w-[200px] bg-[#F3F6F8]">
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200" />
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Affiliate Program
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200" />
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Store
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200" />
+                    <DropdownMenuItem className="p-2 cursor-pointer">
+                      Campaign
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-gray-200" />
+                    <DropdownMenuItem
+                      className="p-2 cursor-pointer"
+                      onClick={handleLogout}
+                    >
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <p>{session?.user?.first_name}</p>
+              </div>
+            ) : (
+              <button
+                className="hidden md:block bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
+                onClick={() => setIsLoginPopupOpen(true)}
+              >
+                Sign In
+              </button>
+            )}
+
             <button
               className="md:hidden text-2xl shadow-md rounded-md p-1"
               onClick={() => setIsOpen(true)}
@@ -148,7 +219,7 @@ const Navbar = () => {
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-50"
             onClick={() => setIsOpen(false)}
-          ></div>
+          />
         )}
         <div
           className={`fixed top-0 left-0 h-full w-1/2 bg-white shadow-lg p-6 z-50 transform transition-transform duration-300 ${
@@ -186,7 +257,7 @@ const Navbar = () => {
             className="w-full bg-white text-gray-700 px-6 py-2 rounded-md border border-[#121212] hover:bg-[#dfdfdf]"
             onClick={() => setIsLoginPopupOpen(true)}
           >
-            Sign up
+            Sign In
           </button>
         </div>
       </nav>

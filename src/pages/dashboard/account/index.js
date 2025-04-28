@@ -3,9 +3,12 @@ import Link from "next/link";
 import { FiEdit2 } from "react-icons/fi";
 import { IoArrowRedoOutline } from "react-icons/io5";
 import EditProfile from "@/components/dashboard/sidebarcomponents/Settings/EditProfile";
+import { authService } from "@/lib/authService";
 
 const index = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const { getSession } = authService;
 
   return (
     <div className="px-0 lg:px-6">
@@ -39,7 +42,9 @@ const index = () => {
               className="w-16 h-16 rounded-full"
             />
             <div>
-              <h3 className="text-lg font-semibold">Rafin Ahmed</h3>
+              <h3 className="text-lg font-semibold">
+                {getSession()?.user?.first_name} {getSession()?.user?.last_name}
+              </h3>
               <div className="py-2 text-graycolor">
                 <p className="text-sm opacity-[0.44]">Project Manager</p>
                 <p className="text-sm opacity-[0.44]">Leeds, United Kingdom</p>
@@ -60,19 +65,24 @@ const index = () => {
           <h4 className="text-md font-semibold">Personal Information</h4>
           <div className="grid grid-cols-2 gap-4 text-sm text-graycolor font-medium">
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">First Name:</span> Rafin
+              <span className="font-medium opacity-[0.44]">First Name:</span>{" "}
+              {getSession()?.user?.first_name}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Last Name:</span> Ahmed
+              <span className="font-medium opacity-[0.44]">Last Name:</span>{" "}
+              {getSession()?.user?.last_name}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Email:</span> Rafinahmed@babs.com
+              <span className="font-medium opacity-[0.44]">Email:</span>{" "}
+              {getSession()?.user?.email}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Phone Number:</span> (217) 555-0113
+              <span className="font-medium opacity-[0.44]">Phone Number:</span>{" "}
+              {getSession()?.user?.phone_number}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Bio:</span> Project Manager
+              <span className="font-medium opacity-[0.44]">Bio:</span> Project
+              Manager
             </p>
           </div>
         </div>
@@ -81,19 +91,22 @@ const index = () => {
           <h4 className="text-md font-semibold">Address</h4>
           <div className="grid grid-cols-2 gap-4 text-sm text-graycolor font-medium">
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Street:</span> 7529 E. Pecan St.
+              <span className="font-medium opacity-[0.44]">Street:</span> 7529
+              E. Pecan St.
             </p>
             <p className="flex flex-col">
               <span className="font-medium opacity-[0.44]">State:</span> Austin
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Postal Code:</span> 45785
+              <span className="font-medium opacity-[0.44]">Postal Code:</span>{" "}
+              45785
             </p>
             <p className="flex flex-col">
               <span className="font-medium opacity-[0.44]">Country:</span> USA
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Time Zone:</span> Eastern Standard Time
+              <span className="font-medium opacity-[0.44]">Time Zone:</span>{" "}
+              Eastern Standard Time
             </p>
           </div>
         </div>

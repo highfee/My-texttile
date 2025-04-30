@@ -131,7 +131,7 @@ export default function index() {
                 <img
                   src={project.image}
                   alt={project.name}
-                  className="w-full h-auto rounded-lg"
+                  className="w-full h-auto rounded-lg object-cover"
                 />
               </div>
               <h2 className="text-[12px] lg:text-[14px] font-semibold ">

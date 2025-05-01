@@ -2,12 +2,12 @@ import {
   ProjectTemplates,
   recentProjects,
 } from "@/data/adminData/userData/home";
-// import { useDashboardComponentStore } from "@/store/useDashboadComponent";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
+import BestSeller from "./BestSeller"; // Import the BestSeller component
 
 export default function index() {
   const { data, isLoading, error } = useQuery({
@@ -17,11 +17,9 @@ export default function index() {
       return data;
     },
   });
-
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
+  const [showBestSeller, setShowBestSeller] = useState(false); // New state for showing BestSeller
   const contentRef = useRef(null);
-
   useEffect(() => {
     const contentElement = contentRef.current;
 
@@ -41,7 +39,9 @@ export default function index() {
       resizeObserver.unobserve(contentElement);
     };
   }, []);
-
+  if (showBestSeller) {
+    return <BestSeller onBack={() => setShowBestSeller(false)} isSidebarCollapsed={isSidebarCollapsed} />;
+  }
   return (
     <div className=" flex flex-col ">
       <div
@@ -76,7 +76,10 @@ export default function index() {
             />
             <span className="pr-6 lg:pr-0">New Products</span>
           </button>
-          <button className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0">
+          <button 
+            onClick={() => setShowBestSeller(true)} 
+            className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0"
+          >
             <img
               src="/dashboard/medal.png"
               alt="Magic Wand"
@@ -84,17 +87,7 @@ export default function index() {
             />
             <span className="pr-6 lg:pr-0">Best Seller</span>
           </button>
-          <button className="inline-flex  text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0">
-            <img
-              src="/dashboard/dress.png"
-              alt="Magic Wand"
-              className="w-5 h-5"
-            />
-            <div className="flex items-center gap-2 w-full pr-4 lg:pr-0">
-              Apparel
-              <IoIosArrowDown className="lg:w-5  text-white" />
-            </div>
-          </button>
+          
           <Link
             href="/dashboard/design"
             className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2"
@@ -115,8 +108,6 @@ export default function index() {
             className=" sm:ml-4"
           />
         </div>
-
-        {/* recent products */}
         <div
           className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
             isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"
@@ -160,13 +151,9 @@ export default function index() {
             </div>
           ))}
         </div>
-
-        {/* Templates Section */}
         <div className="flex flex-row py-2 font-bold">
           <p>Templates</p>
         </div>
-
-        {/* Grid for Templates */}
         <div
           className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
             isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"

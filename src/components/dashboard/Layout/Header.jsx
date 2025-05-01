@@ -4,51 +4,43 @@ import { Bell, Search } from "lucide-react";
 import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
 import { useRouter } from "next/router";
 import { useDashboardComponentStore } from "@/store/useDashboadComponent";
+import Link from "next/link";
 
 const Header = ({ toggleSidebar }) => {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { setActiveComponent } = useDashboardComponentStore();
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
   const handleNavigation = (path) => {
     router.push(`/dashboard/${path}`);
     setIsDropdownOpen(false);
   };
-
   const handleNewDesign = () => {
     setActiveComponent("Design");
     router.push("/dashboard/design");
   };
-
   return (
     <div className="w-full">
       <div className="flex items-center justify-between py-3 px-3 gap-x-6 lg:gap-x-0">
-        {/* Mobile menu button */}
         <div className="lg:hidden">
           <button
             onClick={toggleSidebar}
             className="border border-graycolor rounded-md"
           >
-            <IoIosMenu className="w-6 h-6" />
+            <IoIosMenu className="" />
           </button>
         </div>
-
-        {/* Search bar */}
         <div className="flex-1 flex items-center justify-center">
           <div className="relative w-full max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -61,15 +53,14 @@ const Header = ({ toggleSidebar }) => {
             />
           </div>
         </div>
-
-        {/* Desktop controls */}
         <div className="items-center justify-end gap-4 hidden lg:flex">
-          <div className="relative cursor-pointer bg-[#282828] rounded-full p-1">
+          <Link
+            href="/chathelp"
+            className="relative cursor-pointer bg-[#282828] rounded-full p-1"
+          >
             <Bell className="w-6 h-6 text-white" />
             <span className="absolute top-0 right-0 bg-bluebutton text-white text-xs rounded-full w-2 h-2 flex items-center justify-center"></span>
-          </div>
-
-          {/* Profile Dropdown */}
+          </Link>
           <div className="relative" ref={dropdownRef}>
             <div
               className="cursor-pointer flex items-center gap-2"
@@ -86,8 +77,6 @@ const Header = ({ toggleSidebar }) => {
                 }`}
               />
             </div>
-
-            {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
                 <ul className="py-2">
@@ -119,7 +108,6 @@ const Header = ({ toggleSidebar }) => {
               </div>
             )}
           </div>
-
           <button
             className="bg-bluebutton text-white px-4 py-2 rounded-md transition-colors flex items-center gap-2"
             onClick={handleNewDesign}

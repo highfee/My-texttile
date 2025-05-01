@@ -15,7 +15,17 @@ export default function App({ Component, pageProps, router }) {
     : (page) => page;
 
   return getLayout(
-    <QueryClientProvider client={getQueryClient()}>
+    <QueryClientProvider client={getQueryClient()} style={{
+      overflowY: "auto",
+      scrollbarWidth: "none" /* Firefox */,
+      msOverflowStyle: "none" /* IE and Edge */,
+    }}
+  >
+    <style jsx global>{`
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    `}</style>
       <Component {...pageProps} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

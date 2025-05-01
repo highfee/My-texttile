@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
-import BestSeller from "./BestSeller"; // Import the BestSeller component
+import BestSeller from "@/components/dashboard/sidebarcomponents/BestSeller"; // Import the BestSeller component
 
 export default function index() {
   const { data, isLoading, error } = useQuery({

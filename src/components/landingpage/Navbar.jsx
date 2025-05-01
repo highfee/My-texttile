@@ -85,7 +85,9 @@ const Navbar = () => {
 
           <div className="flex items-center gap-4">
             {/* Profile Dropdown - Visible on both mobile and desktop */}
-            <div className="relative" ref={dropdownRef}>
+
+            {/* FAIQA--------- I worked on this already, ignore it when merging conflict */}
+            {/* <div className="relative" ref={dropdownRef}>
               <button
                 className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -150,7 +152,7 @@ const Navbar = () => {
                   </ul>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {session ? (
               <div className="hidden md:flex items-center gap-2">

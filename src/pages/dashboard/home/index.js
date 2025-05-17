@@ -20,6 +20,7 @@ export default function index() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showBestSeller, setShowBestSeller] = useState(false); // New state for showing BestSeller
   const contentRef = useRef(null);
+
   useEffect(() => {
     const contentElement = contentRef.current;
 
@@ -39,9 +40,16 @@ export default function index() {
       resizeObserver.unobserve(contentElement);
     };
   }, []);
+
   if (showBestSeller) {
-    return <BestSeller onBack={() => setShowBestSeller(false)} isSidebarCollapsed={isSidebarCollapsed} />;
+    return (
+      <BestSeller
+        onBack={() => setShowBestSeller(false)}
+        isSidebarCollapsed={isSidebarCollapsed}
+      />
+    );
   }
+
   return (
     <div className=" flex flex-col ">
       <div
@@ -67,6 +75,7 @@ export default function index() {
             className="w-full rounded-lg shadow-md"
           />
         </div>
+
         <div className="flex overflow-x-auto whitespace-nowrap pb-2 sm:justify-center space-x-4">
           <button className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0">
             <img
@@ -76,8 +85,8 @@ export default function index() {
             />
             <span className="pr-6 lg:pr-0">New Products</span>
           </button>
-          <button 
-            onClick={() => setShowBestSeller(true)} 
+          <button
+            onClick={() => setShowBestSeller(true)}
             className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2 mr-2 sm:mr-0"
           >
             <img
@@ -87,7 +96,7 @@ export default function index() {
             />
             <span className="pr-6 lg:pr-0">Best Seller</span>
           </button>
-          
+
           <Link
             href="/dashboard/design"
             className="inline-flex text-white px-4 py-2 rounded-full bg-gradient-to-r from-[#016FDE] to-[#013C78] transition-colors items-center gap-2"
@@ -100,6 +109,7 @@ export default function index() {
             <span className="pr-6 lg:pr-0">New Design</span>
           </Link>
         </div>
+
         <div className="flex flex-row justify-between items-center sm:items-start mt-6">
           <p className="font-bold ">Recent Projects</p>
           <img
@@ -108,6 +118,7 @@ export default function index() {
             className=" sm:ml-4"
           />
         </div>
+
         <div
           className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
             isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"
@@ -151,6 +162,7 @@ export default function index() {
             </div>
           ))}
         </div>
+
         <div className="flex flex-row py-2 font-bold">
           <p>Templates</p>
         </div>
@@ -168,7 +180,7 @@ export default function index() {
                 <img
                   src={project.image}
                   alt={project.name}
-                  className="w-full lg:h-[200px] rounded-lg"
+                  className="w-full lg:h-[200px] rounded-lg object-cover object-top"
                 />
               </div>
               <h2 className="text-[12px] lg:text-[14px] font-semibold ">

@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
-import {
-  Stage,
-  Layer,
-  Text,
-  Rect,
-  Circle,
-  Image as KonvaImage,
-  Arc,
-  Transformer,
-} from "react-konva";
+import React, { useEffect, useRef, useState } from "react";
+
 import Header from "./Header";
-import { Redo, Trash2, Undo } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ArrowUpToLine,
+  ChevronDown,
+  ChevronUp,
+  Redo,
+  Trash2,
+  Undo,
+} from "lucide-react";
 import { MdOutlineRotateRight } from "react-icons/md";
 import {
   Select,
@@ -22,8 +21,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useDesignStore } from "@/store/useDesignStore";
-import useImage from "use-image";
+import useDesignStore from "@/store/DesignStore";
+// import useImage from "use-image";
+import ApparelView from "./ApparelView";
+import ElementRenderer from "./ElementRenderer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Element components
 const TextElement = ({ element, isSelected, onSelect }) => {
@@ -210,37 +218,126 @@ const ImageElement = ({ element, isSelected, onSelect }) => {
   );
 };
 
+const MIN_ZOOM = 0.25;
+const MAX_ZOOM = 3.0;
+const ZOOM_STEP = 0.1;
+
 const Canvas = () => {
   const {
-    elements,
-    selectedElement,
+    designs,
+    currentDesignId,
+    selectedElementId,
     selectElement,
-    clearCanvas,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    currentView,
-    setCurrentView,
-    rotateElement,
+    deleteElement,
+    bringElementToFront,
+    sendElementToBack,
+    bringElementForward,
+    sendElementBackward,
   } = useDesignStore();
-  const stageRef = useRef(null);
 
-  const handleSelect = (id) => {
-    selectElement(id);
+  const currentDesign = designs?.find((d) => d.id === currentDesignId);
+
+  const [contextMenu, setContextMenu] = useState({
+    open: false,
+    x: 0,
+    y: 0,
+    elementId: null,
+  });
+
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+
+  const handleZoomChange = (newZoom) => {
+    const val = Array.isArray(newZoom) ? newZoom[0] : newZoom;
+    setZoomLevel(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, val)));
   };
 
-  const handleDeselect = (e) => {
-    if (e.target === e.target.getStage()) {
-      selectElement(null);
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(MAX_ZOOM, prev + ZOOM_STEP));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(MIN_ZOOM, prev - ZOOM_STEP));
+  };
+
+  const handleCanvasClick = (e) => {
+    const target = e.target;
+    if (target.closest("#zoom-controls-bar")) {
+      return;
+    }
+    if (
+      target === e.currentTarget ||
+      target.id === "design-canvas-scroll-container" ||
+      target.id === "design-canvas-scaler"
+    ) {
+      selectElement({ elementId: null });
+    }
+    if (contextMenu.open) {
+      setContextMenu((prev) => ({ ...prev, open: false }));
     }
   };
 
-  const handleRotateSelected = () => {
-    if (selectedElement) {
-      rotateElement(selectedElement, 90);
+  const handleElementContextMenu = (event, elementId) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (selectedElementId !== elementId) {
+      selectElement({ elementId });
+    }
+    setContextMenu({
+      open: true,
+      x: event.clientX,
+      y: event.clientY,
+      elementId,
+    });
+  };
+
+  const handleContextMenuClose = (isOpen) => {
+    if (!isOpen) {
+      setContextMenu((prev) => ({ ...prev, open: false, elementId: null }));
     }
   };
+
+  const handleDeleteElementFromMenu = () => {
+    if (contextMenu.elementId) {
+      deleteElement({ elementId: contextMenu.elementId });
+      // toast({ title: "Element Deleted", description: "The element has been removed." });
+      handleContextMenuClose(false);
+    }
+  };
+
+  const handleBringToFrontFromMenu = () => {
+    if (contextMenu.elementId)
+      bringElementToFront({ elementId: contextMenu.elementId });
+  };
+  const handleSendToBackFromMenu = () => {
+    if (contextMenu.elementId)
+      sendElementToBack({ elementId: contextMenu.elementId });
+  };
+  const handleBringForwardFromMenu = () => {
+    if (contextMenu.elementId)
+      bringElementForward({ elementId: contextMenu.elementId });
+  };
+  const handleSendBackwardFromMenu = () => {
+    if (contextMenu.elementId)
+      sendElementBackward({ elementId: contextMenu.elementId });
+  };
+
+  // useEffect(() => {
+  //   const handleEsc = (event) => {
+  //     if (event.key === "Escape" && contextMenu.open) {
+  //       handleContextMenuClose(false);
+  //     }
+  //   };
+  //   window.addEventListener("keydown", handleEsc);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleEsc);
+  //   };
+  // }, [contextMenu.open]);
+
+  const visibleElements = currentDesign
+    ? (currentDesign.elements || []).filter(
+        (el) => el.associatedView === currentDesign.apparelView
+      )
+    : [];
 
   return (
     <main className="flex-1 bg-off-white h-[3000px] overflow-y-auto no-scrollbar">
@@ -250,39 +347,39 @@ const Canvas = () => {
         <header className="p-2 bg-primary w-[450px] rounded-md mb-4 flex items-center gap-3 px-4">
           <div
             className="grid place-items-center size-[30px] bg-dark-gray rounded-md cursor-pointer"
-            onClick={clearCanvas}
+            // onClick={clearCanvas}
           >
             <Trash2 color="white" size={20} />
           </div>
 
           <div
-            className={`cursor-pointer ${canUndo() ? "" : "opacity-50"}`}
-            onClick={canUndo() ? undo : undefined}
+          // className={`cursor-pointer ${canUndo() ? "" : "opacity-50"}`}
+          // onClick={canUndo() ? undo : undefined}
           >
             <Undo
-              color={canUndo() ? "white" : "rgb(255,255,255,0.44)"}
+              // color={canUndo() ? "white" : "rgb(255,255,255,0.44)"}
               size={20}
             />
           </div>
 
           <div
-            className={`cursor-pointer ${canRedo() ? "" : "opacity-50"}`}
-            onClick={canRedo() ? redo : undefined}
+          // className={`cursor-pointer ${canRedo() ? "" : "opacity-50"}`}
+          // onClick={canRedo() ? redo : undefined}
           >
             <Redo
-              color={canRedo() ? "white" : "rgb(255,255,255,0.44)"}
+              // color={canRedo() ? "white" : "rgb(255,255,255,0.44)"}
               size={20}
             />
           </div>
 
           <div
             className="grid place-items-center size-[30px] bg-dark-gray rounded-md cursor-pointer"
-            onClick={handleRotateSelected}
+            // onClick={handleRotateSelected}
           >
             <MdOutlineRotateRight color="white" size={20} />
           </div>
 
-          <div className="ml-auto">
+          {/* <div className="ml-auto">
             <Select value={currentView} onValueChange={setCurrentView}>
               <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2">
                 <SelectValue
@@ -296,58 +393,102 @@ const Canvas = () => {
                 <SelectItem value="arm">Arm</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
         </header>
 
-        <div className="w-[450px] h-[425px] bg-white border border-primary/40 rounded-md shadow-sm">
-          <Stage
-            width={450}
-            height={425}
-            ref={stageRef}
-            onClick={handleDeselect}
-            onTap={handleDeselect}
+        <section
+          className="w-[450px] h-[425px] bg-white border border-primary/40 rounded-md shadow-sm"
+          id="design-canvas-scaler"
+          onContextMenu={(e) => {
+            e.preventDefault();
+            if (contextMenu.open) {
+              handleContextMenuClose(false);
+            }
+          }}
+        >
+          <div
+            id="design-canvas-scaler"
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: "center center",
+              transition: "transform 0.1s ease-out",
+            }}
           >
-            <Layer>
-              {elements.map((element) => {
-                const isSelected = selectedElement === element.id;
+            <div
+              id="design-canvas-container"
+              className="relative shadow-2xl bg-white rounded-lg"
+            >
+              {currentDesign ? (
+                <>
+                  <ApparelView
+                    apparelType={currentDesign.apparelType}
+                    apparelColor={currentDesign.apparelColor}
+                    apparelView={currentDesign.apparelView}
+                  />
+                  {visibleElements.map((element) => (
+                    <ElementRenderer
+                      key={element.id}
+                      element={element}
+                      isSelected={element.id === selectedElementId}
+                      onElementContextMenu={handleElementContextMenu}
+                      zoomLevel={zoomLevel}
+                    />
+                  ))}
+                </>
+              ) : (
+                <div
+                  className="flex items-center justify-center h-full w-full p-20"
+                  style={{ width: "400px", height: "500px" }}
+                >
+                  <p className="text-muted-foreground">
+                    No design selected or available. Create one from the panel.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
 
-                if (element.type === "text") {
-                  return (
-                    <TextElement
-                      key={element.id}
-                      element={{
-                        ...element,
-                        draggable: true, // Ensure the text is draggable
-                        editable: true, // Enable editing
-                      }}
-                      isSelected={isSelected}
-                      onSelect={handleSelect}
-                    />
-                  );
-                } else if (element.type === "shape") {
-                  return (
-                    <ShapeElement
-                      key={element.id}
-                      element={element}
-                      isSelected={isSelected}
-                      onSelect={handleSelect}
-                    />
-                  );
-                } else if (element.type === "image") {
-                  return (
-                    <ImageElement
-                      key={element.id}
-                      element={element}
-                      isSelected={isSelected}
-                      onSelect={handleSelect}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </Layer>
-          </Stage>
-        </div>
+        {contextMenu.open && contextMenu.elementId && (
+          <DropdownMenu
+            open={contextMenu.open}
+            onOpenChange={handleContextMenuClose}
+          >
+            <DropdownMenuTrigger asChild>
+              <div
+                style={{
+                  position: "fixed",
+                  left: contextMenu.x,
+                  top: contextMenu.y,
+                  width: 1,
+                  height: 1,
+                  pointerEvents: "none",
+                }}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem onClick={handleBringForwardFromMenu}>
+                <ChevronUp className="mr-2 h-4 w-4" /> Bring Forward
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSendBackwardFromMenu}>
+                <ChevronDown className="mr-2 h-4 w-4" /> Send Backward
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleBringToFrontFromMenu}>
+                <ArrowUpToLine className="mr-2 h-4 w-4" /> Bring to Front
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSendToBackFromMenu}>
+                <ArrowDownToLine className="mr-2 h-4 w-4" /> Send to Back
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleDeleteElementFromMenu}
+                className="text-destructive focus:text-destructive focus:bg-destructive/10"
+              >
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Element
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </section>
     </main>
   );

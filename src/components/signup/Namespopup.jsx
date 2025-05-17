@@ -1,39 +1,62 @@
 import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import Createaccount from "./Createaccount"; 
+import Createaccount from "./Createaccount";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useRegisterStore } from "@/store/registerStore";
 
 const Namespopup = ({ onBack }) => {
   const [showCreateAccount, setShowCreateAccount] = useState(false);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: ''
+
+  const { setLastname, setFirstname } = useRegisterStore();
+
+  const schema = z.object({
+    firstname: z
+      .string()
+      .min(3, { message: "First name must be at least 3 characters long." }),
+    lastname: z
+      .string()
+      .min(3, { message: "Last name must be at least 3 characters long." }),
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
+
+  const onSubmit = (data) => {
+    setFirstname(data.firstname);
+    setLastname(data.lastname);
     setShowCreateAccount(true);
   };
 
   if (showCreateAccount) {
-    return <Createaccount 
-             onBack={() => setShowCreateAccount(false)} 
-             userData={formData} 
-           />;
+    return (
+      <Createaccount
+        onBack={() => setShowCreateAccount(false)}
+        // userData={formData}
+      />
+    );
   }
 
   return (
     <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-md overflow-hidden w-full max-w-[850px] min-h-[400px] md:h-[572px]">
       {/* Left Column - Form */}
       <div className="flex flex-col items-start p-6 md:p-8 w-full md:w-1/2">
-        <button 
+        <button
           onClick={onBack}
           className="text-black hover:text-gray-600 transition-colors"
           aria-label="Go back"
@@ -46,11 +69,15 @@ const Namespopup = ({ onBack }) => {
             Create Your Account
           </h1>
           <p className="text-gray-700 text-sm md:text-base">
-            We'll check if you have an account with us, and help create one for you
+            We'll check if you have an account with us, and help create one for
+            you
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4 w-full"
+        >
           <div className="w-full">
             <label htmlFor="firstName" className="font-bold block mb-2">
               First Name
@@ -59,12 +86,17 @@ const Namespopup = ({ onBack }) => {
               id="firstName"
               name="firstName"
               type="text"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              placeholder="Enter your First Name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className={`w-full px-2 py-1 lg:py-2 border ${
+                errors.firstname ? "border-red-500" : "border-[#12121270]"
+              } rounded-lg focus:outline-none`}
+              {...register("firstname")}
             />
+
+            {errors.firstname && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.firstname.message}
+              </p>
+            )}
           </div>
 
           <div className="w-full">
@@ -75,12 +107,16 @@ const Namespopup = ({ onBack }) => {
               id="lastName"
               name="lastName"
               type="text"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              placeholder="Enter your Last Name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className={`w-full px-2 py-1 lg:py-2 border ${
+                errors.lastname ? "border-red-500" : "border-[#12121270]"
+              } rounded-lg focus:outline-none`}
+              {...register("lastname")}
             />
+            {errors.lastname && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.lastname.message}
+              </p>
+            )}
           </div>
 
           <div className="w-full pt-4">

@@ -72,7 +72,10 @@ const Loginoptions = () => {
               </button>
 
               {/*  */}
-              <p onClick={() => setShowLogin(true)}>
+              <p
+                onClick={() => setShowLogin(true)}
+                className="text-bluebutton text-[8px] sm:text-[10px] md:text-[14px] lg:text-[16px] font-semibold cursor-pointer"
+              >
                 Already have an account? Login
               </p>
             </div>

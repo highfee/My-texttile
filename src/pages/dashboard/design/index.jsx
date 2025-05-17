@@ -1,14 +1,15 @@
 "use client";
 
-import React from "react";
-import dynamic from "next/dynamic";
-import Sidebar from "@/components/dashboard/design/Sidebar";
+import React, { useEffect } from "react";
 
-const Canvas = dynamic(() => import("@/components/dashboard/design/Canvas"), {
-  ssr: false,
-});
+import Sidebar from "@/components/dashboard/design/Sidebar";
+import Canvas from "@/components/dashboard/design/Canvas";
+import useDesignStore from "@/store/DesignStore";
 
 const Main = () => {
+  // useEffect(() => {
+  //   useDesignStore.persist.rehydrate();
+  // }, []);
   return (
     <div className="bg-off-white h-screen absolute inset-0 flex shadow-md overflow-y-hidden ">
       <Sidebar />

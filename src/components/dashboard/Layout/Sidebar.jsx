@@ -5,6 +5,7 @@ import { LayoutDashboard, WalletMinimal } from "lucide-react";
 import { IoIosArrowDown } from "react-icons/io";
 import { Bell } from "lucide-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const Sidebar = ({ isMobile, onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -39,7 +40,10 @@ const Sidebar = ({ isMobile, onClose }) => {
   // Handle clicks outside mobile dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+      if (
+        mobileDropdownRef.current &&
+        !mobileDropdownRef.current.contains(event.target)
+      ) {
         setIsMobileDropdownOpen(false);
       }
     };
@@ -54,28 +58,70 @@ const Sidebar = ({ isMobile, onClose }) => {
   }, [isMobile]);
 
   const sidebarItems = [
-    { name: "Home", icon: <LayoutDashboard className="mr-2" />, path: "home", showOnMobile: false },
-    { name: "Purchase", icon: <WalletMinimal className="mr-2" />, path: "purchase", showOnMobile: false },
-    { name: "Analytics", icon: <ChartNoAxesColumn className="mr-2" />, path: "analytics", showOnMobile: true },
-    { name: "Store", icon: <Store className="mr-2" />, path: "store", showOnMobile: true },
-    { name: "Brand", icon: <Palette className="mr-2" />, path: "brand", showOnMobile: true },
-    { name: "Listing", icon: <Layers className="mr-2" />, path: "listing", showOnMobile: false },
+    {
+      name: "Home",
+      icon: <LayoutDashboard className="mr-2" />,
+      path: "home",
+      showOnMobile: false,
+    },
+    {
+      name: "Purchase",
+      icon: <WalletMinimal className="mr-2" />,
+      path: "purchase",
+      showOnMobile: false,
+    },
+    {
+      name: "Analytics",
+      icon: <ChartNoAxesColumn className="mr-2" />,
+      path: "analytics",
+      showOnMobile: true,
+    },
+    {
+      name: "Store",
+      icon: <Store className="mr-2" />,
+      path: "store",
+      showOnMobile: true,
+    },
+    {
+      name: "Brand",
+      icon: <Palette className="mr-2" />,
+      path: "brand",
+      showOnMobile: true,
+    },
+    {
+      name: "Listing",
+      icon: <Layers className="mr-2" />,
+      path: "listing",
+      showOnMobile: false,
+    },
     {
       name: "Payout",
-      icon: <img src="/dashboard/credit-card-pos.svg" alt="Payout" className="w-6 h-6 mr-2" />,
+      icon: (
+        <img
+          src="/dashboard/credit-card-pos.svg"
+          alt="Payout"
+          className="w-6 h-6 mr-2"
+        />
+      ),
       path: "payout",
-      showOnMobile: false
+      showOnMobile: false,
     },
     {
       name: "Settings",
-      icon: <img src="/dashboard/settings-05.svg" alt="Settings" className="w-6 h-6 mr-2" />,
+      icon: (
+        <img
+          src="/dashboard/settings-05.svg"
+          alt="Settings"
+          className="w-6 h-6 mr-2"
+        />
+      ),
       path: "settings",
-      showOnMobile: true
+      showOnMobile: true,
     },
   ];
 
-  const filteredItems = isMobile 
-    ? sidebarItems.filter(item => item.showOnMobile) 
+  const filteredItems = isMobile
+    ? sidebarItems.filter((item) => item.showOnMobile)
     : sidebarItems;
 
   return (
@@ -86,14 +132,27 @@ const Sidebar = ({ isMobile, onClose }) => {
       } bg-bluebutton text-white text-[14px] flex flex-col items-start py-4 space-y-4 transition-all duration-300`}
     >
       {/* Logo */}
-      <div className={`w-full flex justify-start ${
-        isCollapsed && !isMobile ? "px-2" : "pl-3"
-      } transition-all duration-300`}>
-        {isCollapsed && !isMobile ? (
-          <img src="/landingpage/logo-f.svg" alt="Collapsed Logo" className="w-8 h-8" />
-        ) : (
-          <img src="/dashboard/completelogo.svg" alt="Expanded Logo" className="hidden lg:block h-8" />
-        )}
+
+      <div
+        className={`w-full flex justify-start ${
+          isCollapsed && !isMobile ? "px-2" : "pl-3"
+        } transition-all duration-300`}
+      >
+        <Link href={"/"}>
+          {isCollapsed && !isMobile ? (
+            <img
+              src="/landingpage/logo-f.svg"
+              alt="Collapsed Logo"
+              className="w-8 h-8"
+            />
+          ) : (
+            <img
+              src="/dashboard/completelogo.svg"
+              alt="Expanded Logo"
+              className="hidden lg:block h-8"
+            />
+          )}
+        </Link>
       </div>
 
       {/* Mobile Profile Section */}
@@ -119,9 +178,11 @@ const Sidebar = ({ isMobile, onClose }) => {
                   <p className="text-sm">Ahmad</p>
                   <p className="text-xs opacity-[0.44]">Ahmad@gmail.com</p>
                 </div>
-                <IoIosArrowDown className={`w-4 h-4 text-white opacity-[0.44] transition-transform ${
-                  isMobileDropdownOpen ? "transform rotate-180" : ""
-                }`} />
+                <IoIosArrowDown
+                  className={`w-4 h-4 text-white opacity-[0.44] transition-transform ${
+                    isMobileDropdownOpen ? "transform rotate-180" : ""
+                  }`}
+                />
               </div>
 
               {isMobileDropdownOpen && (
@@ -151,11 +212,15 @@ const Sidebar = ({ isMobile, onClose }) => {
             </div>
           </div>
 
-          <button 
+          <button
             className="bg-white font-bold text-black px-10 py-2 rounded-md transition-colors flex items-center gap-2 w-full justify-center mt-4"
             onClick={() => handleSidebarItemClick("design")}
           >
-            <img src="/dashboard/magic wand.svg" alt="Magic Wand" className="w-5 h-5" />
+            <img
+              src="/dashboard/magic wand.svg"
+              alt="Magic Wand"
+              className="w-5 h-5"
+            />
             <span>New Design</span>
           </button>
         </div>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -18,9 +19,12 @@ const Hero = () => {
             provide everything you need to build your creative empire.
           </p>
           <div className="py-6">
-            <button className="bg-[#016FDE] text-white px-6 py-2 rounded-full  ">
+            <Link
+              href={"/dashboard/home"}
+              className="bg-[#016FDE] text-white px-6 py-2 rounded-full"
+            >
               Start Creating
-            </button>
+            </Link>
           </div>
         </div>
         <div className="relative  flex flex-col items-center">

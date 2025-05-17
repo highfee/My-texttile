@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ProjectTemplates } from "@/data/adminData/userData/home";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -47,7 +48,7 @@ export default function BestSeller({ onBack, isSidebarCollapsed }) {
                 <img
                   src={project.image}
                   alt={project.name}
-                  className="w-full lg:h-[200px] rounded-lg"
+                  className="w-full lg:h-[200px] rounded-lg object-cover object-top"
                 />
               </div>
               <h2 className="text-[12px] lg:text-[14px] font-semibold">

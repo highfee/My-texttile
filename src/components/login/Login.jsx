@@ -18,6 +18,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const [passwordValid, setPasswordValid] = useState(false); // State for password validation
 
+  const [error, setError] = useState(false); // State for error message
+
   const schema = z.object({
     email: z.string().email({ message: "Invalid email address." }),
     password: z.string(),
@@ -61,13 +63,12 @@ const Login = () => {
     onSuccess: (data) => {
       if (data["response status"] === "success") {
         router.push("/dashboard/home");
-        // router.reload();
       } else {
-        setError(data["response description"] || "Registration failed");
+        setError(data["response description"] || "Login failed");
       }
     },
     onError: (error) => {
-      setError(error.message || "Registration failed. Please try again.");
+      setError(error.message || "Login failed. Please try again.");
       console.log(error);
     },
   });
@@ -88,6 +89,13 @@ const Login = () => {
     <div className="flex flex-row items-stretch rounded-lg shadow-md overflow-hidden sm:w-[600px] md:w-[700px] lg:w-[850px] h-auto sm:h-[400px] md:h-[450px] lg:h-[572px] bg-white">
       {/* Left Section (Login Form) */}
       <div className="flex flex-col items-start px-2 sm:px-6 py-6 sm:py-8 md:py-10 w-full md:w-1/2">
+        <p>
+          {error && (
+            <p className="text-[#FF5789] text-[10px] lg:text-[14px] py-2">
+              {JSON.stringify(error)}
+            </p>
+          )}
+        </p>
         <div className="py-4 lg:py-8">
           <p className="font-bold text-black text-[16px] lg:text-[30px]">
             Login

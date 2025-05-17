@@ -2,10 +2,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { FiEdit2 } from "react-icons/fi";
 import { IoArrowRedoOutline } from "react-icons/io5";
-import EditProfile from "./EditProfile"; 
+import EditProfile from "./EditProfile";
+import useAuthStore from "@/store/authStore";
 
 const Account = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const { session, clearSession } = useAuthStore();
+
+  console.log(session, "session");
 
   return (
     <div className="px-0 lg:px-6">
@@ -39,11 +44,16 @@ const Account = () => {
               className="w-16 h-16 rounded-full"
             />
             <div>
-              <h3 className="text-lg font-semibold">Rafin Ahmed</h3>
+              <h3 className="text-lg font-semibold">
+                {" "}
+                {session?.user?.first_name} {session?.user?.last_name}
+              </h3>
               <div className="py-2 text-graycolor">
                 <p className="text-sm opacity-[0.44]">Project Manager</p>
                 <p className="text-sm opacity-[0.44]">Leeds, United Kingdom</p>
-                <p className="text-sm opacity-[0.44]">UserID: aae44746</p>
+                <p className="text-sm opacity-[0.44]">
+                  UserID: {session?.user?.username}
+                </p>
               </div>
             </div>
           </div>
@@ -60,19 +70,24 @@ const Account = () => {
           <h4 className="text-md font-semibold">Personal Information</h4>
           <div className="grid grid-cols-2 gap-4 text-sm text-graycolor font-medium">
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">First Name:</span> Rafin
+              <span className="font-medium opacity-[0.44]">First Name:</span>{" "}
+              {session?.user?.first_name}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Last Name:</span> Ahmed
+              <span className="font-medium opacity-[0.44]">Last Name:</span>{" "}
+              {session?.user?.last_name}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Email:</span> Rafinahmed@babs.com
+              <span className="font-medium opacity-[0.44]">Email:</span>{" "}
+              {session?.user?.email}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Phone Number:</span> (217) 555-0113
+              <span className="font-medium opacity-[0.44]">Phone Number:</span>{" "}
+              {session?.user?.phone_number}
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Bio:</span> Project Manager
+              <span className="font-medium opacity-[0.44]">Bio:</span> Project
+              Manager
             </p>
           </div>
         </div>
@@ -81,19 +96,22 @@ const Account = () => {
           <h4 className="text-md font-semibold">Address</h4>
           <div className="grid grid-cols-2 gap-4 text-sm text-graycolor font-medium">
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Street:</span> 7529 E. Pecan St.
+              <span className="font-medium opacity-[0.44]">Street:</span> 7529
+              E. Pecan St.
             </p>
             <p className="flex flex-col">
               <span className="font-medium opacity-[0.44]">State:</span> Austin
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Postal Code:</span> 45785
+              <span className="font-medium opacity-[0.44]">Postal Code:</span>{" "}
+              45785
             </p>
             <p className="flex flex-col">
               <span className="font-medium opacity-[0.44]">Country:</span> USA
             </p>
             <p className="flex flex-col">
-              <span className="font-medium opacity-[0.44]">Time Zone:</span> Eastern Standard Time
+              <span className="font-medium opacity-[0.44]">Time Zone:</span>{" "}
+              Eastern Standard Time
             </p>
           </div>
         </div>

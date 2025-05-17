@@ -69,7 +69,7 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           <div>
-            <Label htmlFor="color" className="cursor-pointer">
+            <Label htmlFor="color" className="cursor-pointer relative">
               <Image
                 src="/design/icons/colors.svg"
                 alt=""
@@ -79,7 +79,7 @@ const Header = () => {
               <Input
                 type="color"
                 id="color"
-                className="opacity-0 absolute pointer-events-none bottom-0 left-0"
+                className="opacity-0 absolute pointer-events-none bottom-0 left-0 hidde"
               />
             </Label>
           </div>

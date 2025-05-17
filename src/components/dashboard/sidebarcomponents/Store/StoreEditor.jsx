@@ -4,6 +4,8 @@ import NavigationBarEditor from "./NavigationBarEditor";
 import HeroBar from "./HeroBar";
 import FooterBar from "./FooterBar";
 import Productspopup from "./Productspopup";
+import Desktop from "@/components/creatorstore/template/Desktop";
+import Mobile from "@/components/creatorstore/template/Mobile";
 
 export default function StoreEditor({ onBack, initialView = "desktop" }) {
   const [activeView, setActiveView] = useState(initialView);
@@ -14,19 +16,19 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     logo: null,
     siteTitle: "",
     bgColor: "#979797",
-    menuItemColor: "#979797"
+    menuItemColor: "#979797",
   });
   const [heroBannerSettings, setHeroBannerSettings] = useState({
     title: "",
     subtitle: "",
     image: null,
     ctaText: "",
-    ctaLink: ""
+    ctaLink: "",
   });
   const [footerSettings, setFooterSettings] = useState({
     copyrightText: "",
     links: [],
-    socialIcons: []
+    socialIcons: [],
   });
 
   const handleEditSection = (section) => {
@@ -66,16 +68,16 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
   ];
 
   return (
-    <div className="hidden lg:flex flex-col h-screen">
+    <div className="hidde flex flex-col lg:flex-row relative">
       {showProductsPopup && (
         <Productspopup
           onSave={handleSaveProducts}
           onCancel={() => setShowProductsPopup(false)}
-          products={productsData} 
+          products={productsData}
         />
       )}
 
-      <div className="w-72 absolute top-0 z-40 p-4">
+      <div className="lg:min-w-[304px] max-w-[304px] absolut top-0 z-40 p-4 sticky h-[calc(100vh-6rem)] overflow-y-auto ">
         <button
           onClick={onBack}
           className="flex items-center border border-graycolor rounded-lg p-2 opacity-[0.44] hover:opacity-100"
@@ -89,32 +91,33 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
             <div key={section.id} className="flex flex-col">
               <div
                 className={`flex items-center justify-between p-2 rounded ${
-                  editingSection === section.id
-                    ? " text-bluebutton"
-                    : ""
+                  editingSection === section.id ? " text-bluebutton" : ""
                 }`}
-                
               >
                 <span>{section.name}</span>
                 <div className="hover:bg-gray-100 rounded-full p-1 cursor-pointer">
-
-                <FiEdit2 className="text-md " onClick={() => handleEditSection(section.id)} />
+                  <FiEdit2
+                    className="text-md "
+                    onClick={() => handleEditSection(section.id)}
+                  />
                 </div>
               </div>
-              {editingSection === section.id && section.id === "Navigation Bar" && (
-                <NavigationBarEditor
-                  onSave={handleSaveNavBar}
-                  onCancel={() => setEditingSection(null)}
-                  initialSettings={navBarSettings}
-                />
-              )}
-              {editingSection === section.id && section.id === "Hero Banner" && (
-                <HeroBar
-                  onSave={handleSaveHeroBanner}
-                  onCancel={() => setEditingSection(null)}
-                  initialSettings={heroBannerSettings}
-                />
-              )}
+              {editingSection === section.id &&
+                section.id === "Navigation Bar" && (
+                  <NavigationBarEditor
+                    onSave={handleSaveNavBar}
+                    onCancel={() => setEditingSection(null)}
+                    initialSettings={navBarSettings}
+                  />
+                )}
+              {editingSection === section.id &&
+                section.id === "Hero Banner" && (
+                  <HeroBar
+                    onSave={handleSaveHeroBanner}
+                    onCancel={() => setEditingSection(null)}
+                    initialSettings={heroBannerSettings}
+                  />
+                )}
               {editingSection === section.id && section.id === "Footer" && (
                 <FooterBar
                   onSave={handleSaveFooter}
@@ -126,7 +129,9 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
           ))}
         </div>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-20">
+
+      <div className="flex-1 flex flex-col items-center justify-cente  px-20">
+        {/* buttons */}
         <div className="flex justify-center space-x-4 p-4">
           <button
             className={`flex items-center ${
@@ -145,21 +150,12 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
             <FiSmartphone />
           </button>
         </div>
-        <div className="flex items-center justify-center p-4">
-          <div className="relative">
-            {activeView === "desktop" ? (
-              <img
-                src="/dashboard/store/desktop.png"
-                alt="Desktop Preview"
-                className="max-w-full h-auto border rounded-lg shadow-sm"
-              />
-            ) : (
-              <img
-                src="/dashboard/store/mobile.png"
-                alt="Mobile Preview"
-                className="max-w-xs h-auto border rounded-lg shadow-sm"
-              />
-            )}
+
+        {/* views */}
+        <div className="flex items-cente  p-4">
+          <div className="relative b">
+            {/* {activeView === "desktop" ? <Desktop /> : <Mobile />} */}
+            <Desktop activeView={activeView} />
           </div>
         </div>
       </div>

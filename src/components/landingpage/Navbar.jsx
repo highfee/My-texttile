@@ -172,21 +172,29 @@ const Navbar = () => {
 
                   <DropdownMenuContent className="w-[200px] bg-[#F3F6F8]">
                     <DropdownMenuItem className="p-2 cursor-pointer">
-                      Profile
+                      <Link href={"/dashboard/settings"}>Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-200" />
                     <DropdownMenuItem className="p-2 cursor-pointer">
-                      Affiliate Program
+                      <Link href={"/dashboard/affiliateprogram"}>
+                        Affiliate Program
+                      </Link>
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator className="bg-gray-200" />
+
                     <DropdownMenuItem className="p-2 cursor-pointer">
-                      Store
+                      <Link href={"/dashboard/store"}>Store</Link>
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator className="bg-gray-200" />
+
                     <DropdownMenuItem className="p-2 cursor-pointer">
-                      Campaign
+                      <Link href={"/dashboard/campaign"}>Campaign</Link>
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator className="bg-gray-200" />
+
                     <DropdownMenuItem
                       className="p-2 cursor-pointer"
                       onClick={handleLogout}

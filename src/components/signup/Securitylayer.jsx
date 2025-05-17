@@ -12,6 +12,7 @@ import Finalizeaccount from "./Finalizeaccount";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
+import { Loader } from "lucide-react";
 
 const passwordSchema = z
   .string()
@@ -46,9 +47,9 @@ const Securitylayer = ({ onBack }) => {
     phoneNumber,
     referralCode,
     setUserData,
-    // setLoading,
+    lastname,
     setError,
-    // loading,
+    firstname,
     error,
   } = useRegisterStore();
 
@@ -88,14 +89,13 @@ const Securitylayer = ({ onBack }) => {
     setPassword(data.password);
     const userData = {
       email,
-      first_name: "test1",
-      last_name: "test2",
+      first_name: firstname,
+      last_name: lastname,
       password,
       referred_by: referralCode,
       phone_number: phoneNumber,
       country_code: "+1",
       username: "Highfee12",
-      // profile_photo: "http://example.com",
     };
 
     registerMutation.mutate(userData);
@@ -187,7 +187,13 @@ const Securitylayer = ({ onBack }) => {
               type="submit"
               className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg hover:bg-blue-600 transition duration-300"
             >
-              <p>{registerMutation.isPending ? "Pls wait" : "Submit"}</p>
+              <p className="text-center ">
+                {registerMutation.isPending ? (
+                  <Loader className=" animate-spin mx-auto" />
+                ) : (
+                  "Submit"
+                )}
+              </p>
             </button>
             {/* <p className="text-[#121212] opacity-[0.44] text-[10px] lg:text-[14px] mt-2">
               Didn’t get a code? Resend in{" "}

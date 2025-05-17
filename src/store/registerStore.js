@@ -5,6 +5,8 @@ export const useRegisterStore = create((set) => ({
   password: "",
   phoneNumber: "",
   referralCode: "",
+  firstname: "",
+  lastname: "",
   code: "",
   loading: false,
   error: null,
@@ -17,4 +19,6 @@ export const useRegisterStore = create((set) => ({
   setCode: (code) => set({ code }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
+  setFirstname: (firstname) => set({ firstname }),
+  setLastname: (lastname) => set({ lastname }),
 }));

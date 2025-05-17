@@ -8,10 +8,12 @@ const PasswordConfig = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div
         className="bg-white rounded-lg shadow-lg p-4 w-full max-w-sm relative h-4/5 lg:h-5/6 overflow-y-auto space-y-4"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         <button
           className="absolute top-2 right-2 text-graycolor hover:text-black text-xl"
-          onClick={onClose}>
+          onClick={onClose}
+        >
           ✕
         </button>
         <h3 className="text-lg font-semibold text-graycolor flex items-center gap-x-2">
@@ -30,7 +32,8 @@ const PasswordConfig = ({ isOpen, onClose }) => {
           <input
             type="password"
             placeholder="Enter current password here"
-            className="w-full border p-2 rounded-lg mt-1 text-sm "/>
+            className="w-full border p-2 rounded-lg mt-1 text-sm "
+          />
 
           <label className="text-sm font-medium text-graycolor mt-3 block">
             New Password
@@ -38,15 +41,22 @@ const PasswordConfig = ({ isOpen, onClose }) => {
           <input
             type="password"
             placeholder="New Password"
-            className="w-full border p-2 rounded-lg mt-1 text-sm"/>
-            <p className="py-4 text-sm opacity-[0.44]">Choose your password reset option</p>
+            className="w-full border p-2 rounded-lg mt-1 text-sm"
+          />
+          <p className="py-4 text-sm opacity-[0.44]">
+            Choose your password reset option
+          </p>
           <label className="text-sm font-medium text-graycolor mt-3 block">
             Password reset channel
           </label>
           <select className="w-full border p-2 rounded-lg text-sm mt-1">
             <option>Email</option>
-            <option>Phone</option>
+            <option className=" disabled:text-muted" disabled>
+              Phone
+            </option>
           </select>
+
+          {/* phone number */}
           <label className="text-sm font-medium text-graycolor mt-3 block">
             Verify Mobile Number
           </label>
@@ -61,6 +71,7 @@ const PasswordConfig = ({ isOpen, onClose }) => {
               className="border p-2 rounded-lg text-sm w-full"
             />
           </div>
+
           <p className="text-xs text-red-500 mt-1">
             0 : 00 Didn't get the code?{" "}
             <span className="text-blue-500">Resend</span>

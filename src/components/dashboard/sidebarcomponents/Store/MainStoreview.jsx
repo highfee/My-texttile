@@ -13,23 +13,25 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
     } else {
       setActiveComponent({
         name: "StoreEditor",
-        props: { initialView: viewType }
+        props: { initialView: viewType },
       });
     }
   };
 
   return (
-    <div className="px-2 lg:px-10"style={{
-      overflowY: "auto",
-      scrollbarWidth: "none" /* Firefox */,
-      msOverflowStyle: "none" /* IE and Edge */,
-    }}
-  >
-    <style jsx global>{`
-      ::-webkit-scrollbar {
-        display: none;
-      }
-    `}</style>
+    <div
+      className="px-2 lg:px-10"
+      style={{
+        overflowY: "auto",
+        scrollbarWidth: "none" /* Firefox */,
+        msOverflowStyle: "none" /* IE and Edge */,
+      }}
+    >
+      <style jsx global>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <div className="border p-2 rounded-lg shadow-md">
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
@@ -49,16 +51,16 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             >
               Setup store
             </button>
-            <Link href="/creatorsstore"
+            <Link
+              href="/creatorsstore"
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
-              
             >
               View stores
             </Link>
           </div>
         </div>
       </div>
-      
+
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-10 mt-4">
         <div className="border p-4 rounded-md text-center space-y-4">
           <div className="flex justify-center">
@@ -115,7 +117,9 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
                 <FiEdit2 className="text-lg" />
               </div>
               <h3 className="text-sm font-semibold">Edit Desktop View</h3>
-              <p className="text-xs mt-1">Click to customize your store's desktop appearance</p>
+              <p className="text-xs mt-1">
+                Click to customize your store's desktop appearance
+              </p>
             </div>
           </div>
         </div>
@@ -143,7 +147,9 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
                 <FiEdit2 className="text-lg" />
               </div>
               <h3 className="text-sm font-semibold">Edit Mobile View</h3>
-              <p className="text-xs mt-1">Click to customize your store's mobile appearance</p>
+              <p className="text-xs mt-1">
+                Click to customize your store's mobile appearance
+              </p>
             </div>
           </div>
         </div>

@@ -4,11 +4,15 @@ import { Pencil, Trash } from "lucide-react";
 import { GiCheckMark } from "react-icons/gi";
 import PasswordConfig from "./PasswordConfig";
 import { FiEdit2 } from "react-icons/fi";
+import { encryptEmail } from "@/lib/utils";
+import useAuthStore from "@/store/authStore";
 
 export default function Security() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+
+  const { session, clearSession } = useAuthStore();
 
   const devices = [
     {
@@ -127,7 +131,10 @@ export default function Security() {
               Easily reset your password if forgotten
             </p>
             <p className="text-xs text-gray-500">
-              Email: <span className="text-graycolor">Ra***@***.com</span>{" "}
+              Email:{" "}
+              <span className="text-graycolor">
+                {encryptEmail(session?.user?.email)}
+              </span>{" "}
             </p>
           </div>
           <div className="flex items-center justify-between py-2 ">
@@ -155,7 +162,8 @@ export default function Security() {
           </div>
         </div>
       </div>
-      <div className="py-8">
+
+      <div className="py-8 hidden">
         <h3 className="text-lg font-semibold text-gray-700">
           Login History/Devices
         </h3>
@@ -165,7 +173,7 @@ export default function Security() {
       {/* Header row (fixed on both desktop & mobile) */}
 
       {/* Content - scrollable only on mobile */}
-      <div className="bg-[#016FDE0D] p-4 rounded-lg">
+      <div className="bg-[#016FDE0D] p-4 rounded-lg hidden">
         <div className="md:overflow-x-visible overflow-x-auto">
           <div className="md:w-auto w-[800px]">
             <div className="grid grid-cols-4 text-sm font-medium  border-b pb-2">

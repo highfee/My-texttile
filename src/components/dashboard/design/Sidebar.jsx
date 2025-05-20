@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Filter, Plus, Search } from "lucide-react";
+import { Filter, Plus, Search, UploadCloud } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -34,6 +34,8 @@ import { cn } from "@/lib/utils";
 // import { useDesignStore } from "@/store/useDesignStore";
 
 import useDesignStore from "@/store/DesignStore";
+import { Label } from "@/components/ui/label";
+import { useRef } from "react";
 
 const recentlyUsed = [
   { id: 1, name: "Template 1", image: "/design/images/template 1.png" },
@@ -216,7 +218,14 @@ const Sidebar = () => {
     undo,
     redo,
     loadImage,
+    setApparelBaseImage,
   } = useDesignStore();
+
+  const imageElementInputRef = useRef(null);
+  const frontImageInputRef = useRef(null);
+  const backImageInputRef = useRef(null);
+  const leftImageInputRef = useRef(null);
+  const rightImageInputRef = useRef(null);
 
   const currentDesign = designs.find((d) => d.id === currentDesignId);
   const selectedElement = currentDesign?.elements?.find(
@@ -244,12 +253,28 @@ const Sidebar = () => {
     if (file && currentDesign) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageUrl = e.target?.result || "";
+        const imageUrl = e.target?.result;
         const img = new Image();
         img.onload = () => {
           loadImage({ imageUrl, width: img.width, height: img.height });
+          //  toast({ title: "Image Added", description: "Your image has been added to the canvas." });
         };
         img.src = imageUrl;
+      };
+      reader.readAsDataURL(file);
+    }
+    event.target.value = "";
+  };
+
+  const handleApparelBaseImageUpload = (event, view) => {
+    const file = event.target.files?.[0];
+    if (file && currentDesignId) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result;
+        if (typeof imageUrl === "string") {
+          setApparelBaseImage({ view, imageUrl });
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -409,6 +434,77 @@ const Sidebar = () => {
 
         {/* styles */}
         <TabsContent value="styles">
+          <Label
+            htmlFor="base-apparel-images-label"
+            id="base-apparel-images-label-id"
+          >
+            Customize Base Apparel Images
+          </Label>
+          <div
+            id="base-apparel-images-controls"
+            className="grid grid-cols-2 gap-2 mt-1"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => frontImageInputRef.current?.click()}
+            >
+              <UploadCloud size={14} className="mr-1.5" /> Front
+            </Button>
+            <input
+              type="file"
+              ref={frontImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleApparelBaseImageUpload(e, "front")}
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => backImageInputRef.current?.click()}
+            >
+              <UploadCloud size={14} className="mr-1.5" /> Back
+            </Button>
+            <input
+              type="file"
+              ref={backImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleApparelBaseImageUpload(e, "back")}
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => leftImageInputRef.current?.click()}
+            >
+              <UploadCloud size={14} className="mr-1.5" /> Left
+            </Button>
+            <input
+              type="file"
+              ref={leftImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleApparelBaseImageUpload(e, "left")}
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => rightImageInputRef.current?.click()}
+            >
+              <UploadCloud size={14} className="mr-1.5" /> Right
+            </Button>
+            <input
+              type="file"
+              ref={rightImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => handleApparelBaseImageUpload(e, "right")}
+            />
+          </div>
+
           <header className="flex justify-between gap-5 items-center mt-5">
             <Button
               variant="outline"
@@ -484,25 +580,28 @@ const Sidebar = () => {
           </header>
 
           {/* product colors */}
-          {/* <div className="mt-5">
+          <div className="mt-5">
             <p className="text-lg font-semibold">Choose a product color</p>
 
             <div className="flex gap-1.5 flex-wrap mt-2">
               {productColors.map((color) => (
                 <div
                   key={color.id}
-                  onClick={() => handleColorChange(color.id, color.color)}
+                  onClick={() => {
+                    updateApparelColor({ color: color.color });
+                    console.log(color.color);
+                  }}
                   className={cn(
-                    "relative size-6 rounded-sm cursor-pointer border border-cyan-200",
-                    {
-                      "border-black":
-                        selectedColor === color.id ||
-                        selectedProductColor === color.color,
-                    }
+                    "relative size-6 rounded-sm cursor-pointer border border-cyan-200"
+                    // {
+                    //   "border-black":
+                    //     selectedColor === color.id ||
+                    //     selectedProductColor === color.color,
+                    // }
                   )}
                   style={{ backgroundColor: color.color }}
                 >
-                  {(selectedColor === color.id ||
+                  {/* {(selectedColor === color.id ||
                     selectedProductColor === color.color) && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -523,11 +622,11 @@ const Sidebar = () => {
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>
-          </div> */}
+          </div>
 
           {/* brands */}
           <div className="mt-12">
@@ -542,7 +641,7 @@ const Sidebar = () => {
                 >
                   <AccordionTrigger
                     className="border-b py-2 text-lg text-gray-600"
-                    onClick={() => handleBrandSelect(brand.id)}
+                    // onClick={() => handleBrandSelect(brand.id)}
                   >
                     {brand.name}
                   </AccordionTrigger>
@@ -556,7 +655,7 @@ const Sidebar = () => {
                           <div
                             key={logo.id}
                             className="cursor-pointer text-center"
-                            onClick={() => handleAddLogo(logo)}
+                            // onClick={() => handleAddLogo(logo)}
                           >
                             <NextImage
                               src={logo.src}
@@ -581,12 +680,12 @@ const Sidebar = () => {
                             key={index}
                             className="size-6 rounded-sm border border-gray-200 cursor-pointer"
                             style={{ background: color }}
-                            onClick={() =>
-                              handleColorChange(
-                                `brand-${brand.id}-${index}`,
-                                color
-                              )
-                            }
+                            // onClick={() =>
+                            //   handleColorChange(
+                            //     `brand-${brand.id}-${index}`,
+                            //     color
+                            //   )
+                            // }
                           />
                         ))}
 

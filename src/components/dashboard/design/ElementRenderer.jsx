@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-
+// DesignElement type import is removed for plain JS, its structure is implicitly used.
 import useDesignStore from "@/store/DesignStore";
 import {
   DEFAULT_FONT_FAMILY,
@@ -13,24 +13,31 @@ import {
 } from "@/constants/index";
 import { RotateCcw } from "lucide-react";
 
+const MIN_DIMENSION = 20; // Minimum width/height in pixels
+
 export default function ElementRenderer({
   element,
   isSelected,
   onElementContextMenu,
   zoomLevel,
 }) {
-  const { updateElement, selectElement } = useDesignStore();
+  console.log(element);
+  const { designs, currentDesignId, updateElement, selectElement } =
+    useDesignStore();
   const elementRef = useRef(null);
+
+  const currentDesign = designs.find((d) => d.id === currentDesignId);
+  const imageBank = currentDesign?.imageBank || {};
 
   const [interactionMode, setInteractionMode] = useState(null);
   const [initialInteractionPos, setInitialInteractionPos] = useState({
     mouseX: 0,
     mouseY: 0,
-    elementX: 0, // %
-    elementY: 0, // %
-    elementWidth: 0, // px
-    elementHeight: 0, // px
-    elementRotation: 0, // degrees
+    elementXPercent: 0,
+    elementYPercent: 0,
+    elementWidthPx: 0,
+    elementHeightPx: 0,
+    elementRotation: 0,
     canvasWidth: 1,
     canvasHeight: 1,
   });
@@ -95,7 +102,10 @@ export default function ElementRenderer({
 
   const onInteractionStart = (e, mode) => {
     if (!isSelected || isEditingText) return;
-    if (e.button === 2 && mode === "drag") {
+    if (
+      e.button === 2 &&
+      (mode === "drag" || mode?.startsWith("resize-") || mode === "rotate")
+    ) {
       return;
     }
 
@@ -119,10 +129,10 @@ export default function ElementRenderer({
     setInitialInteractionPos({
       mouseX: e.clientX,
       mouseY: e.clientY,
-      elementX: element.x,
-      elementY: element.y,
-      elementWidth: element.width,
-      elementHeight: element.height,
+      elementXPercent: element.x,
+      elementYPercent: element.y,
+      elementWidthPx: element.width,
+      elementHeightPx: element.height,
       elementRotation: element.rotation || 0,
       canvasWidth: canvasRect.width,
       canvasHeight: canvasRect.height,
@@ -133,78 +143,215 @@ export default function ElementRenderer({
     const handleMouseMove = (e) => {
       if (!interactionMode || !elementRef.current) return;
 
-      const dx = e.clientX - initialInteractionPos.mouseX;
-      const dy = e.clientY - initialInteractionPos.mouseY;
+      const dxScreen = e.clientX - initialInteractionPos.mouseX;
+      const dyScreen = e.clientY - initialInteractionPos.mouseY;
 
-      const scaledDx = dx / zoomLevel;
-      const scaledDy = dy / zoomLevel;
+      const scaledDx = dxScreen / zoomLevel;
+      const scaledDy = dyScreen / zoomLevel;
+
+      let newXPercent = initialInteractionPos.elementXPercent;
+      let newYPercent = initialInteractionPos.elementYPercent;
+      let newWidthPx = initialInteractionPos.elementWidthPx;
+      let newHeightPx = initialInteractionPos.elementHeightPx;
+
+      const aspectRatio =
+        element.type === "image" &&
+        element.originalWidth &&
+        element.originalHeight
+          ? element.originalWidth / element.originalHeight
+          : null;
 
       switch (interactionMode) {
-        case "drag": {
-          const newXPercent =
-            initialInteractionPos.elementX +
+        case "drag":
+          newXPercent =
+            initialInteractionPos.elementXPercent +
             (scaledDx / initialInteractionPos.canvasWidth) * 100;
-          const newYPercent =
-            initialInteractionPos.elementY +
+          newYPercent =
+            initialInteractionPos.elementYPercent +
             (scaledDy / initialInteractionPos.canvasHeight) * 100;
-          updateElement({
-            elementId: element.id,
-            updates: { x: newXPercent, y: newYPercent },
-          });
           break;
-        }
-        case "resize": {
-          let newWidth = initialInteractionPos.elementWidth + scaledDx;
-          let newHeight = initialInteractionPos.elementHeight + scaledDy;
 
-          if (
-            element.type === "image" &&
-            element.originalWidth &&
-            element.originalHeight
-          ) {
-            const aspectRatio = element.originalWidth / element.originalHeight;
-            if (Math.abs(scaledDx) > Math.abs(scaledDy)) {
-              newHeight = newWidth / aspectRatio;
-            } else {
-              newWidth = newHeight * aspectRatio;
-            }
+        case "resize-br":
+          newWidthPx = initialInteractionPos.elementWidthPx + scaledDx;
+          newHeightPx = initialInteractionPos.elementHeightPx + scaledDy;
+          if (aspectRatio) {
+            if (Math.abs(scaledDx) > Math.abs(scaledDy))
+              newHeightPx = newWidthPx / aspectRatio;
+            else newWidthPx = newHeightPx * aspectRatio;
           }
-
-          newWidth = Math.max(newWidth, 20);
-          newHeight = Math.max(newHeight, 20);
-
-          updateElement({
-            elementId: element.id,
-            updates: { width: newWidth, height: newHeight },
-          });
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            ((newWidthPx - initialInteractionPos.elementWidthPx) /
+              2 /
+              initialInteractionPos.canvasWidth) *
+              100;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            ((newHeightPx - initialInteractionPos.elementHeightPx) /
+              2 /
+              initialInteractionPos.canvasHeight) *
+              100;
           break;
-        }
-        case "rotate": {
+
+        case "resize-bl":
+          newWidthPx = initialInteractionPos.elementWidthPx - scaledDx;
+          newHeightPx = initialInteractionPos.elementHeightPx + scaledDy;
+          if (aspectRatio) {
+            if (Math.abs(scaledDx) > Math.abs(scaledDy))
+              newHeightPx = newWidthPx / aspectRatio;
+            else newWidthPx = newHeightPx * aspectRatio;
+          }
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            (scaledDx / 2 / initialInteractionPos.canvasWidth) * 100;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            ((newHeightPx - initialInteractionPos.elementHeightPx) /
+              2 /
+              initialInteractionPos.canvasHeight) *
+              100;
+          break;
+
+        case "resize-tr":
+          newWidthPx = initialInteractionPos.elementWidthPx + scaledDx;
+          newHeightPx = initialInteractionPos.elementHeightPx - scaledDy;
+          if (aspectRatio) {
+            if (Math.abs(scaledDx) > Math.abs(scaledDy))
+              newHeightPx = newWidthPx / aspectRatio;
+            else newWidthPx = newHeightPx * aspectRatio;
+          }
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            ((newWidthPx - initialInteractionPos.elementWidthPx) /
+              2 /
+              initialInteractionPos.canvasWidth) *
+              100;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            (scaledDy / 2 / initialInteractionPos.canvasHeight) * 100;
+          break;
+
+        case "resize-tl":
+          newWidthPx = initialInteractionPos.elementWidthPx - scaledDx;
+          newHeightPx = initialInteractionPos.elementHeightPx - scaledDy;
+          if (aspectRatio) {
+            if (Math.abs(scaledDx) > Math.abs(scaledDy))
+              newHeightPx = newWidthPx / aspectRatio;
+            else newWidthPx = newHeightPx * aspectRatio;
+          }
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            (scaledDx / 2 / initialInteractionPos.canvasWidth) * 100;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            (scaledDy / 2 / initialInteractionPos.canvasHeight) * 100;
+          break;
+
+        case "resize-t":
+          newHeightPx = initialInteractionPos.elementHeightPx - scaledDy;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            (scaledDy / 2 / initialInteractionPos.canvasHeight) * 100;
+          break;
+
+        case "resize-b":
+          newHeightPx = initialInteractionPos.elementHeightPx + scaledDy;
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            (scaledDy / 2 / initialInteractionPos.canvasHeight) * 100;
+          break;
+
+        case "resize-l":
+          newWidthPx = initialInteractionPos.elementWidthPx - scaledDx;
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            (scaledDx / 2 / initialInteractionPos.canvasWidth) * 100;
+          break;
+
+        case "resize-r":
+          newWidthPx = initialInteractionPos.elementWidthPx + scaledDx;
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            (scaledDx / 2 / initialInteractionPos.canvasWidth) * 100;
+          break;
+
+        case "rotate":
           const rect = elementRef.current.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
 
           const angleRad = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-          let angleDeg = angleRad * (180 / Math.PI);
-
           const initialMouseAngleRad = Math.atan2(
             initialInteractionPos.mouseY - centerY,
             initialInteractionPos.mouseX - centerX
           );
-          const initialMouseAngleDeg = initialMouseAngleRad * (180 / Math.PI);
 
           let newRotation =
             initialInteractionPos.elementRotation +
-            (angleDeg - initialMouseAngleDeg);
+            angleRad * (180 / Math.PI) -
+            initialMouseAngleRad * (180 / Math.PI);
           newRotation = ((newRotation % 360) + 360) % 360;
 
           updateElement({
             elementId: element.id,
             updates: { rotation: newRotation },
           });
-          break;
+          return;
+      }
+
+      const clampedNewWidthPx = Math.max(newWidthPx, MIN_DIMENSION);
+      const clampedNewHeightPx = Math.max(newHeightPx, MIN_DIMENSION);
+
+      if (clampedNewWidthPx !== newWidthPx) {
+        const widthDiff = clampedNewWidthPx - newWidthPx;
+        if (
+          interactionMode === "resize-l" ||
+          interactionMode === "resize-tl" ||
+          interactionMode === "resize-bl"
+        ) {
+          newXPercent =
+            initialInteractionPos.elementXPercent -
+            (widthDiff / 2 / initialInteractionPos.canvasWidth) * 100;
+        } else if (
+          interactionMode === "resize-r" ||
+          interactionMode === "resize-tr" ||
+          interactionMode === "resize-br"
+        ) {
+          newXPercent =
+            initialInteractionPos.elementXPercent +
+            (widthDiff / 2 / initialInteractionPos.canvasWidth) * 100;
         }
       }
+      if (clampedNewHeightPx !== newHeightPx) {
+        const heightDiff = clampedNewHeightPx - newHeightPx;
+        if (
+          interactionMode === "resize-t" ||
+          interactionMode === "resize-tl" ||
+          interactionMode === "resize-tr"
+        ) {
+          newYPercent =
+            initialInteractionPos.elementYPercent -
+            (heightDiff / 2 / initialInteractionPos.canvasHeight) * 100;
+        } else if (
+          interactionMode === "resize-b" ||
+          interactionMode === "resize-bl" ||
+          interactionMode === "resize-br"
+        ) {
+          newYPercent =
+            initialInteractionPos.elementYPercent +
+            (heightDiff / 2 / initialInteractionPos.canvasHeight) * 100;
+        }
+      }
+
+      updateElement({
+        elementId: element.id,
+        updates: {
+          x: newXPercent,
+          y: newYPercent,
+          width: clampedNewWidthPx,
+          height: clampedNewHeightPx,
+        },
+      });
     };
 
     const handleMouseUp = () => {
@@ -213,14 +360,38 @@ export default function ElementRenderer({
       }
     };
 
+    let cursorStyle = "default";
+    if (interactionMode) {
+      switch (interactionMode) {
+        case "drag":
+          cursorStyle = "grabbing";
+          break;
+        case "rotate":
+          cursorStyle = "grabbing";
+          break;
+        case "resize-tl":
+        case "resize-br":
+          cursorStyle = "nwse-resize";
+          break;
+        case "resize-tr":
+        case "resize-bl":
+          cursorStyle = "nesw-resize";
+          break;
+        case "resize-t":
+        case "resize-b":
+          cursorStyle = "ns-resize";
+          break;
+        case "resize-l":
+        case "resize-r":
+          cursorStyle = "ew-resize";
+          break;
+      }
+    }
+
     if (interactionMode) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
-      if (interactionMode === "drag") document.body.style.cursor = "grabbing";
-      else if (interactionMode === "resize")
-        document.body.style.cursor = "nwse-resize";
-      else if (interactionMode === "rotate")
-        document.body.style.cursor = "grabbing";
+      document.body.style.cursor = cursorStyle;
     } else {
       document.body.style.cursor = "default";
     }
@@ -239,6 +410,8 @@ export default function ElementRenderer({
     element.originalWidth,
     element.originalHeight,
     zoomLevel,
+    designs,
+    currentDesignId,
   ]);
 
   const style = {
@@ -252,7 +425,7 @@ export default function ElementRenderer({
     cursor:
       isSelected && !interactionMode && !isEditingText ? "grab" : "default",
     border: isSelected
-      ? "2px dashed hsl(var(--primary))"
+      ? `2px dashed hsl(var(--primary))`
       : "1px solid transparent",
     boxSizing: "border-box",
     zIndex: element.zIndex,
@@ -332,20 +505,142 @@ export default function ElementRenderer({
           </div>
         );
       case "shape":
-        const shapeStyle = {
+        const shapeSvgStyle = {
           width: "100%",
           height: "100%",
-          backgroundColor: element.color || DEFAULT_ELEMENT_COLOR,
+          fill: element.color || DEFAULT_ELEMENT_COLOR,
+          strokeWidth: 0,
+          pointerEvents: "none",
         };
-        if (element.shapeType === "circle") {
-          shapeStyle.borderRadius = "50%";
+        switch (element.shapeType) {
+          case "circle":
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: element.color || DEFAULT_ELEMENT_COLOR,
+                  borderRadius: "50%",
+                }}
+                className="pointer-events-none"
+              />
+            );
+          case "square":
+          case "rectangle":
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: element.color || DEFAULT_ELEMENT_COLOR,
+                }}
+                className="pointer-events-none"
+              />
+            );
+          case "triangle":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <polygon points="50,0 100,100 0,100" />
+              </svg>
+            );
+          case "hexagon":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 86.6"
+                preserveAspectRatio="none"
+              >
+                <polygon points="50,0 100,25 100,75 50,100 0,75 0,25" />
+              </svg>
+            );
+          case "pentagon":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 95.1"
+                preserveAspectRatio="none"
+              >
+                <polygon points="50,0 100,36.3 80.9,95.1 19.1,95.1 0,36.3" />
+              </svg>
+            );
+          case "star":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <polygon points="50,0 61.8,35.3 98.2,35.3 68.0,57.3 79.6,92.7 50,70.3 20.4,92.7 32.0,57.3 1.8,35.3 38.2,35.3" />
+              </svg>
+            );
+          case "heart":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 90"
+                preserveAspectRatio="none"
+              >
+                <path d="M50,90 L10,50 C10,20 40,0 50,20 C60,0 90,20 90,50 L50,90 Z" />
+              </svg>
+            );
+          case "arrow":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 60"
+                preserveAspectRatio="none"
+              >
+                <polygon points="0,20 70,20 70,0 100,30 70,60 70,40 0,40" />
+              </svg>
+            );
+          case "diamond":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <polygon points="50,0 100,50 50,100 0,50" />
+              </svg>
+            );
+          case "plus":
+            return (
+              <svg
+                style={shapeSvgStyle}
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <polygon points="40,0 60,0 60,40 100,40 100,60 60,60 60,100 40,100 40,60 0,60 0,40 40,40" />
+              </svg>
+            );
+          default:
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: element.color || DEFAULT_ELEMENT_COLOR,
+                }}
+                className="pointer-events-none"
+              ></div>
+            );
         }
-        return <div style={shapeStyle} className="pointer-events-none" />;
       case "image":
-        if (!element.imageUrl) return null;
+        if (!element.id)
+          return <div className="text-xs text-red-500">Missing imageId</div>;
+        const imageUrlFromBank = imageBank[element.imageId];
+        if (!imageUrlFromBank)
+          return (
+            <div className="text-xs text-red-500">Image not found in bank</div>
+          );
+
         return (
           <Image
-            src={element.imageUrl}
+            src={imageUrlFromBank}
             alt="User uploaded content"
             layout="fill"
             objectFit="contain"
@@ -358,8 +653,75 @@ export default function ElementRenderer({
     }
   };
 
-  const HANDLE_SIZE = 10 / zoomLevel;
-  const HANDLE_OFFSET = -HANDLE_SIZE / 2 - 1 / zoomLevel;
+  const HANDLE_SIZE_PX = 10;
+  const handleSize = HANDLE_SIZE_PX / zoomLevel;
+  const handleOffset = -handleSize / 2 - 1 / zoomLevel;
+
+  const resizeHandleBaseStyle = {
+    position: "absolute",
+    width: `${handleSize}px`,
+    height: `${handleSize}px`,
+    backgroundColor: "hsl(var(--primary))",
+    border: `${1 / zoomLevel}px solid hsl(var(--background))`,
+    borderRadius: `${2 / zoomLevel}px`,
+    zIndex: (element.zIndex || 0) + 1001,
+    boxShadow: `0 0 ${2 / zoomLevel}px rgba(0,0,0,0.3)`,
+  };
+
+  const resizeHandles = [
+    {
+      mode: "resize-tl",
+      style: { top: `${handleOffset}px`, left: `${handleOffset}px` },
+      cursor: "nwse-resize",
+    },
+    {
+      mode: "resize-tr",
+      style: { top: `${handleOffset}px`, right: `${handleOffset}px` },
+      cursor: "nesw-resize",
+    },
+    {
+      mode: "resize-bl",
+      style: { bottom: `${handleOffset}px`, left: `${handleOffset}px` },
+      cursor: "nesw-resize",
+    },
+    {
+      mode: "resize-br",
+      style: { bottom: `${handleOffset}px`, right: `${handleOffset}px` },
+      cursor: "nwse-resize",
+    },
+    {
+      mode: "resize-t",
+      style: {
+        top: `${handleOffset}px`,
+        left: `calc(50% - ${handleSize / 2}px)`,
+      },
+      cursor: "ns-resize",
+    },
+    {
+      mode: "resize-b",
+      style: {
+        bottom: `${handleOffset}px`,
+        left: `calc(50% - ${handleSize / 2}px)`,
+      },
+      cursor: "ns-resize",
+    },
+    {
+      mode: "resize-l",
+      style: {
+        top: `calc(50% - ${handleSize / 2}px)`,
+        left: `${handleOffset}px`,
+      },
+      cursor: "ew-resize",
+    },
+    {
+      mode: "resize-r",
+      style: {
+        top: `calc(50% - ${handleSize / 2}px)`,
+        right: `${handleOffset}px`,
+      },
+      cursor: "ew-resize",
+    },
+  ];
 
   return (
     <div
@@ -374,29 +736,26 @@ export default function ElementRenderer({
       {renderContent()}
       {isSelected && !isEditingText && (
         <>
+          {resizeHandles.map((handle) => (
+            <div
+              key={handle.mode}
+              style={{
+                ...resizeHandleBaseStyle,
+                ...handle.style,
+                cursor: handle.cursor,
+              }}
+              onMouseDown={(e) => onInteractionStart(e, handle.mode)}
+              onClick={(e) => e.stopPropagation()}
+              title={`Resize ${handle.mode?.split("-")[1].toUpperCase()}`}
+            />
+          ))}
           <div
             style={{
               position: "absolute",
-              bottom: `${HANDLE_OFFSET}px`,
-              right: `${HANDLE_OFFSET}px`,
-              width: `${HANDLE_SIZE}px`,
-              height: `${HANDLE_SIZE}px`,
-              backgroundColor: "hsl(var(--primary))",
-              border: `${1 / zoomLevel}px solid hsl(var(--background))`,
-              borderRadius: `${2 / zoomLevel}px`,
-              cursor: "nwse-resize",
-              zIndex: (element.zIndex || 0) + 1001,
-            }}
-            onMouseDown={(e) => onInteractionStart(e, "resize")}
-            onClick={(e) => e.stopPropagation()}
-          />
-          <div
-            style={{
-              position: "absolute",
-              top: `${HANDLE_OFFSET - HANDLE_SIZE - 2 / zoomLevel}px`,
-              left: `calc(50% - ${(HANDLE_SIZE + 4 / zoomLevel) / 2}px)`,
-              width: `${HANDLE_SIZE + 4 / zoomLevel}px`,
-              height: `${HANDLE_SIZE + 4 / zoomLevel}px`,
+              top: `${handleOffset - handleSize - 4 / zoomLevel}px`,
+              left: `calc(50% - ${(handleSize + 4 / zoomLevel) / 2}px)`,
+              width: `${handleSize + 4 / zoomLevel}px`,
+              height: `${handleSize + 4 / zoomLevel}px`,
               color: "hsl(var(--primary))",
               backgroundColor: "hsl(var(--background))",
               border: `${1 / zoomLevel}px solid hsl(var(--primary))`,
@@ -412,7 +771,10 @@ export default function ElementRenderer({
             onClick={(e) => e.stopPropagation()}
             title="Rotate Element"
           >
-            <RotateCcw size={HANDLE_SIZE} />
+            <RotateCcw
+              size={handleSize}
+              strokeWidth={Math.max(1, Math.min(2.5, 2.25 / zoomLevel))}
+            />
           </div>
         </>
       )}

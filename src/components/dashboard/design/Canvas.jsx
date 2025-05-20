@@ -233,6 +233,9 @@ const Canvas = () => {
     sendElementToBack,
     bringElementForward,
     sendElementBackward,
+    undo,
+    redo,
+    updateApparelView,
   } = useDesignStore();
 
   const currentDesign = designs?.find((d) => d.id === currentDesignId);
@@ -321,17 +324,23 @@ const Canvas = () => {
       sendElementBackward({ elementId: contextMenu.elementId });
   };
 
-  // useEffect(() => {
-  //   const handleEsc = (event) => {
-  //     if (event.key === "Escape" && contextMenu.open) {
-  //       handleContextMenuClose(false);
-  //     }
-  //   };
-  //   window.addEventListener("keydown", handleEsc);
-  //   return () => {
-  //     window.removeEventListener("keydown", handleEsc);
-  //   };
-  // }, [contextMenu.open]);
+  const canUndo = currentDesign ? (currentDesign.historyIndex || 0) > 0 : false;
+  const canRedo = currentDesign
+    ? (currentDesign.historyIndex || 0) <
+      (currentDesign.history || []).length - 1
+    : false;
+
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === "Escape" && contextMenu.open) {
+        handleContextMenuClose(false);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [contextMenu.open]);
 
   const visibleElements = currentDesign
     ? (currentDesign.elements || []).filter(
@@ -353,21 +362,21 @@ const Canvas = () => {
           </div>
 
           <div
-          // className={`cursor-pointer ${canUndo() ? "" : "opacity-50"}`}
-          // onClick={canUndo() ? undo : undefined}
+            className={`cursor-pointer ${canUndo ? "" : "opacity-50"}`}
+            onClick={undo}
           >
             <Undo
-              // color={canUndo() ? "white" : "rgb(255,255,255,0.44)"}
+              color={canUndo ? "white" : "rgb(255,255,255,0.44)"}
               size={20}
             />
           </div>
 
           <div
-          // className={`cursor-pointer ${canRedo() ? "" : "opacity-50"}`}
-          // onClick={canRedo() ? redo : undefined}
+            className={`cursor-pointer ${canRedo ? "" : "opacity-50"}`}
+            onClick={redo}
           >
             <Redo
-              // color={canRedo() ? "white" : "rgb(255,255,255,0.44)"}
+              color={canRedo ? "white" : "rgb(255,255,255,0.44)"}
               size={20}
             />
           </div>
@@ -379,25 +388,29 @@ const Canvas = () => {
             <MdOutlineRotateRight color="white" size={20} />
           </div>
 
-          {/* <div className="ml-auto">
-            <Select value={currentView} onValueChange={setCurrentView}>
-              <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2">
+          <div className="ml-auto">
+            <Select
+              value={currentDesign.apparelView}
+              onValueChange={(value) => updateApparelView({ view: value })}
+            >
+              <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2 text-white">
                 <SelectValue
-                  placeholder={currentView}
+                  placeholder={currentDesign.apparelView}
                   className="text-white capitalize"
                 />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="front">Front</SelectItem>
                 <SelectItem value="back">Back</SelectItem>
-                <SelectItem value="arm">Arm</SelectItem>
+                <SelectItem value="left">Left Side</SelectItem>
+                <SelectItem value="right">Right Side</SelectItem>
               </SelectContent>
             </Select>
-          </div> */}
+          </div>
         </header>
 
         <section
-          className="w-[450px] h-[425px] bg-white border border-primary/40 rounded-md shadow-sm"
+          className="w-[450px] h-[425px] bg-white border border-primary/40 rounded-md shadow-sm overflow-hidde"
           id="design-canvas-scaler"
           onContextMenu={(e) => {
             e.preventDefault();

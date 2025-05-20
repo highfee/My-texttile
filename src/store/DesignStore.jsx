@@ -12,11 +12,12 @@ import {
   DEFAULT_TEXT_ALIGN,
   DEFAULT_FONT_WEIGHT,
   DEFAULT_FONT_STYLE,
+  DEFAULT_TEXT_ALIGN_VERTICAL,
 } from "@/constants/index";
 
 // Helpers
 const generateId = () => Math.random().toString(36).substr(2, 9);
-const MAX_HISTORY_LENGTH = 50;
+const MAX_HISTORY_LENGTH = 3;
 
 const assignZIndices = (elements) => {
   return elements.map((el, index) => ({ ...el, zIndex: index }));
@@ -31,8 +32,16 @@ const createNewDesign = (name) => {
     apparelColor: DEFAULT_APPAREL_COLOR,
     apparelView: "front",
     elements: [],
-    history: [[]], // Initial history with empty elements
+    history: [[]],
     historyIndex: 0,
+    imageBank: {},
+    apparelBaseImages: {
+      // Added
+      front: null,
+      back: null,
+      left: null,
+      right: null,
+    },
   };
 };
 
@@ -77,13 +86,13 @@ const useDesignStore = create(
           const updates = updater(currentDesign);
           let historyUpdates = {};
 
-          if (recordInHistory) {
-            const elementsToRecord =
-              updates.elements !== undefined
-                ? updates.elements
-                : currentDesign.elements;
+          if (
+            recordInHistory &&
+            updates.elements !== undefined &&
+            updates.elements !== currentDesign.elements
+          ) {
             historyUpdates = updateHistoryForCurrentDesign(
-              elementsToRecord || [],
+              updates.elements || currentDesign.elements,
               currentDesign
             );
           }
@@ -160,6 +169,21 @@ const useDesignStore = create(
           }, false);
         },
 
+        setApparelBaseImage: ({ view, imageUrl }) => {
+          modifyCurrentDesign((currentDesign) => {
+            const newApparelBaseImages = {
+              ...(currentDesign.apparelBaseImages || {
+                front: null,
+                back: null,
+                left: null,
+                right: null,
+              }),
+              [view]: imageUrl,
+            };
+            return { apparelBaseImages: newApparelBaseImages };
+          }, false);
+        },
+
         addElement: ({ type, options }) => {
           modifyCurrentDesign((currentDesign) => {
             const newElementId = generateId();
@@ -191,6 +215,8 @@ const useDesignStore = create(
                   textAlign: options?.textAlign || DEFAULT_TEXT_ALIGN,
                   fontWeight: options?.fontWeight || DEFAULT_FONT_WEIGHT,
                   fontStyle: options?.fontStyle || DEFAULT_FONT_STYLE,
+                  textAlignVertical:
+                    options?.textAlignVertical || DEFAULT_TEXT_ALIGN_VERTICAL,
                 };
                 break;
               case "shape":
@@ -204,12 +230,12 @@ const useDesignStore = create(
                 };
                 break;
               case "image":
-                if (!options?.imageUrl)
-                  throw new Error("Image URL is required for image element.");
+                if (!options?.imageId)
+                  throw new Error("Image ID is required for image element.");
                 newElement = {
                   ...commonProps,
                   type: "image",
-                  imageUrl: options.imageUrl,
+                  imageId: options.imageId,
                   width: options.width || INITIAL_ELEMENT_WIDTH,
                   height: options.height || INITIAL_ELEMENT_HEIGHT,
                   originalWidth: options.originalWidth,
@@ -287,9 +313,16 @@ const useDesignStore = create(
 
         loadImage: ({ imageUrl, width, height }) => {
           modifyCurrentDesign((currentDesign) => {
+            const newImageId = generateId();
+            const newImageBank = {
+              ...(currentDesign.imageBank || {}),
+              [newImageId]: imageUrl,
+            };
+
             const newElementId = generateId();
             const currentElements = currentDesign.elements || [];
             const currentView = currentDesign.apparelView;
+
             const newImageElement = {
               id: newElementId,
               type: "image",
@@ -300,14 +333,14 @@ const useDesignStore = create(
               originalWidth: width,
               originalHeight: height,
               rotation: 0,
-              imageUrl: imageUrl,
               zIndex: 0,
+              imageId: newImageId,
               associatedView: currentView,
             };
             let updatedElements = [...currentElements, newImageElement];
             updatedElements = assignZIndices(updatedElements);
             set({ selectedElementId: newElementId, isLoading: false });
-            return { elements: updatedElements };
+            return { elements: updatedElements, imageBank: newImageBank };
           });
         },
 
@@ -363,16 +396,15 @@ const useDesignStore = create(
       };
     },
     {
-      name: "design-storage",
+      name: "apparel-architect-storage",
       storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: () => (rawState, error) => {
+      onRehydrateStorage: () => (rawStateParam, error) => {
         if (error) {
           console.error("Failed to rehydrate state from storage:", error);
-          set(getInitialState());
           return;
         }
 
-        let state = rawState;
+        let state = rawStateParam;
 
         if (state) {
           let needsPersistUpdate = false;
@@ -392,22 +424,48 @@ const useDesignStore = create(
 
           state.designs = state.designs.map((design) => {
             const designDefaultView = design.apparelView || "front";
+            let currentDesignImageBank = design.imageBank || {};
+            let currentApparelBaseImages = design.apparelBaseImages || {
+              front: null,
+              back: null,
+              left: null,
+              right: null,
+            }; // Added
 
-            const migrateElements = (elementsArray) => {
-              return elementsArray.map((el) => {
-                if (el.associatedView === undefined) {
+            const migrateElementsArray = (elementsArray) => {
+              return (elementsArray || []).map((el) => {
+                let migratedEl = { ...el };
+                if (migratedEl.associatedView === undefined) {
+                  migratedEl.associatedView = designDefaultView;
                   needsPersistUpdate = true;
-                  return { ...el, associatedView: designDefaultView };
                 }
-                return el;
+                if (
+                  migratedEl.type === "image" &&
+                  migratedEl.imageUrl &&
+                  !migratedEl.imageId
+                ) {
+                  const newImgId = generateId();
+                  currentDesignImageBank[newImgId] = migratedEl.imageUrl;
+                  migratedEl.imageId = newImgId;
+                  delete migratedEl.imageUrl;
+                  needsPersistUpdate = true;
+                }
+                if (
+                  migratedEl.type === "text" &&
+                  migratedEl.textAlignVertical === undefined
+                ) {
+                  migratedEl.textAlignVertical = DEFAULT_TEXT_ALIGN_VERTICAL;
+                  needsPersistUpdate = true;
+                }
+                return migratedEl;
               });
             };
 
-            const migratedElements = migrateElements(design.elements || []);
+            const migratedElements = migrateElementsArray(design.elements);
 
             const migratedHistory = (
               design.history || [[JSON.parse(JSON.stringify(migratedElements))]]
-            ).map((historyEntry) => migrateElements(historyEntry));
+            ).map((historyEntry) => migrateElementsArray(historyEntry));
 
             const historyIndex =
               design.historyIndex !== undefined
@@ -418,6 +476,8 @@ const useDesignStore = create(
             if (!design.history || design.history.length === 0)
               needsPersistUpdate = true;
             if (design.historyIndex === undefined) needsPersistUpdate = true;
+            if (!design.imageBank) needsPersistUpdate = true;
+            if (!design.apparelBaseImages) needsPersistUpdate = true; // Added check
 
             return {
               ...design,
@@ -425,13 +485,10 @@ const useDesignStore = create(
               history: migratedHistory,
               historyIndex: historyIndex,
               apparelView: designDefaultView,
+              imageBank: currentDesignImageBank,
+              apparelBaseImages: currentApparelBaseImages, // Added
             };
           });
-
-          if (needsPersistUpdate) {
-          }
-        } else {
-          set(getInitialState());
         }
       },
     }

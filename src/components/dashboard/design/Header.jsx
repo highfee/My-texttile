@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -51,19 +51,136 @@ import { Button } from "@/components/ui/button";
 import { LiaSearchPlusSolid } from "react-icons/lia";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
+import useDesignStore from "@/store/DesignStore";
+import { AVAILABLE_FONTS } from "@/constants";
+import ApparelView from "./ApparelView";
+import ElementRenderer from "./ElementRenderer";
+
+const fonts = [
+  "Arial",
+  "Helvetica",
+  "Times New Roman",
+  "Courier New",
+  "Verdana",
+  "Georgia",
+  "Palatino",
+  "Garamond",
+  "Comic Sans MS",
+  "Trebuchet MS",
+  "Impact",
+  "Tahoma",
+  "Lucida Console",
+  "Roboto",
+  "Open Sans",
+  "Lato",
+  "Montserrat",
+  "Oswald",
+  "Raleway",
+  "Poppins",
+];
 
 const Header = () => {
+  const {
+    designs,
+    selectedElementId,
+    updateElement,
+    currentDesignId,
+    undo,
+    redo,
+  } = useDesignStore();
+
+  const handleColorChange = (color) => {
+    if (selectedElementId) {
+      updateElement({ elementId: selectedElementId, updates: { color } });
+    }
+  };
+
+  // const handleBoldToggle = () => {
+  //   if (selectedElementId) {
+  //     updateElement({
+  //       elementId: selectedElementId,
+  //       updates: { fontWeight: "bold" },
+  //     });
+  //   }
+  // };
+
+  // const handleItalicToggle = () => {
+  //   if (selectedElementId) {
+  //     updateElement({
+  //       elementId: selectedElementId,
+  //       updates: { fontStyle: "italic" },
+  //     });
+  //   }
+  // };
+  // const handleUnderlineToggle = () => {
+  //   if (selectedElementId) {
+  //     updateElement({
+  //       elementId: selectedElementId,
+  //       updates: { textDecoration: "underline" },
+  //     });
+  //   }
+  // };
+
+  const selectedElement = designs
+    ?.find((design) => design.id === currentDesignId)
+    ?.elements?.find((el) => el.id === selectedElementId);
+
+  console.log(
+    useDesignStore.getState().designs.find((d) => d.id === currentDesignId)
+  );
+
+  const toggleStyle = (styleKey, value) => {
+    if (selectedElementId) {
+      const currentValue = selectedElement?.[styleKey];
+      console.log("currentValue", selectedElement);
+      updateElement({
+        elementId: selectedElementId,
+        updates: { [styleKey]: currentValue === value ? null : value },
+      });
+    }
+  };
+
+  const handleFontFamilyChange = (fontFamily) => {
+    if (selectedElementId) {
+      updateElement({
+        elementId: selectedElementId,
+        updates: { fontFamily },
+      });
+    }
+  };
+  const toggleCase = () => {
+    if (selectedElementId) {
+      const currentTransform = selectedElement?.textTransform || "none";
+      let newTransform;
+
+      // Toggle between 'uppercase', 'lowercase', and 'none'
+      if (currentTransform === "none") {
+        newTransform = "uppercase";
+      } else if (currentTransform === "uppercase") {
+        newTransform = "lowercase";
+      } else {
+        newTransform = "none";
+      }
+
+      updateElement({
+        elementId: selectedElementId,
+        updates: { textTransform: newTransform },
+      });
+    }
+  };
   return (
     <header className="bg-white sticky top-0 p-4 shadow-md flex justify-between gap-10 items-center">
       <section className="flex items-center  gap-10 ">
-        <Select>
+        <Select onValueChange={handleFontFamilyChange}>
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Helvica" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="light">Light</SelectItem>
-            <SelectItem value="dark">Dark</SelectItem>
-            <SelectItem value="system">System</SelectItem>
+            {AVAILABLE_FONTS.map((font) => (
+              <SelectItem key={font} value={font}>
+                {font}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -80,29 +197,61 @@ const Header = () => {
                 type="color"
                 id="color"
                 className="opacity-0 absolute pointer-events-none bottom-0 left-0 hidde"
+                onChange={(e) => handleColorChange(e.target.value)}
               />
             </Label>
           </div>
-          <Bold
-            color="rgba(18, 18, 18, 0.44)"
-            size={20}
-            className=" cursor-pointer"
-          />
-          <Italic
-            color="rgba(18, 18, 18, 0.44)"
-            size={20}
-            className=" cursor-pointer"
-          />
-          <CaseSensitive
-            color="rgba(18, 18, 18, 0.44)"
-            size={20}
-            className=" cursor-pointer"
-          />
-          <Underline
-            color="rgba(18, 18, 18, 0.44)"
-            size={20}
-            className=" cursor-pointer"
-          />
+
+          <div
+            className={cn(" cursor-pointer p-1 rounded-md", {
+              "bg-gray-200": selectedElement?.fontWeight === "bold",
+            })}
+          >
+            <Bold
+              color={"rgba(18, 18, 18, 0.44)"}
+              size={20}
+              onClick={() => toggleStyle("fontWeight", "bold")}
+            />
+          </div>
+
+          <div
+            className={cn(" cursor-pointer p-1 rounded-md", {
+              "bg-gray-200": selectedElement?.fontStyle === "italic",
+            })}
+          >
+            <Italic
+              color="rgba(18, 18, 18, 0.44)"
+              size={20}
+              className=" cursor-pointer"
+              onClick={() => toggleStyle("fontStyle", "italic")}
+            />
+          </div>
+          <div
+            className={cn("cursor-pointer p-1 rounded-md", {
+              "bg-gray-200":
+                selectedElement?.textTransform === "uppercase" ||
+                selectedElement?.textTransform === "lowercase",
+            })}
+          >
+            <CaseSensitive
+              color="rgba(18, 18, 18, 0.44)"
+              size={20}
+              onClick={toggleCase}
+            />
+          </div>
+
+          <div
+            className={cn(" cursor-pointer p-1 rounded-md", {
+              "bg-gray-200": selectedElement?.textDecoration === "underline",
+            })}
+          >
+            <Underline
+              color="rgba(18, 18, 18, 0.44)"
+              size={20}
+              className=" cursor-pointer"
+              onClick={() => toggleStyle("textDecoration", "underline")}
+            />
+          </div>
           <LuAlignEndHorizontal
             color="rgba(18, 18, 18, 0.44)"
             className=" cursor-pointer"
@@ -376,6 +525,47 @@ export const Access = () => {
 };
 
 export const PreviewOverlay = () => {
+  const PREVIEW_CANVAS_WIDTH = 450;
+  const PREVIEW_CANVAS_HEIGHT = 450;
+  const { designs, currentDesignId } = useDesignStore();
+
+  const currentDesign = designs.find((d) => d.id === currentDesignId);
+
+  const [previewView, setPreviewView] = useState(
+    currentDesign?.apparelView || "front"
+  );
+  const [previewZoomLevel, setPreviewZoomLevel] = useState(1);
+
+  useEffect(() => {
+    if (currentDesign) {
+      setPreviewView(currentDesign.apparelView);
+    }
+  }, [currentDesign?.apparelView, currentDesign]);
+
+  const visibleElements = (currentDesign.elements || []).filter(
+    (el) => el.associatedView === previewView
+  );
+
+  let apparelDisplayWidth = PREVIEW_CANVAS_WIDTH;
+  let apparelDisplayHeight = PREVIEW_CANVAS_HEIGHT;
+
+  const previewContainerStyle = {
+    width: `${PREVIEW_CANVAS_WIDTH}px`,
+    height: `${PREVIEW_CANVAS_HEIGHT}px`, // Keep container fixed
+    transform: `scale(${previewZoomLevel})`,
+    transformOrigin: "center center",
+    transition: "transform 0.1s ease-out",
+  };
+
+  const apparelContainerStyle = {
+    width: `${apparelDisplayWidth}px`,
+    height: `${apparelDisplayHeight}px`,
+    position: "relative",
+    overflow: "hidden", // This is crucial for clipping elements
+    margin: "auto", // Center the apparel within the scaled container
+    backgroundColor: currentDesign.apparelColor, // Fallback if no base image
+  };
+
   return (
     <div>
       <DialogHeader className="flex items-center justify-between flex-row">
@@ -383,14 +573,19 @@ export const PreviewOverlay = () => {
           <div>Preview </div>
         </DialogTitle>
 
-        <Select defaultValue="front">
+        <Select
+          defaultValue="front"
+          value={previewView}
+          onValueChange={setPreviewView}
+        >
           <SelectTrigger className=" rounded-md cursor-pointer gap-2 border-primary/40 w-20">
             <SelectValue placeholder="View" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="front">Front</SelectItem>
             <SelectItem value="back">Back</SelectItem>
-            <SelectItem value="arm">Arm</SelectItem>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
             {/* <SelectItem value="system">System</SelectItem> */}
           </SelectContent>
         </Select>
@@ -410,13 +605,37 @@ export const PreviewOverlay = () => {
       </DialogHeader>
 
       <section className="flex flex-col items-center justify-center h-[calc(100vh-4rem) mt-20">
-        <div className="border border-primary/40  rounded-md p-5">
-          <Image
-            src={"/design/images/black-mockup.png"}
-            width={450}
-            height={450}
-            alt="preview"
-          />
+        <div className="borde border-primary/40  rounded-md p-5">
+          <div style={previewContainerStyle}>
+            {/* Inner container for apparel and elements, with overflow:hidden */}
+            <div
+              id="preview-apparel-container"
+              style={apparelContainerStyle}
+              className="border border-primary/40 rounded-md shadow-lg"
+            >
+              <ApparelView
+                apparelType={currentDesign.apparelType}
+                apparelColor={currentDesign.apparelColor} // ApparelView will use this if no base image
+                apparelView={previewView}
+                // We let ApparelView determine its own image source (custom or placeholder)
+                // and its internal sizing. We just ensure its container clips.
+              />
+              {visibleElements.map((element) => (
+                <ElementRenderer
+                  key={element.id}
+                  element={element}
+                  isSelected={false} // Nothing is selected in preview
+                  onElementContextMenu={() => {}} // No context menu in preview
+                  zoomLevel={1} // Elements inside are rendered at 100% of their size relative to apparel
+                  isPreview={true} // Key: Tells ElementRenderer it's in preview mode
+                  // Pass the dimensions of the apparel display area so elements can scale correctly
+                  // This is a conceptual change; ElementRenderer would need to use these if its % pos is relative to these
+                  canvasWidthForElements={apparelDisplayWidth}
+                  canvasHeightForElements={apparelDisplayHeight}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

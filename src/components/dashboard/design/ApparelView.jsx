@@ -118,8 +118,6 @@ export default function ApparelView({
     ? `${apparelType} ${apparelView} custom`
     : placeholderHint;
 
-  console.log(apparelColor);
-
   return (
     <section style={{ width: "100%", backgroundColor: apparelColor }}>
       <div

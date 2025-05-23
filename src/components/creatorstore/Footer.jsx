@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 export default function Footer({ onSupportClick }) {
   return (
@@ -11,12 +11,19 @@ export default function Footer({ onSupportClick }) {
 
         {/* Middle Links */}
         <div className="flex flex-col lg:flex-row justify-center gap-6 text-sm opacity-[0.77]">
-          <a href="#" className="hover:text-white">Track Item</a>
+          <a href="#" className="hover:text-white">
+            Track Item
+          </a>
           <button onClick={onSupportClick} className="hover:text-white">
             Support
           </button>
-          <a href="#" className="hover:text-white">Contact Us</a>
-          <a href="#" className="hover:text-white">Refund Policy</a>
+
+          <a href="#" className="hover:text-white">
+            Contact Us
+          </a>
+          <a href="#" className="hover:text-white">
+            Refund Policy
+          </a>
         </div>
 
         {/* Bottom Section */}
@@ -25,12 +32,20 @@ export default function Footer({ onSupportClick }) {
 
           <div className="flex items-center gap-2">
             <span>Powered by</span>
-            <img src="/dashboard/completelogo.svg" alt="MyTextil Logo" className="h-8" />
+            <img
+              src="/dashboard/completelogo.svg"
+              alt="MyTextil Logo"
+              className="h-8"
+            />
           </div>
 
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white">Privacy Policy</a>
-            <a href="#" className="hover:text-white">Terms Of Service</a>
+            <a href="#" className="hover:text-white">
+              Privacy Policy
+            </a>
+            <a href="#" className="hover:text-white">
+              Terms Of Service
+            </a>
           </div>
         </div>
       </div>

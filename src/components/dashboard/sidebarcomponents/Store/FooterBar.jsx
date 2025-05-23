@@ -117,7 +117,7 @@ export default function FooterBar() {
                 <input
                   type="text"
                   placeholder="@username"
-                  value={socialLinks[platform]}
+                  // value={socialLinks[platform]}
                   onChange={(e) => {
                     setFooterSocialIcons({ [platform]: e.target.value });
                   }}

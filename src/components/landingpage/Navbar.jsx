@@ -22,6 +22,8 @@ const Navbar = () => {
 
   const { session, clearSession } = useAuthStore();
 
+  console.log(session);
+
   const homeRef = useRef(null);
   const featuresRef = useRef(null);
   const creatorsRef = useRef(null);

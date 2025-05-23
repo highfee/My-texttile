@@ -5,19 +5,25 @@ import { authService } from "./authService";
 const httpClient = axios.create({
   baseURL: "http://23.88.47.163/dev/api/v1",
   timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 // Request interceptor
 httpClient.interceptors.request.use(
   async (config) => {
+    console.log("Request Data:", {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data,
+    });
+
     const session = authService.getSession();
 
     if (config.url.includes("/users/register")) {
       config.method = "POST";
-
       return config;
     }
 
@@ -38,12 +44,12 @@ httpClient.interceptors.request.use(
           config.headers.Authorization = `Bearer ${newSession.accessToken}`;
         } catch (error) {
           authService.clearSession();
-          window.location.href = "/login";
+          window.location.href = "/";
           return config;
         }
       } else {
         authService.clearSession();
-        window.location.href = "/login";
+        window.location.href = "/";
         return config;
       }
     }
@@ -81,12 +87,12 @@ httpClient.interceptors.response.use(
           return httpClient(originalRequest);
         } catch (refreshError) {
           authService.clearSession();
-          window.location.href = "/login";
+          window.location.href = "/";
         }
       }
 
       authService.clearSession();
-      window.location.href = "/login";
+      window.location.href = "/";
     }
 
     const errorMessage = getErrorMessage(error);

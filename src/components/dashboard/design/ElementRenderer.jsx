@@ -21,7 +21,6 @@ export default function ElementRenderer({
   onElementContextMenu,
   zoomLevel,
 }) {
-  console.log(element);
   const { designs, currentDesignId, updateElement, selectElement } =
     useDesignStore();
   const elementRef = useRef(null);

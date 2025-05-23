@@ -57,12 +57,14 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationFn: async (data) => {
       const response = await httpClient.post("/users/login/", data);
+      console.log(response);
       authService.setSession(response.data["response data"]);
       return response.data;
     },
     onSuccess: (data) => {
       if (data["response status"] === "success") {
-        router.push("/dashboard/home");
+        // router.push("/dashboard/home");
+        router.reload();
       } else {
         setError(data["response description"] || "Login failed");
       }

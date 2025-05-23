@@ -15,6 +15,17 @@ const nextConfig = {
       },
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/dhptrkobw/image/upload/**",
+        search: "",
+      },
+    ],
+  },
 };
 
 // module.exports = nextConfig;

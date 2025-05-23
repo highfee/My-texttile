@@ -7,6 +7,8 @@ import Hero from "@/components/creatorstore/Hero";
 import Cart from "@/components/creatorstore/Cart";
 import SupportPage from "@/components/creatorstore/SupportPage"; // Import your SupportPage component
 import { Inter } from "next/font/google";
+import { useQuery } from "@tanstack/react-query";
+import { httpClient } from "@/lib/httpClient";
 
 const inter = Inter({
   weight: ["400", "500", "600", "700"],
@@ -19,6 +21,28 @@ export default function StorePage() {
     showShop: false,
     selectedProduct: null,
   });
+
+  const fetchData = async () => {
+    const response = await httpClient.get("/shops/profile/", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data["response data"];
+  };
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["shop"],
+    queryFn: fetchData,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
 
   const resetNavigation = () => {
     setShowCart(false);
@@ -64,7 +88,11 @@ export default function StorePage() {
           display: none;
         }
       `}</style>
-      <CreatorHeader toggleCart={toggleCart} onHomeClick={resetNavigation} />
+      <CreatorHeader
+        toggleCart={toggleCart}
+        onHomeClick={resetNavigation}
+        data={data}
+      />
 
       {showCart ? (
         <Cart />
@@ -72,10 +100,12 @@ export default function StorePage() {
         <SupportPage onBackClick={resetNavigation} />
       ) : (
         <>
-          <Hero heroState={heroState} setHeroState={setHeroState} />
+          <Hero heroState={heroState} setHeroState={setHeroState} data={data} />
         </>
       )}
-      {!heroState.showShop && <Footer onSupportClick={handleSupportClick} />}
+      {!heroState.showShop && (
+        <Footer onSupportClick={handleSupportClick} data={data} />
+      )}
     </div>
   );
 }

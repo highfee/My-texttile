@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import FAQ from '@/components/dashboard/sidebarcomponents/HelpCenter/FAQ';
-import Payout from '@/components/dashboard/sidebarcomponents/Payout';
-import GettingStarted from '@/components/dashboard/sidebarcomponents/HelpCenter/GettingStarted';
-import Marketing from '@/components/dashboard/sidebarcomponents/HelpCenter/Marketing';
-import Store from '@/components/dashboard/sidebarcomponents/HelpCenter/Store';
+import { useState } from "react";
+import FAQ from "@/components/dashboard/sidebarcomponents/HelpCenter/FAQ";
+// import Payout from '@/components/dashboard/sidebarcomponents/Payout';
+import GettingStarted from "@/components/dashboard/sidebarcomponents/HelpCenter/GettingStarted";
+import Marketing from "@/components/dashboard/sidebarcomponents/HelpCenter/Marketing";
+import Store from "@/components/dashboard/sidebarcomponents/HelpCenter/Store";
 
 const index = () => {
-  const [activeTab, setActiveTab] = useState('FAQs');
+  const [activeTab, setActiveTab] = useState("FAQs");
 
-  const tabs = ['FAQs', 'Getting Started', 'Payout', 'Store', 'Marketing'];
+  const tabs = ["FAQs", "Getting Started", "Payout", "Store", "Marketing"];
 
   return (
     <div className=" lg:px-16">
@@ -20,7 +20,7 @@ const index = () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`whitespace-nowrap text-sm sm:text-lg font-medium ${
-              activeTab === tab ? 'text-black font-bold' : 'text-gray-400'
+              activeTab === tab ? "text-black font-bold" : "text-gray-400"
             }`}
           >
             {tab}
@@ -28,11 +28,11 @@ const index = () => {
         ))}
       </div>
       <div className="mt-4">
-        {activeTab === 'FAQs' && <FAQ />}
-        {activeTab === 'Getting Started' && <GettingStarted/> }
-        {activeTab === 'Payout' && <Payout />}
-        {activeTab === 'Store' && <Store/> }
-        {activeTab === 'Marketing' && <Marketing/> }
+        {activeTab === "FAQs" && <FAQ />}
+        {activeTab === "Getting Started" && <GettingStarted />}
+        {/* {activeTab === 'Payout' && <Payout />} */}
+        {activeTab === "Store" && <Store />}
+        {activeTab === "Marketing" && <Marketing />}
       </div>
     </div>
   );

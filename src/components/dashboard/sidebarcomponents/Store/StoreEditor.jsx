@@ -6,8 +6,18 @@ import FooterBar from "./FooterBar";
 import Productspopup from "./Productspopup";
 import Desktop from "@/components/creatorstore/template/Desktop";
 import Mobile from "@/components/creatorstore/template/Mobile";
+import { Button } from "@/components/ui/button";
+
+import { useMutation } from "@tanstack/react-query";
+import { httpClient } from "@/lib/httpClient";
+import { useCreatorStore } from "@/store/useCreatorShopFront";
+import { authService } from "@/lib/authService";
 
 export default function StoreEditor({ onBack, initialView = "desktop" }) {
+  // const { getSession } = authService;
+
+  // const session = getSession();
+  // console.log(session);
   const [activeView, setActiveView] = useState(initialView);
   const [editingSection, setEditingSection] = useState(null);
   const [showProductsPopup, setShowProductsPopup] = useState(false);
@@ -66,6 +76,78 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     { id: "Products", name: "Products" },
     { id: "Footer", name: "Footer" },
   ];
+
+  const {
+    storeName,
+    storeLogoFile,
+    navigationBackgroudColor,
+    navigationForegroudColor,
+    heroBannerTitle,
+    heroBannerSubtitle,
+    heroBannerImage,
+    heroBannerCtaText,
+    heroBannerCtaLink,
+    footerCopyrightText,
+    footerSocialIcons,
+    footerBackgroundColor,
+    footerForegroundColor,
+    products,
+    heroBannerImageFile,
+  } = useCreatorStore();
+
+  const storeMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await httpClient.post("/shops/users/create/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      router.push("/creatorstore");
+      if (data["response status"] === "success") {
+        router.push("/creatorstore");
+      } else {
+        setError(data["response description"] || "Error creating store");
+      }
+    },
+    onError: (error) => {
+      setError(error.message || "Error creating store");
+      console.log(error);
+    },
+  });
+
+  const onSubmit = () => {
+    const formData = new FormData();
+    formData.append("shop_name", storeName || "test");
+    formData.append("shop_about", "Testing");
+    formData.append("shop_logo", storeLogoFile);
+    formData.append("shop_banner", heroBannerImageFile);
+    formData.append("shop_crypto_wallet_address", "test");
+    formData.append("shop_bank_name", "test");
+    formData.append("shop_bank_account_number", "test");
+    formData.append("shop_bank_account_name", "test");
+    formData.append("shop_bank_swift_code", "test");
+    formData.append("background_image", heroBannerImageFile);
+    formData.append("user_bio", "test");
+    formData.append("background_colour", navigationBackgroudColor);
+    formData.append("text_colour", navigationForegroudColor);
+    formData.append("hero_text", heroBannerSubtitle);
+    formData.append("instagram_link", footerSocialIcons.instagram);
+    formData.append("facebook_link", footerSocialIcons.facebook);
+    formData.append("tiktok_link", footerSocialIcons.tiktok);
+    formData.append("x_twiter_link", footerSocialIcons.twitter);
+    formData.append("menu_item_colour", navigationForegroudColor);
+    formData.append("payout_method", "crypto");
+    formData.append("hero_title", heroBannerTitle);
+
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
+    storeMutation.mutate(formData);
+  };
 
   return (
     <div className="hidde flex flex-col lg:flex-row relative">
@@ -127,6 +209,9 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
               )}
             </div>
           ))}
+          <Button onClick={onSubmit}>
+            {storeMutation.isPending ? "Creating Store..." : "Create Store"}
+          </Button>
         </div>
       </div>
 

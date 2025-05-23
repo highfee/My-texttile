@@ -11,15 +11,17 @@ export default function NavigationBarEditor() {
     setStoreLogo,
     setNavigationBackgroudColor,
     setNavigationForegroudColor,
+    setStoreLogoFile,
   } = useCreatorStore();
 
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setStoreLogoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        // setLogo(reader.result);
-        setStoreLogo(reader.result);
+        const imageDataUrl = reader.result;
+        setStoreLogo(imageDataUrl);
       };
       reader.readAsDataURL(file);
     }

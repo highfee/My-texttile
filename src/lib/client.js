@@ -8,7 +8,7 @@ const getQueryClient = (() => {
       client = new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 minute
+            staleTime: 60 * 1000,
             retry: (failureCount, error) => {
               if (error instanceof Error && error.message.includes("401"))
                 return false;

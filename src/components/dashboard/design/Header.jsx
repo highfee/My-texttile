@@ -38,6 +38,7 @@ import {
   ChevronUp,
   Eye,
   Italic,
+  Loader,
   Plus,
   Underline,
   X,
@@ -55,6 +56,10 @@ import useDesignStore from "@/store/DesignStore";
 import { AVAILABLE_FONTS } from "@/constants";
 import ApparelView from "./ApparelView";
 import ElementRenderer from "./ElementRenderer";
+import { usePublishDesign } from "@/store/usePublishDesign";
+import { useMutation } from "@tanstack/react-query";
+import { useCreatorStore } from "@/store/useCreatorShopFront";
+import { httpClient } from "@/lib/httpClient";
 
 const fonts = [
   "Arial",
@@ -124,10 +129,6 @@ const Header = () => {
   const selectedElement = designs
     ?.find((design) => design.id === currentDesignId)
     ?.elements?.find((el) => el.id === selectedElementId);
-
-  console.log(
-    useDesignStore.getState().designs.find((d) => d.id === currentDesignId)
-  );
 
   const toggleStyle = (styleKey, value) => {
     if (selectedElementId) {
@@ -329,7 +330,7 @@ const Header = () => {
               Publish
             </Button>
           </DialogTrigger>
-          <DialogContent className="min-w-[calc(100vw-10rem)] max-h-[calc(100vh-5rem)] overflow-y-auto">
+          <DialogContent className="min-w-[calc(100vw-25rem)] max-h-[calc(100vh-5rem)] overflow-y-auto">
             <PublishOverlay />
           </DialogContent>
         </Dialog>
@@ -650,7 +651,81 @@ export const PreviewOverlay = () => {
 };
 
 export const PublishOverlay = () => {
+  const state = useDesignStore();
+  const design = state.designs.find((d) => d.id === state.currentDesignId);
+
+  const { storeLogoFile } = useCreatorStore();
+  const {
+    productName,
+    productColor,
+    productSize,
+
+    productPrice,
+    productType,
+  } = usePublishDesign();
+
+  const designMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await httpClient.post("/designs/create/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      router.push("/creatorstore");
+      if (data["response status"] === "success") {
+        router.push("/creatorstore");
+      } else {
+        setError(data["response description"] || "Error creating store");
+      }
+    },
+    onError: (error) => {
+      setError(error.message || "Error creating store");
+      console.log(error);
+    },
+  });
+
+  const onSubmit = () => {
+    const formData = new FormData();
+    // const emptyFile = new File([""], "empty.png", { type: "image/png" });
+
+    formData.append("design_description", productName);
+    formData.append("product_category", productType);
+    formData.append("shop_price", productPrice);
+    // Create an empty file for front_view
+    // formData.append("front_view", emptyFile);
+    // formData.append("back_view", emptyFile);
+    // formData.append("left_view", emptyFile);
+    // formData.append("right_view", emptyFile);
+    formData.append("desgin_view_data", JSON.stringify(design));
+
+    // console.log(JSON.stringify(design));
+    designMutation.mutate(formData);
+  };
+
   const [openAccordion, setOpenAccordion] = React.useState(null);
+
+  const { designs, currentDesignId } = useDesignStore();
+
+  const currentDesign = designs.find((d) => d.id === currentDesignId);
+
+  const [previewView, setPreviewView] = useState(
+    currentDesign?.apparelView || "front"
+  );
+  const [previewZoomLevel, setPreviewZoomLevel] = useState(1);
+
+  useEffect(() => {
+    if (currentDesign) {
+      setPreviewView(currentDesign.apparelView);
+    }
+  }, [currentDesign?.apparelView, currentDesign]);
+
+  const visibleElements = (currentDesign.elements || []).filter(
+    (el) => el.associatedView === previewView
+  );
 
   const toggleAccordion = (key) => {
     setOpenAccordion((prev) => (prev === key ? null : key));
@@ -674,9 +749,9 @@ export const PublishOverlay = () => {
 
       {/* settings / details */}
 
-      <div className="flex   mt-20">
+      <div className="flex mt-10">
         {/* Left side: Accordions */}
-        <div className=" flex-1 space-y-4 max-w-[1000px]">
+        <div className="flex-1 space-y-4 max-w-[800px]">
           {/* Accordion One */}
           <ProductInfo
             openAccordion={openAccordion}
@@ -700,18 +775,99 @@ export const PublishOverlay = () => {
         <div className=" pl-6">
           {openAccordion === "one" && (
             <div className="">
-              <h3 className="font-semibold mb-2">Preview for Accordion One</h3>
-              <p>This preview appears only when Accordion One is open.</p>
-              {/* You can add images, charts, etc., here */}
+              <h3 className="font-semibold mb-2">Product Preview</h3>
+
+              <section
+                className="relative scale-[0.6] -ml-[90px] -mt-20 p-5 rounded-2xl border border-primary/40"
+                style={{ background: currentDesign.apparelColor }}
+              >
+                <div>
+                  <ApparelView
+                    apparelType={currentDesign.apparelType}
+                    // apparelColor={currentDesign.apparelColor} // ApparelView will use this if no base image
+                    apparelView={previewView}
+                    // We let ApparelView determine its own image source (custom or placeholder)
+                    // and its internal sizing. We just ensure its container clips.
+                  />
+                  {visibleElements.map((element) => (
+                    <ElementRenderer
+                      key={element.id}
+                      element={element}
+                      isSelected={false} // Nothing is selected in preview
+                      onElementContextMenu={() => {}} // No context menu in preview
+                      zoomLevel={1} // Elements inside are rendered at 100% of their size relative to apparel
+                      isPreview={true} // Key: Tells ElementRenderer it's in preview mode
+                      // canvasWidthForElements={apparelDisplayWidth}
+                      // canvasHeightForElements={apparelDisplayHeight}
+                    />
+                  ))}
+                </div>
+              </section>
+
+              <div className="-mt-20">
+                <p className="font-semibold">{productName}</p>
+
+                <div className="text-sm">
+                  <p className="text-primary/40 mt-1">
+                    Category:{" "}
+                    <span className="text-primary/90">{productType}</span>
+                  </p>
+
+                  {/* colors */}
+                  <div>
+                    <p className="text-primary/40 mt-1">Colors: </p>
+                  </div>
+
+                  <p className="text-primary/40 mt-1">
+                    Starting:{" "}
+                    <span className="text-primary/90">${productPrice}</span>
+                  </p>
+
+                  <div className="text-primary/40 mt-1 flex gap-1">
+                    Sizes:{" "}
+                    <div className="flex gap-1">
+                      {productSize.map((size) => (
+                        <span className="px-1 bg-primary text-white rounded-sm inline-block text-[10px]">
+                          {size}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      <footer className="mt-10 flex justify-between">
+        <div></div>
+        <Button onClick={onSubmit} className="w-24">
+          {designMutation.isPending ? (
+            <Loader className=" animate-spin" />
+          ) : (
+            "Publish"
+          )}
+        </Button>
+      </footer>
     </div>
   );
 };
 
 const ProductInfo = ({ openAccordion, toggleAccordion }) => {
+  const {
+    productName,
+    productColor,
+    productSize,
+    listing,
+    productPrice,
+    setProductName,
+    setProductType,
+    setProductColor,
+    setProductSize,
+    setListing,
+    setProductPrice,
+  } = usePublishDesign();
   return (
     <div
       className={` transition-all cursor-pointer ${
@@ -743,41 +899,117 @@ const ProductInfo = ({ openAccordion, toggleAccordion }) => {
       </div>
 
       {openAccordion === "one" && (
-        <div className=" text-sm ml-12  grid grid-cols-2 gap-20 mt-5 gap-y-10">
+        <div className=" text-sm ml-12  grid grid-cols-2 gap-10 gap-y-5 mt-5 ">
           {/* name */}
           <div>
             <Label className="mb-2">Product Name</Label>
-            <Input className="border-primary/40" />
+            <Input
+              className="border-primary/40"
+              value={productName}
+              onInput={(e) => setProductName(e.target.value)}
+            />
           </div>
 
           {/* category */}
           <div>
             <Label className="mb-2">Product Category</Label>
-            <Input className="border-primary/40" />
+            <Select defaultValue="t_shirt" onValueChange={setProductType}>
+              <SelectTrigger className="w-full border-primary/40">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="t_shirt">T-Shirts</SelectItem>
+                <SelectItem value="sweatshirt">Sweatshirt</SelectItem>
+                <SelectItem value="hoodies">Hoodies</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* price */}
           <div>
             <Label className="mb-2">Product Price</Label>
-            <Input className="border-primary/40" />
+            <Input
+              className="border-primary/40"
+              value={productPrice}
+              onInput={(e) => setProductPrice(e.target.value)}
+              type="number"
+            />
           </div>
 
           {/* listing */}
           <div>
             <Label className="mb-2">Listing</Label>
-            <Input className="border-primary/40" />
+            <Select
+              defaultValue="T-Shirts"
+              onValueChange={setProductType}
+              disabled
+            >
+              <SelectTrigger className="w-full border-primary/40">
+                <SelectValue placeholder="Listing" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="T-Shirts">Store</SelectItem>
+                <SelectItem value="Hoodies">Hoodies</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Sizes */}
           <div>
             <Label className="mb-2">Size</Label>
-            <Input className="border-primary/40" />
+            <div className=" border border-primary/40 h-9 rounded-md w-full flex gap-1 items-center px-3">
+              {productSize.map((size) => (
+                <span className="p-1 bg-primary text-white rounded-sm inline-block text-xs">
+                  {size}
+                </span>
+              ))}
+            </div>
+            <div className="mt-2 flex gap-1">
+              <Button
+                className="text-[10px] size-6"
+                onClick={() => setProductSize("XS")}
+              >
+                XS
+              </Button>
+              <Button
+                className="text-[10px] size-6"
+                onClick={() => setProductSize("S")}
+              >
+                S
+              </Button>
+              <Button
+                className="text-[10px] size-6"
+                onClick={() => setProductSize("M")}
+              >
+                M
+              </Button>
+              <Button
+                className="text-[10px] size-6"
+                onClick={() => setProductSize("XL")}
+              >
+                XL
+              </Button>
+              <Button
+                className="text-[10px] size-6"
+                onClick={() => setProductSize("2XL")}
+              >
+                2XL
+              </Button>
+            </div>
           </div>
 
           {/* color */}
           <div>
             <Label className="mb-2">Select Color</Label>
-            <Input className="border-primary/40" />
+            <Select defaultValue="" onValueChange={setProductType} disabled>
+              <SelectTrigger className="w-full border-primary/40">
+                <SelectValue placeholder="Color" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="T-Shirts">Store</SelectItem>
+                <SelectItem value="Hoodies">Hoodies</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}

@@ -1,23 +1,39 @@
-'use client';
+"use client";
 
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 
-export default function CreatorHeader({ toggleCart, onHomeClick }) {
+export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
+  console.log(data);
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: data.background_colour,
+        color: data.text_colour,
+      }}
+    >
       <header className="w-full flex items-center justify-between px-6 py-3">
         {/* Left: Logo - now clickable */}
-        <div 
+        <div
           className="flex items-center space-x-2 cursor-pointer"
           onClick={onHomeClick}
         >
-          <span className="text-black font-bold text-lg">M</span>
-          <span className="text-sm text-gray-700">My-Store</span>
+          <span className="text-black font-bold text-lg">
+            {data?.shop_name}
+          </span>
+          {/* <span className="text-sm text-gray-700">My-Store</span> */}
+          <Image
+            src={data?.shop_logo}
+            alt="Logo"
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
         </div>
 
         {/* Center: Navigation */}
         <nav className="flex space-x-4">
-          <span 
+          <span
             className="text-black text-sm font-semibold cursor-pointer"
             onClick={onHomeClick}
           >

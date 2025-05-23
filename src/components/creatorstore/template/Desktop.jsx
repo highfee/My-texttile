@@ -8,15 +8,18 @@ import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { FaInstagram, FaTiktok, FaX } from "react-icons/fa6";
 
 const Desktop = ({ activeView }) => {
-  console.log(activeView);
   const { navigationBackgroudColor, navigationForegroudColor, storeLogo } =
     useCreatorStore();
 
   return (
     <section
-      className={cn("bg-white shadow-md rounded-3xl p-4 min-w-[980px]", {
-        "min-w-[400px] w-[400px]": activeView === "mobile",
-      })}
+      className={cn(
+        "bg-white shadow-md rounded-3xl p-4 min-w-[980px] select-none",
+        {
+          "min-w-[400px] w-[400px]": activeView === "mobile",
+        }
+      )}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <p className="text-lg font-medium">
         {activeView === "desktop"
@@ -143,7 +146,7 @@ const Hero = ({ activeView }) => {
   return (
     <section
       className={cn(
-        " bg-cover bg-center h-[450px] flex flex-col items-center justify-center text-white relative isolate",
+        " bg-cover bg-center h-[400px] flex flex-col items-center justify-center text-white relative isolate",
         {
           "h-[300px]": activeView === "mobile",
         }
@@ -233,7 +236,7 @@ const Products = ({ activeView }) => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ activeView }) => {
   const {
     footerCopyrightText,
     footerBackgroundColor,
@@ -250,7 +253,11 @@ const Footer = () => {
         color: footerForegroundColor,
       }}
     >
-      <section className="flex justify-between items-center">
+      <section
+        className={cn("flex justify-between items-center gap-3", {
+          "flex-col": activeView == "mobile",
+        })}
+      >
         <h2 className="text-center text-lg">{storeName}</h2>
 
         {/* socials */}
@@ -270,20 +277,33 @@ const Footer = () => {
         </div>
       </section>
 
-      <nav className="flex justify-center space-x-4 mt-3">
+      <nav
+        className={cn("flex justify-center space-x-4 mt-3 ", {
+          "text-sm": activeView == "mobile",
+        })}
+      >
         <Link href={""}>Track Item</Link>
         <Link href={""}>Support</Link>
         <Link href={""}>Contact us</Link>
         <Link href={""}>Refund Policy</Link>
       </nav>
 
-      <section className="mt-7 flex justify-between items-center">
+      <section
+        className={cn("mt-7 flex justify-between items-center", {
+          "flex-col text-sm": activeView == "mobile",
+        })}
+      >
         <p>
           &copy; {new Date().getFullYear()} {storeName}. All rights reserved.
         </p>
 
-        <div>
+        <div className="flex items-center gap-2">
           <p>Powered by</p>
+          <img
+            src="/dashboard/completelogo.svg"
+            alt="MyTextil Logo"
+            className="h-8"
+          />
         </div>
 
         <div>

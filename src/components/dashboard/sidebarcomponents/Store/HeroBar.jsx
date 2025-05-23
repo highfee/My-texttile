@@ -18,13 +18,21 @@ export default function HeroBar() {
     setHeroBannerSubtitle,
     setHeroBannerImage,
     setHeroBannerCtaText,
+    setHeroBannerImageFile,
   } = useCreatorStore();
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+    setHeroBannerImageFile(file);
     if (file) {
-      setHeroBannerImage(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeroBannerImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
+
+    console.log(file);
   };
 
   return (

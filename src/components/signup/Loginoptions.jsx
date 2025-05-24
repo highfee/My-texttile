@@ -40,7 +40,7 @@ const Loginoptions = () => {
             <p className="text-[#121212] text-[8px] md:text-[14px] lg:text-[16px] font-bold">
               (It's free)
             </p>
-            <div className="w-full space-y-2 sm:space-y-3 py-4 sm:py-6 md:py-16 px-1 sm:px-4 mt-2">
+            <div className="w-full space-y-2 sm:space-y-3 py-4 sm:py-6 md:py-16 md:pb-0 px-1 sm:px-4 mt-2 ">
               <button className="flex items-center justify-start w-full px-2 sm:px-3 py-1 sm:py-2 border border-[#12121270] rounded-lg">
                 <span className="flex items-center justify-center w-5 sm:w-6">
                   <FcGoogle className="h-4 sm:h-5 w-4 sm:w-5" />
@@ -72,12 +72,12 @@ const Loginoptions = () => {
               </button>
 
               {/*  */}
-              <p
+              <div
                 onClick={() => setShowLogin(true)}
-                className="text-bluebutton text-[8px] sm:text-[10px] md:text-[14px] lg:text-[16px] font-semibold cursor-pointer"
+                className="text-bluebutton text-[8px] sm:text-[10px] md:text-[14px] lg:text-[16px] font-semibold cursor-pointer "
               >
                 Already have an account? Login
-              </p>
+              </div>
             </div>
 
             <div className="mt-2 sm:mt-4 text-[10px] sm:text-[11px] md:text-[12px] lg:text-[14px] text-gray-500">

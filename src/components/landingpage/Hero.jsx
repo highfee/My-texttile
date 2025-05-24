@@ -1,7 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "../ui/button";
+import useAuthStore from "@/store/authStore";
+import { useState } from "react";
+import Login from "../login/Login";
+import Loginoptions from "../signup/Loginoptions";
+import { FiX } from "react-icons/fi";
 
 const Hero = () => {
+  const { session, clearSession } = useAuthStore();
+
+  const [showLogin, setShowLogin] = useState(false);
+
+  console.log(session);
   return (
     <div className="w-full  lg:px-24 px-4">
       <div className="  h-fit bg-landing rounded-3xl bg-cover px-4 ">
@@ -19,12 +30,21 @@ const Hero = () => {
             provide everything you need to build your creative empire.
           </p>
           <div className="py-6">
-            <Link
-              href={"/dashboard/home"}
+            <Button
+              // href={"/dashboard/home"}
               className="bg-[#016FDE] text-white px-6 py-2 rounded-full"
+              onClick={() => {
+                if (session) {
+                  window.location.href = "/dashboard/home";
+                } else {
+                  clearSession();
+                  setShowLogin(true);
+                }
+              }}
+              as={Link}
             >
               Start Creating
-            </Link>
+            </Button>
           </div>
         </div>
         <div className="relative  flex flex-col items-center">
@@ -55,6 +75,23 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {showLogin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <button
+            className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"
+            onClick={() => setShowLogin(false)}
+          >
+            <FiX size={20} />
+          </button>
+          <div
+            className="relative max-w-6xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Loginoptions />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

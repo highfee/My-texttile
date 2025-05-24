@@ -77,7 +77,6 @@ const Securitylayer = ({ onBack }) => {
     },
     onError: (error) => {
       setError(error.message || "Registration failed. Please try again.");
-      console.log(error);
     },
   });
 
@@ -98,6 +97,7 @@ const Securitylayer = ({ onBack }) => {
       username: "Highfee12",
     };
 
+    // console.log(userData);
     registerMutation.mutate(userData);
   };
 
@@ -119,6 +119,7 @@ const Securitylayer = ({ onBack }) => {
           {error && (
             <p className="text-[#FF5789] text-[10px] lg:text-[14px] py-2">
               {JSON.stringify(error)}
+              ""
             </p>
           )}
         </p>

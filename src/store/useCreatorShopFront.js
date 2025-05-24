@@ -80,6 +80,34 @@ export const useCreatorStore = create(
     setStoreLogoFile: (storeLogoFile) => set({ storeLogoFile }),
     setHeroBannerImageFile: (heroBannerImageFile) =>
       set({ heroBannerImageFile }),
+
+    setAllFromServer: (data) =>
+      set((state) => ({
+        // Map backend keys to frontend state keys
+        storeName: data.shop_name || state.storeName,
+        storeLogo: data.shop_logo || state.storeLogo,
+        navigationBackgroudColor:
+          data.background_colour || state.navigationBackgroudColor,
+        navigationForegroudColor:
+          data.text_colour || state.navigationForegroudColor,
+        heroBannerTitle: data.hero_title || state.heroBannerTitle,
+        heroBannerSubtitle: data.hero_text || state.heroBannerSubtitle,
+        heroBannerImage: data.shop_banner || state.heroBannerImage,
+        heroBannerCtaText: data.heroBannerCtaText || state.heroBannerCtaText, // update if you have a backend key for this
+        products: data.products || state.products, // update if you have products in backend
+        footerCopyrightText:
+          data.footerCopyrightText || state.footerCopyrightText, // update if you have a backend key for this
+        footerBackgroundColor:
+          data.footerBackgroundColor || state.footerBackgroundColor, // update if you have a backend key for this
+        footerForegroundColor:
+          data.footerForegroundColor || state.footerForegroundColor, // update if you have a backend key for this
+        footerSocialIcons: {
+          instagram: data.instagram_link || state.footerSocialIcons.instagram,
+          facebook: data.facebook_link || state.footerSocialIcons.facebook,
+          tiktok: data.tiktok_link || state.footerSocialIcons.tiktok,
+          twitter: data.x_twiter_link || state.footerSocialIcons.twitter,
+        },
+      })),
   })
 
   // {

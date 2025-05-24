@@ -702,6 +702,7 @@ export const PublishOverlay = () => {
     // formData.append("right_view", emptyFile);
     formData.append("desgin_view_data", JSON.stringify(design));
 
+    // console.log(productType);
     // console.log(JSON.stringify(design));
     designMutation.mutate(formData);
   };

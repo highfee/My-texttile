@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export const usePublishDesign = create((set) => ({
   productName: "",
-  productType: "T-shirt",
+  productType: "t_shirt",
   productColor: "#000000",
   productSize: [],
   listing: "",

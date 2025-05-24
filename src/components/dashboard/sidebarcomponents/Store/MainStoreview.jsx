@@ -2,6 +2,9 @@ import { IoIosLink } from "react-icons/io";
 import { FiEdit2 } from "react-icons/fi";
 import { useState } from "react";
 import Link from "next/link";
+import Desktop from "@/components/creatorstore/template/Desktop";
+import { httpClient } from "@/lib/httpClient";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -17,6 +20,20 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
       });
     }
   };
+
+  const fetchData = async () => {
+    const response = await httpClient.get("/shops/profile/", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data["response data"];
+  };
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["shop"],
+    queryFn: fetchData,
+  });
 
   return (
     <div
@@ -103,11 +120,13 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             onMouseLeave={() => setShowOverlay1(false)}
             onClick={() => handleImageClick("desktop")}
           >
-            <img
+            {/* <img
               src="/dashboard/store/desktop.png"
               alt="Desktop View"
               className="w-full max-w-2xl border border-gray-200 rounded-lg"
-            />
+            /> */}
+
+            <Desktop activeView={"desktop"} data={data} />
             <div
               className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                 showOverlay1 ? "opacity-100" : "opacity-0"
@@ -133,11 +152,12 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             onMouseLeave={() => setShowOverlay(false)}
             onClick={() => handleImageClick("mobile")}
           >
-            <img
+            {/* <img
               src="/dashboard/store/mobile.png"
               alt="Mobile View"
               className="w-full max-w-xs border border-gray-200 rounded-lg"
-            />
+            /> */}
+            <Desktop activeView={"mobile"} data={data} />
             <div
               className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                 showOverlay ? "opacity-100" : "opacity-0"

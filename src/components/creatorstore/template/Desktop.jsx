@@ -3,13 +3,25 @@ import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { Menu, Search, ShoppingBag, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaFacebook, FaTwitter } from "react-icons/fa";
 import { FaInstagram, FaTiktok, FaX } from "react-icons/fa6";
 
-const Desktop = ({ activeView }) => {
-  const { navigationBackgroudColor, navigationForegroudColor, storeLogo } =
-    useCreatorStore();
+const Desktop = ({ activeView, data }) => {
+  const {
+    navigationBackgroudColor,
+    navigationForegroudColor,
+    storeLogo,
+    setAllFromServer,
+  } = useCreatorStore();
+
+  useEffect(() => {
+    if (data) {
+      setAllFromServer(data);
+    }
+    // Only run on mount or when data changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <section
@@ -21,6 +33,7 @@ const Desktop = ({ activeView }) => {
       )}
       onContextMenu={(e) => e.preventDefault()}
     >
+      {}
       <p className="text-lg font-medium">
         {activeView === "desktop"
           ? "Desktop View"
@@ -61,6 +74,7 @@ const Header = ({
   storeLogo,
   activeView,
 }) => {
+  console.log(storeLogo, "storeLogo in header");
   return (
     <header
       className={cn("flex justify-between items-center p-4 px-10", {

@@ -9,10 +9,6 @@ const Reference = ({ onBack }) => {
     setShowCreateAccount(true);
   };
 
-  // if (showCreateAccount) {
-  //   return <Finalizeaccount onBack={() => setShowCreateAccount(false)} />;
-  // }
-
   if (showCreateAccount) {
     return <Securitylayer onBack={() => setShowCreateAccount(false)} />;
   }

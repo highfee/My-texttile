@@ -97,11 +97,11 @@ const Login = () => {
         <p>
           {error && (
             <p className="text-[#FF5789] text-[10px] lg:text-[14px] py-2">
-              {JSON.stringify(error)}
+              {error || JSON.stringify(error)}
             </p>
           )}
         </p>
-        <div className="py-4 ">
+        <div className="py-4 pt-0 ">
           <p className="font-bold text-black text-[16px] lg:text-[30px]">
             Login
           </p>

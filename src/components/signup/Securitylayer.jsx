@@ -85,12 +85,12 @@ const Securitylayer = ({ onBack }) => {
   };
 
   const onSubmit = async (data) => {
-    setPassword(data.password);
+    // setPassword(data.password);
     const userData = {
       email,
       first_name: firstname,
       last_name: lastname,
-      password,
+      password: data.password,
       referred_by: referralCode,
       phone_number: phoneNumber,
       country_code: "+1",

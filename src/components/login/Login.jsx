@@ -57,7 +57,9 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationFn: async (data) => {
       const response = await httpClient.post("/users/login/", data);
-      console.log(response);
+      if (response.status !== 200) {
+        throw new Error("Login failed. Please try again.");
+      }
       authService.setSession(response.data["response data"]);
       return response.data;
     },
@@ -67,6 +69,7 @@ const Login = () => {
         router.reload();
       } else {
         setError(data["response description"] || "Login failed");
+        console.log(data);
       }
     },
     onError: (error) => {
@@ -98,7 +101,7 @@ const Login = () => {
             </p>
           )}
         </p>
-        <div className="py-4 lg:py-8">
+        <div className="py-4 ">
           <p className="font-bold text-black text-[16px] lg:text-[30px]">
             Login
           </p>

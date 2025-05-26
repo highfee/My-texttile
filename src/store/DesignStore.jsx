@@ -17,7 +17,7 @@ import {
 
 // Helpers
 const generateId = () => Math.random().toString(36).substr(2, 9);
-const MAX_HISTORY_LENGTH = 3;
+const MAX_HISTORY_LENGTH = 50;
 
 const assignZIndices = (elements) => {
   return elements.map((el, index) => ({ ...el, zIndex: index }));
@@ -34,13 +34,14 @@ const createNewDesign = (name) => {
     elements: [],
     history: [[]],
     historyIndex: 0,
-    imageBank: {},
+    imageBank: {}, // Stores { imageId: { id, url, originalWidth, originalHeight } }
     apparelBaseImages: {
-      // Added
+      // Stores { view: url | null }
       front: null,
       back: null,
       left: null,
       right: null,
+      arm: null,
     },
   };
 };
@@ -51,7 +52,8 @@ const getInitialState = () => {
     designs: [firstDesign],
     currentDesignId: firstDesign.id,
     selectedElementId: null,
-    isLoading: false,
+    isLoading: false, // General loading state if needed
+    isLoadingImage: false, // Specific for image uploads
   };
 };
 
@@ -108,6 +110,7 @@ const useDesignStore = create(
 
       return {
         ...getInitialState(),
+        setIsLoadingImage: (isLoading) => set({ isLoadingImage: isLoading }),
 
         addDesign: ({ name }) => {
           const newDesign = createNewDesign(name);
@@ -169,6 +172,7 @@ const useDesignStore = create(
           }, false);
         },
 
+        // This action now expects a URL (e.g., from Cloudinary)
         setApparelBaseImage: ({ view, imageUrl }) => {
           modifyCurrentDesign((currentDesign) => {
             const newApparelBaseImages = {
@@ -177,8 +181,9 @@ const useDesignStore = create(
                 back: null,
                 left: null,
                 right: null,
+                arm: null,
               }),
-              [view]: imageUrl,
+              [view]: imageUrl, // Store the URL
             };
             return { apparelBaseImages: newApparelBaseImages };
           }, false);
@@ -230,12 +235,14 @@ const useDesignStore = create(
                 };
                 break;
               case "image":
+                // When adding an image element, we use its imageId to reference it in the imageBank
                 if (!options?.imageId)
                   throw new Error("Image ID is required for image element.");
                 newElement = {
                   ...commonProps,
                   type: "image",
                   imageId: options.imageId,
+                  imageUrl: options.imageUrl, // Store the direct URL on the element for easier rendering
                   width: options.width || INITIAL_ELEMENT_WIDTH,
                   height: options.height || INITIAL_ELEMENT_HEIGHT,
                   originalWidth: options.originalWidth,
@@ -271,6 +278,8 @@ const useDesignStore = create(
             if (get().selectedElementId === elementId) {
               set({ selectedElementId: null });
             }
+            // Note: This does not delete the image from Cloudinary. That would require a backend call.
+            // The image might remain in imageBank if not explicitly removed, but won't be used.
             return { elements: updatedElements };
           });
         },
@@ -311,14 +320,27 @@ const useDesignStore = create(
           }, false);
         },
 
-        loadImage: ({ imageUrl, width, height }) => {
+        // This action is called after an image is "uploaded" (simulated for now)
+        // and we have its URL (from Cloudinary or temporary object URL).
+        // It adds the image to the imageBank and then calls addElement.
+        processAndAddImageElement: ({
+          imageUrl,
+          originalWidth,
+          originalHeight,
+        }) => {
           modifyCurrentDesign((currentDesign) => {
-            const newImageId = generateId();
+            const newImageId = generateId(); // Or use Cloudinary's public_id if available
             const newImageBank = {
               ...(currentDesign.imageBank || {}),
-              [newImageId]: imageUrl,
+              [newImageId]: {
+                id: newImageId,
+                url: imageUrl,
+                originalWidth,
+                originalHeight,
+              },
             };
 
+            // Now call addElement with the imageId and imageUrl
             const newElementId = generateId();
             const currentElements = currentDesign.elements || [];
             const currentView = currentDesign.apparelView;
@@ -328,18 +350,21 @@ const useDesignStore = create(
               type: "image",
               x: 25,
               y: 25,
-              width: width > 200 ? 200 : width,
-              height: (width > 200 ? 200 : width) * (height / width),
-              originalWidth: width,
-              originalHeight: height,
+              width: originalWidth > 200 ? 200 : originalWidth,
+              height:
+                (originalWidth > 200 ? 200 : originalWidth) *
+                (originalHeight / originalWidth),
+              originalWidth: originalWidth,
+              originalHeight: originalHeight,
               rotation: 0,
               zIndex: 0,
-              imageId: newImageId,
+              imageId: newImageId, // Reference to imageBank
+              imageUrl: imageUrl, // Direct URL for rendering
               associatedView: currentView,
             };
             let updatedElements = [...currentElements, newImageElement];
             updatedElements = assignZIndices(updatedElements);
-            set({ selectedElementId: newElementId, isLoading: false });
+            set({ selectedElementId: newElementId, isLoadingImage: false });
             return { elements: updatedElements, imageBank: newImageBank };
           });
         },
@@ -391,6 +416,24 @@ const useDesignStore = create(
           });
         },
         resetStateAndStorage: () => {
+          // Before resetting, revoke any temporary object URLs stored in the current state
+          const { designs } = get();
+          designs.forEach((design) => {
+            if (design.imageBank) {
+              Object.values(design.imageBank).forEach((imageAsset) => {
+                if (imageAsset.url && imageAsset.url.startsWith("blob:")) {
+                  URL.revokeObjectURL(imageAsset.url);
+                }
+              });
+            }
+            if (design.apparelBaseImages) {
+              Object.values(design.apparelBaseImages).forEach((url) => {
+                if (url && url.startsWith("blob:")) {
+                  URL.revokeObjectURL(url);
+                }
+              });
+            }
+          });
           set(getInitialState());
         },
       };
@@ -401,98 +444,112 @@ const useDesignStore = create(
       onRehydrateStorage: () => (rawStateParam, error) => {
         if (error) {
           console.error("Failed to rehydrate state from storage:", error);
+          // Optionally, set to initial state on error
+          // set(getInitialState());
           return;
         }
 
         let state = rawStateParam;
+        if (!state) {
+          // If storage is empty or invalid, initialize with default state.
+          // set(getInitialState()); // Handled by persist returning undefined
+          return;
+        }
 
-        if (state) {
-          let needsPersistUpdate = false;
+        // Migration logic for old data structures (e.g., from data URIs to URLs)
+        // For this refactor, we'll assume new structures or simple defaults.
+        // A full migration of data URIs to Cloudinary URLs would happen server-side
+        // or as a separate migration script if you had live user data.
 
-          if (!state.designs || state.designs.length === 0) {
-            const freshInitial = getInitialState();
-            state.designs = freshInitial.designs;
-            state.currentDesignId = freshInitial.currentDesignId;
-            needsPersistUpdate = true;
-          } else if (
-            !state.currentDesignId ||
-            !state.designs.find((d) => d.id === state.currentDesignId)
-          ) {
-            state.currentDesignId = state.designs[0].id;
-            needsPersistUpdate = true;
-          }
-
+        if (state && state.designs) {
           state.designs = state.designs.map((design) => {
-            const designDefaultView = design.apparelView || "front";
-            let currentDesignImageBank = design.imageBank || {};
-            let currentApparelBaseImages = design.apparelBaseImages || {
-              front: null,
-              back: null,
-              left: null,
-              right: null,
-            }; // Added
+            const migratedDesign = { ...design };
 
-            const migrateElementsArray = (elementsArray) => {
-              return (elementsArray || []).map((el) => {
-                let migratedEl = { ...el };
-                if (migratedEl.associatedView === undefined) {
-                  migratedEl.associatedView = designDefaultView;
-                  needsPersistUpdate = true;
-                }
-                if (
-                  migratedEl.type === "image" &&
-                  migratedEl.imageUrl &&
-                  !migratedEl.imageId
-                ) {
-                  const newImgId = generateId();
-                  currentDesignImageBank[newImgId] = migratedEl.imageUrl;
-                  migratedEl.imageId = newImgId;
-                  delete migratedEl.imageUrl;
-                  needsPersistUpdate = true;
-                }
-                if (
-                  migratedEl.type === "text" &&
-                  migratedEl.textAlignVertical === undefined
-                ) {
-                  migratedEl.textAlignVertical = DEFAULT_TEXT_ALIGN_VERTICAL;
-                  needsPersistUpdate = true;
-                }
-                return migratedEl;
-              });
+            // Ensure apparelBaseImages exists and has all views
+            migratedDesign.apparelBaseImages = {
+              front: design.apparelBaseImages?.front || null,
+              back: design.apparelBaseImages?.back || null,
+              left: design.apparelBaseImages?.left || null,
+              right: design.apparelBaseImages?.right || null,
+              arm: design.apparelBaseImages?.arm || null,
             };
 
-            const migratedElements = migrateElementsArray(design.elements);
+            // Ensure imageBank exists
+            migratedDesign.imageBank = design.imageBank || {};
 
-            const migratedHistory = (
-              design.history || [[JSON.parse(JSON.stringify(migratedElements))]]
-            ).map((historyEntry) => migrateElementsArray(historyEntry));
+            // Ensure elements are correctly structured (example for future migrations)
+            migratedDesign.elements = (design.elements || []).map((el) => {
+              const migratedEl = { ...el };
+              if (
+                el.type === "image" &&
+                !el.imageUrl &&
+                el.imageId &&
+                migratedDesign.imageBank[el.imageId]
+              ) {
+                // If imageUrl is missing but we have imageId and it's in imageBank, populate imageUrl
+                migratedEl.imageUrl = migratedDesign.imageBank[el.imageId].url;
+              }
+              return migratedEl;
+            });
+            // Make sure history is an array of arrays of elements
+            if (
+              !migratedDesign.history ||
+              !Array.isArray(migratedDesign.history) ||
+              !migratedDesign.history.every(Array.isArray)
+            ) {
+              migratedDesign.history = [
+                JSON.parse(JSON.stringify(migratedDesign.elements || [])),
+              ];
+              migratedDesign.historyIndex = 0;
+            }
+            if (
+              typeof migratedDesign.historyIndex !== "number" ||
+              migratedDesign.historyIndex >= migratedDesign.history.length
+            ) {
+              migratedDesign.historyIndex = Math.max(
+                0,
+                migratedDesign.history.length - 1
+              );
+            }
 
-            const historyIndex =
-              design.historyIndex !== undefined
-                ? Math.min(design.historyIndex, migratedHistory.length - 1)
-                : migratedHistory.length - 1;
-
-            if (!design.elements) needsPersistUpdate = true;
-            if (!design.history || design.history.length === 0)
-              needsPersistUpdate = true;
-            if (design.historyIndex === undefined) needsPersistUpdate = true;
-            if (!design.imageBank) needsPersistUpdate = true;
-            if (!design.apparelBaseImages) needsPersistUpdate = true; // Added check
-
-            return {
-              ...design,
-              elements: migratedElements,
-              history: migratedHistory,
-              historyIndex: historyIndex,
-              apparelView: designDefaultView,
-              imageBank: currentDesignImageBank,
-              apparelBaseImages: currentApparelBaseImages, // Added
-            };
+            return migratedDesign;
           });
+          // Reset isLoadingImage on rehydration
+          state.isLoadingImage = false;
+        } else {
+          // If designs array is missing, reset to a clean initial state
+          const freshInitial = getInitialState();
+          state.designs = freshInitial.designs;
+          state.currentDesignId = freshInitial.currentDesignId;
+          state.selectedElementId = null;
+          state.isLoadingImage = false;
         }
       },
     }
   )
 );
+
+// Clean up object URLs when the window is about to unload
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    const { designs } = useDesignStore.getState();
+    designs.forEach((design) => {
+      if (design.imageBank) {
+        Object.values(design.imageBank).forEach((imageAsset) => {
+          if (imageAsset.url && imageAsset.url.startsWith("blob:")) {
+            URL.revokeObjectURL(imageAsset.url);
+          }
+        });
+      }
+      if (design.apparelBaseImages) {
+        Object.values(design.apparelBaseImages).forEach((url) => {
+          if (url && url.startsWith("blob:")) {
+            URL.revokeObjectURL(url);
+          }
+        });
+      }
+    });
+  });
+}
 
 export default useDesignStore;

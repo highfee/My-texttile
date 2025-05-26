@@ -629,13 +629,20 @@ export default function ElementRenderer({
             );
         }
       case "image":
-        if (!element.id)
-          return <div className="text-xs text-red-500">Missing imageId</div>;
-        const imageUrlFromBank = imageBank[element.imageId];
-        if (!imageUrlFromBank)
+        console.log(
+          `Rendering image element with URL: ${JSON.stringify(element)}`
+        );
+        if (!element.imageUrl) {
           return (
-            <div className="text-xs text-red-500">Image not found in bank</div>
+            <div className="text-xs text-red-500 p-1 bg-red-100">
+              Missing image URL
+            </div>
           );
+        }
+        const srcToUse = element.imageUrl;
+        const isCloudinaryUrl = srcToUse.startsWith(
+          "https://res.cloudinary.com"
+        );
 
         return (
           <Image
@@ -645,6 +652,7 @@ export default function ElementRenderer({
             objectFit="contain"
             className="pointer-events-none"
             priority={isSelected}
+            unoptimized={!isCloudinaryUrl}
           />
         );
       default:

@@ -133,24 +133,26 @@ async function refreshTokens(refreshToken) {
 }
 
 function getErrorMessage(error) {
-  if (error.response) {
-    switch (error.response.status) {
-      case 400:
-        return "Invalid request";
-      case 401:
-        return "Session expired. Please login again";
-      case 403:
-        return "You don't have permission for this action";
-      case 404:
-        return "Resource not found";
-      case 429:
-        return "Too many requests. Please try again later";
-      default:
-        return error.response.data?.message || "An unexpected error occurred";
-    }
-  }
+  console.log(error);
+  // if (error.response) {
+  //   switch (error.response.status) {
+  //     case 400:
+  //       return "Invalid request";
+  //     case 401:
+  //       return "Session expired. Please login again";
+  //     case 403:
+  //       return "You don't have permission for this action";
+  //     case 404:
+  //       return "Resource not found";
+  //     case 429:
+  //       return "Too many requests. Please try again later";
+  //     default:
+  //       return error.response.data?.message || "An unexpected error occurred";
+  //   }
+  // }
   return (
-    error.message || "Network error - please check your internet connection"
+    error.response.data["response description"] ||
+    "Network error - please check your internet connection"
   );
 }
 

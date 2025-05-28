@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useAuthStore from "@/store/authStore";
 
+import Auth_Dailog from "./Auth_Dailog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
@@ -209,12 +216,20 @@ const Navbar = () => {
                 <p>{session?.user?.first_name}</p>
               </div>
             ) : (
-              <button
-                className="hidden md:block bg-white text-gray-700 px-6 py-2 rounded-md border border-gray-300 hover:bg-gray-50"
-                onClick={() => setIsLoginPopupOpen(true)}
-              >
-                Sign In
-              </button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button
+                    className="w-full bg-white text-gray-700 px-6 py-2 rounded-md border border-[#121212] hover:bg-[#dfdfdf]"
+                    // onClick={() => setIsLoginPopupOpen(true)}
+                  >
+                    Sign In
+                  </button>
+                </AlertDialogTrigger>
+
+                <AlertDialogContent>
+                  <Auth_Dailog />
+                </AlertDialogContent>
+              </AlertDialog>
             )}
 
             <button
@@ -265,17 +280,25 @@ const Navbar = () => {
             </button>
           </nav>
 
-          <button
-            className="w-full bg-white text-gray-700 px-6 py-2 rounded-md border border-[#121212] hover:bg-[#dfdfdf]"
-            onClick={() => setIsLoginPopupOpen(true)}
-          >
-            Sign In
-          </button>
+          {/* <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className="w-full bg-white text-gray-700 px-6 py-2 rounded-md border border-[#121212] hover:bg-[#dfdfdf]"
+                // onClick={() => setIsLoginPopupOpen(true)}
+              >
+                Sign In
+              </button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <Auth_Dailog />
+            </AlertDialogContent>
+          </AlertDialog> */}
         </div>
       </nav>
 
       {/* Login Popup */}
-      {isLoginPopupOpen && (
+      {/* {isLoginPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <button
             className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"
@@ -290,7 +313,7 @@ const Navbar = () => {
             <Loginoptions />
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 };

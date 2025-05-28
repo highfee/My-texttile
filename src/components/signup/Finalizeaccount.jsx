@@ -9,6 +9,7 @@ import * as z from "zod";
 import { useRegisterStore } from "@/store/registerStore";
 import { useMutation } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
+import { Loader } from "lucide-react";
 
 const codeSchema = z.object({
   code: z.string().min(6, "Code must be at least 6 characters"),
@@ -119,7 +120,11 @@ const Finalizeaccount = ({ onBack }) => {
               type="submit"
               className="w-full bg-bluebutton text-white py-1 lg:py-2 rounded-lg hover:bg-blue-600 transition duration-300"
             >
-              <p>Submit</p>
+              {confirmCodeMutation.isLoading ? (
+                <Loader className=" animate-spin" />
+              ) : (
+                <p>Submit</p>
+              )}
             </button>
             <p className="text-[#121212] opacity-[0.44] text-[10px] sm:text-[14px] mt-2">
               Didn’t get a code?{" "}

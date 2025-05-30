@@ -137,7 +137,7 @@ function getErrorMessage(error) {
 
   return (
     error.response.data["response description"] ||
-    "Network error - please check your internet connection"
+    "Network error - Something went wrong"
   );
 }
 

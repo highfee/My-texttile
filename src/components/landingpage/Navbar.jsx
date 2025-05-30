@@ -217,7 +217,7 @@ const Navbar = () => {
               </div>
             ) : (
               <AlertDialog>
-                <AlertDialogTrigger asChild>
+                <AlertDialogTrigger asChild className="hidden md:block">
                   <button
                     className="w-full bg-white text-gray-700 px-6 py-2 rounded-md border border-[#121212] hover:bg-[#dfdfdf]"
                     // onClick={() => setIsLoginPopupOpen(true)}
@@ -226,9 +226,7 @@ const Navbar = () => {
                   </button>
                 </AlertDialogTrigger>
 
-                <AlertDialogContent>
-                  <Auth_Dailog />
-                </AlertDialogContent>
+                <Auth_Dailog />
               </AlertDialog>
             )}
 

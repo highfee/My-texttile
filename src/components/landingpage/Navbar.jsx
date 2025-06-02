@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+"use client";
+import React, { useState, useRef, useEffect } from "react";
 import { FiMenu, FiX, FiUser } from "react-icons/fi";
 import { IoIosArrowDown } from "react-icons/io";
 import Loginoptions from "../signup/Loginoptions";
@@ -25,6 +26,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const dropdownRef = useRef(null);
 
   const { session, clearSession } = useAuthStore();
@@ -51,6 +58,8 @@ const Navbar = () => {
     // Handle navigation logic here
     setIsDropdownOpen(false);
   };
+
+  if (!isClient) return null;
 
   return (
     <>

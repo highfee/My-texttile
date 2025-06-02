@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 
-const Navbar = () => {
+const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,9 +38,7 @@ const Navbar = () => {
 
   console.log(session);
 
-  const homeRef = useRef(null);
-  const featuresRef = useRef(null);
-  const creatorsRef = useRef(null);
+  
 
   const scrollToSection = (ref) => {
     if (ref.current) {

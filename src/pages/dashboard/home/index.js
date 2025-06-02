@@ -23,7 +23,6 @@ export default function index() {
 
   useEffect(() => {
     const contentElement = contentRef.current;
-
     if (!contentElement) return;
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {

@@ -3,7 +3,7 @@ import axios from "axios";
 import { authService } from "./authService";
 
 const httpClient = axios.create({
-  baseURL: "http://23.88.47.163/dev/api/v1",
+  baseURL: "http://23.88.47.163/prod/api/v1",
   timeout: 10000,
   // headers: {
   //   "Content-Type": "application/json",

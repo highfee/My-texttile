@@ -12,12 +12,12 @@ import { useMutation } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
 import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { authService } from "@/lib/authService";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function StoreEditor({ onBack, initialView = "desktop" }) {
-  // const { getSession } = authService;
+  const router = useRouter();
 
-  // const session = getSession();
-  // console.log(session);
   const [activeView, setActiveView] = useState(initialView);
   const [editingSection, setEditingSection] = useState(null);
   const [showProductsPopup, setShowProductsPopup] = useState(false);
@@ -102,13 +102,11 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
       return response.data;
     },
     onSuccess: (data) => {
-      router.push("/creatorstore");
       if (data["response status"] === "success") {
-        router.push("/creatorstore");
+        router.push("/creatorsstore");
       } else {
         setError(data["response description"] || "Error creating store");
       }

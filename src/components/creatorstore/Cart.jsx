@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Checkout from './Checkout';
-import { MdDelete } from 'react-icons/md';
+import { useState } from "react";
+import Checkout from "./Checkout";
+import { MdDelete } from "react-icons/md";
 
 export default function Cart() {
   const [checkout, setCheckout] = useState(false);
@@ -10,7 +10,7 @@ export default function Cart() {
   // Dummy cart item
   const cartItem = {
     name: "Stylish Maxi Dress",
-    price: 32.50,
+    price: 32.5,
     size: "L",
     color: "black",
     quantity: 1,
@@ -21,10 +21,11 @@ export default function Cart() {
 
   return (
     <div className="flex flex-col md:flex-row gap-6 p-8 min-h-screen bg-gray-50">
-      
       {/* Left Side (Cart Items) */}
       <div className="flex-1 bg-white rounded-xl p-6">
-        <h2 className="text-sm text-gray-500 mb-4">{cartItem.quantity} Item In Cart</h2>
+        <h2 className="text-sm text-gray-500 mb-4">
+          {cartItem.quantity} Item In Cart
+        </h2>
 
         <div className="flex items-center justify-between border rounded-xl p-4">
           {/* Product Image */}
@@ -46,23 +47,23 @@ export default function Cart() {
                 ></div>
               </div>
               <div className="flex items-center overflow-hidden">
-              <button className="px-2  border rounded-md  text-lg">-</button>
-              <span className="px-3">{cartItem.quantity}</span>
-              <button className="px-2  border rounded-md  text-lg">+</button>
+                <button className="px-2  border rounded-md  text-lg">-</button>
+                <span className="px-3">{cartItem.quantity}</span>
+                <button className="px-2  border rounded-md  text-lg">+</button>
+              </div>
             </div>
-            </div>
-            
           </div>
 
           {/* Quantity and Remove */}
-         
 
           {/* Price */}
-          
+
           <div className="flex flex-col items-center gap-4">
-          <div className="text-sm font-semibold">${cartItem.price.toFixed(2)}</div>
+            <div className="text-sm font-semibold">
+              ${cartItem.price.toFixed(2)}
+            </div>
             <button className="border px-3 py-1 text-sm rounded-md hover:bg-gray-100 flex flex-row justify-center">
-              <MdDelete className='text-xl'/> Remove
+              <MdDelete className="text-xl" /> Remove
             </button>
           </div>
         </div>
@@ -85,4 +86,3 @@ export default function Cart() {
 }
 
 // Checkout Component (Simple Dummy)
-

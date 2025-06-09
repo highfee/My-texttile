@@ -6,10 +6,14 @@ import Header from "./Header";
 import {
   ArrowDownToLine,
   ArrowUpToLine,
+  Bold,
+  CaseSensitive,
   ChevronDown,
   ChevronUp,
+  Italic,
   Redo,
   Trash2,
+  Underline,
   Undo,
 } from "lucide-react";
 import { MdOutlineRotateRight } from "react-icons/md";
@@ -32,6 +36,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useMediaQuery from "@/components/hook/usemediaquery";
+import MobileHeader from "./MobileHeader";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { LuAlignEndHorizontal } from "react-icons/lu";
+import { PiAlignCenterHorizontal } from "react-icons/pi";
+import { CiAlignLeft, CiAlignRight, CiAlignTop } from "react-icons/ci";
+import NextImage from "next/image";
 
 // Element components
 const TextElement = ({ element, isSelected, onSelect }) => {
@@ -348,12 +361,118 @@ const Canvas = () => {
       )
     : [];
 
+  const isMobile = useMediaQuery("(max-width: 1024px)");
+
   return (
     <main className="flex-1 bg-off-white h-[3000px] overflow-y-auto no-scrollbar">
-      <Header />
+      {!isMobile && <Header />}
 
-      <section className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] ">
-        <header className="p-2 bg-primary w-[450px] rounded-md mb-4 flex items-center gap-3 px-4">
+      {isMobile && <MobileHeader />}
+
+      {/* text toolbar for mobile */}
+      {isMobile && (
+        <nav className="bg-white shadow-md rounded-md p-2 mx-auto w-max mt-3">
+          <div className="flex items-center gap-2">
+            <div>
+              <Label htmlFor="color" className="cursor-pointer relative">
+                <NextImage
+                  src="/design/icons/colors.svg"
+                  alt=""
+                  width={25}
+                  height={28}
+                  className="translate-y-[4px] "
+                />
+                <Input
+                  type="color"
+                  id="color"
+                  className="opacity-0 absolute pointer-events-none bottom-0 left-0 hidde"
+                  // onChange={(e) => handleColorChange(e.target.value)}
+                />
+              </Label>
+            </div>
+
+            <div
+              className={cn(" cursor-pointer p-1 rounded-md", {
+                // "bg-gray-200": selectedElement?.fontWeight === "bold",
+              })}
+            >
+              <Bold
+                color={"rgba(18, 18, 18, 0.44)"}
+                size={20}
+                // onClick={() => toggleStyle("fontWeight", "bold")}
+              />
+            </div>
+
+            <div
+              className={cn(" cursor-pointer p-1 rounded-md", {
+                // "bg-gray-200": selectedElement?.fontStyle === "italic",
+              })}
+            >
+              <Italic
+                color="rgba(18, 18, 18, 0.44)"
+                size={20}
+                className=" cursor-pointer"
+                // onClick={() => toggleStyle("fontStyle", "italic")}
+              />
+            </div>
+
+            <div
+              className={cn("cursor-pointer p-1 rounded-md", {
+                // "bg-gray-200":
+                //   selectedElement?.textTransform === "uppercase" ||
+                //   selectedElement?.textTransform === "lowercase",
+              })}
+            >
+              <CaseSensitive
+                color="rgba(18, 18, 18, 0.44)"
+                size={20}
+                // onClick={toggleCase}
+              />
+            </div>
+
+            <div
+              className={cn(" cursor-pointer p-1 rounded-md", {
+                // "bg-gray-200": selectedElement?.textDecoration === "underline",
+              })}
+            >
+              <Underline
+                color="rgba(18, 18, 18, 0.44)"
+                size={20}
+                className=" cursor-pointer"
+                // onClick={() => toggleStyle("textDecoration", "underline")}
+              />
+            </div>
+
+            <LuAlignEndHorizontal
+              color="rgba(18, 18, 18, 0.44)"
+              className=" cursor-pointer"
+            />
+            <PiAlignCenterHorizontal
+              color="rgba(18, 18, 18, 0.44)"
+              size="22"
+              className=" cursor-pointer"
+            />
+            <CiAlignLeft
+              color="rgba(18, 18, 18, 0.44)"
+              size="22"
+              className=" cursor-pointer"
+            />
+            <CiAlignRight
+              color="rgba(18, 18, 18, 0.44)"
+              size="22"
+              className=" cursor-pointer"
+            />
+            <CiAlignTop
+              color="rgba(18, 18, 18, 0.44)"
+              size="22"
+              className=" cursor-pointer"
+            />
+          </div>
+        </nav>
+      )}
+
+      <section className="flex flex-col items-center justify-center lg:h-[calc(100vh-4rem)] mt-10 lg:mt-0 overflow-auto">
+        <header className="p-2 lg:bg-primary md:w-[450px] w-[80%] max-w-[450px] rounded-md mb-4 flex items-center gap-3 px-4">
           <div
             className="grid place-items-center size-[30px] bg-dark-gray rounded-md cursor-pointer"
             // onClick={clearCanvas}
@@ -388,29 +507,31 @@ const Canvas = () => {
             <MdOutlineRotateRight color="white" size={20} />
           </div>
 
-          <div className="ml-auto">
-            <Select
-              value={currentDesign.apparelView}
-              onValueChange={(value) => updateApparelView({ view: value })}
-            >
-              <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2 text-white">
-                <SelectValue
-                  placeholder={currentDesign.apparelView}
-                  className="text-white capitalize"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="front">Front</SelectItem>
-                <SelectItem value="back">Back</SelectItem>
-                <SelectItem value="left">Left Side</SelectItem>
-                <SelectItem value="right">Right Side</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="lg:ml-auto">
+            <div className="hidden lg:block">
+              <Select
+                value={currentDesign.apparelView}
+                onValueChange={(value) => updateApparelView({ view: value })}
+              >
+                <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2 text-white">
+                  <SelectValue
+                    placeholder={currentDesign.apparelView}
+                    className="text-white capitalize"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="front">Front</SelectItem>
+                  <SelectItem value="back">Back</SelectItem>
+                  <SelectItem value="left">Left Side</SelectItem>
+                  <SelectItem value="right">Right Side</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </header>
 
         <section
-          className="w-[450px] h-[425px] bg-white border border-primary/40 rounded-md shadow-sm overflow-hidde"
+          className="md:w-[450px] md:h-[425px] w-[80%] max-w-[450px] bg-white border border-primary/40 rounded-md shadow-sm overflow-hidde"
           id="design-canvas-scaler"
           onContextMenu={(e) => {
             e.preventDefault();

@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import Link from "next/link";
@@ -36,6 +36,7 @@ import { httpClient } from "@/lib/httpClient";
 import { redirect } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/authService";
+import { useRegisterStore } from "@/store/registerStore";
 
 const Auth_Dailog = () => {
   const [activeComponent, setActiveComponent] = useState("login");
@@ -93,6 +94,10 @@ const Auth_Dailog = () => {
 
           {activeComponent === "register" && (
             <RegisterForm setActiveComponent={setActiveComponent} />
+          )}
+
+          {activeComponent === "confirmation" && (
+            <Confirmation setActiveComponent={setActiveComponent} />
           )}
         </section>
 
@@ -379,6 +384,8 @@ const RegisterForm = ({ setActiveComponent }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  const { setUserData } = useRegisterStore();
+
   const registerMutation = useMutation({
     mutationFn: async (userData) => {
       const response = await httpClient.post("/users/register/", userData);
@@ -387,6 +394,7 @@ const RegisterForm = ({ setActiveComponent }) => {
     onSuccess: (data) => {
       if (data["response status"] === "success") {
         setUserData(data["response data"]);
+        setActiveComponent("confirmation");
       } else if (data["response status"] == "failure") {
         setError(data["response data"] || "Registration failed");
       } else {
@@ -426,7 +434,9 @@ const RegisterForm = ({ setActiveComponent }) => {
 
   function onSubmit(values) {
     registerMutation.mutate({
-      name: values.name,
+      first_name: values.name.split(" ")[0],
+      last_name: values.name.split(" ")[1] || "Dummy",
+      // name: values.name,
       email: values.email,
       password: values.password,
     });
@@ -530,6 +540,7 @@ const RegisterForm = ({ setActiveComponent }) => {
           <Button
             type="submit"
             className="w-full rounded-sm md:h-11 text-base "
+            disabled={registerMutation.isPending}
           >
             {registerMutation.isPending ? (
               <Loader className=" animate-spin" />
@@ -570,6 +581,167 @@ const RegisterForm = ({ setActiveComponent }) => {
           Continue with Facebook
         </Button>
       </div>
+    </section>
+  );
+};
+
+const Confirmation = ({ setActiveComponent }) => {
+  const [resendTimer, setResendTimer] = useState(300);
+  const { UserData } = useRegisterStore();
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [resendTimer]);
+
+  const confirmCodeMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await httpClient.post("/users/activate/", data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data["response status"] === "success") {
+        // setShowCreateAccount(true);
+      } else {
+        setError(data["response description"] || "Invalid or expired code");
+      }
+    },
+    onError: (error) => {
+      setError(error.message || "Invalid or expired code");
+      console.log(error);
+    },
+  });
+  const codeSchema = z.object({
+    code: z.string().min(6, { message: "Code have to be 6 character." }),
+  });
+
+  const form = useForm({
+    resolver: zodResolver(codeSchema),
+    defaultValues: {
+      code: "",
+    },
+  });
+  console.log(UserData);
+
+  function onSubmit(values) {
+    const res = {
+      code: values.code,
+      user_id: UserData.id,
+      resend_code: false, // Set to true if you want to resend the code
+    };
+
+    confirmCodeMutation.mutate(res);
+  }
+
+  const handleResendCode = () => {
+    setResendTimer(24); // Reset the timer
+
+    confirmCodeMutation.mutate({
+      user_id: UserData.id,
+      resend_code: true, // Indicate that this is a resend request
+    });
+  };
+  // Helper to format seconds as mm:ss
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
+  return (
+    <section>
+      <div>
+        <h2 className="text-gray-600 text-xl font-medium">
+          Let's finalize your account
+        </h2>
+        <p className="text-sm mt-1 text-gray-500">
+          Enter the code we sent to your email address
+        </p>
+      </div>
+
+      <Form {...form} className="">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="md:space-y-6 space-y-2 max-w-[500px] mx-auto mt-10 -translate-y-5"
+        >
+          {confirmCodeMutation.isError && (
+            <p className="text-[#FF5789] text-[10px] lg:text-[14px] ">
+              **{confirmCodeMutation.error.message || "Invalid or expired code"}
+            </p>
+          )}
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Code</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      placeholder="000000"
+                      {...field}
+                      type="text"
+                      className="md:h-12 text-base focus-visible:ring-bluebutton pl10"
+                    />
+                  </div>
+                </FormControl>
+                <FormDescription></FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full rounded-sm md:h-11 text-base md:-translate-y-5"
+          >
+            {confirmCodeMutation.isPending ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Confirm"
+            )}
+          </Button>
+
+          <div className="flex justify-between items-center text-sm md:-translate-y-5">
+            <Button
+              className=" text-sm  hover:bg-transparent"
+              variant="ghost"
+              type="button"
+            >
+              Didn’t get a code?{" "}
+              {resendTimer > 0 ? (
+                <span className="text-blue">{formatTime(resendTimer)}</span>
+              ) : (
+                <span
+                  className="font-medium text-blue cursor-pointer"
+                  onClick={handleResendCode}
+                >
+                  Resend
+                </span>
+              )}
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              className="text-bluebutton underline underline-offset-4 hover:bg-transparent"
+              onClick={() => setActiveComponent("login")}
+            >
+              Login
+            </Button>
+          </div>
+        </form>
+      </Form>
+
+      <p className="text-sm text-center text-gray-400 mt-4 md:mt-10">
+        Please check your email for the confirmation email
+      </p>
     </section>
   );
 };

@@ -10,13 +10,13 @@ import { httpClient } from "@/lib/httpClient";
 import BestSeller from "@/components/dashboard/sidebarcomponents/BestSeller"; // Import the BestSeller component
 
 export default function index() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["recentProjects"],
-    queryFn: async () => {
-      const { data } = await httpClient.get("/designs/shop/view");
-      return data;
-    },
-  });
+  // const { data, isLoading, error } = useQuery({
+  //   queryKey: ["recentProjects"],
+  //   queryFn: async () => {
+  //     const { data } = await httpClient.get("/designs/shop/view");
+  //     return data;
+  //   },
+  // });
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showBestSeller, setShowBestSeller] = useState(false); // New state for showing BestSeller
   const contentRef = useRef(null);
@@ -166,6 +166,7 @@ export default function index() {
         <div className="flex flex-row py-2 font-bold">
           <p>Templates</p>
         </div>
+
         <div
           className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
             isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"

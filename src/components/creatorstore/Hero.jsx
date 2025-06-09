@@ -35,8 +35,6 @@ const Hero = ({ heroState, setHeroState, data }) => {
   if (heroState.selectedProduct)
     return <ProductDetail product={heroState.selectedProduct} />;
 
-  console.log(products);
-
   return (
     <div className="w-full leading-[100%] tracking-[-0.02em]">
       <div className="relative w-full h-[400px] isolate">
@@ -65,7 +63,7 @@ const Hero = ({ heroState, setHeroState, data }) => {
 
       {/* products */}
       <div className="py-12 px-8 md:px-32 grid grid-cols-2 md:grid-cols-4 gap-6">
-        {products.length > 0 &&
+        {products?.length > 0 &&
           products.map((product) => (
             <div key={product.id} className="cursor-pointer group relative">
               <div
@@ -99,7 +97,7 @@ const Hero = ({ heroState, setHeroState, data }) => {
             </div>
           ))}
 
-        {products.length === 0 && (
+        {products?.length === 0 && (
           <div className="col-span-4 text-center text-gray-500">
             No products available
           </div>

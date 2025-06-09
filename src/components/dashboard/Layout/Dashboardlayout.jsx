@@ -5,6 +5,7 @@ import Header from "./Header";
 import useMediaQuery from "@/components/hook/usemediaquery";
 import BottomBar from "./BottomBar";
 import { useRouter } from "next/router";
+import DesignBottomBar from "../design/DesignBottomBar";
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function DashboardLayout({ children }) {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => isMobile && setIsSidebarOpen(false);
+
+  console.log(router);
 
   return (
     <div className="flex flex-col lg:flex-row h-screen font-sans tracking-[-1px]">
@@ -43,7 +46,9 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Mobile bottom bar */}
-      {isMobile && <BottomBar />}
+      {isMobile && !router.pathname.includes("design") && <BottomBar />}
+
+      {router.pathname.includes("design") && isMobile && <DesignBottomBar />}
     </div>
   );
 }

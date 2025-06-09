@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import useDesignStore from "@/store/DesignStore";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
+import useMediaQuery from "@/components/hook/usemediaquery";
 
 const recentlyUsed = [
   { id: 1, name: "Template 1", image: "/design/images/template 1.png" },
@@ -200,6 +201,8 @@ const uploads = [
 const Sidebar = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState(null);
+
+  const isMobile = useMediaQuery("(max-width: 1024px)");
 
   // Environment variables for Cloudinary configuration
   const CLOUDINARY_CLOUD_NAME = "dhptrkobw";
@@ -380,7 +383,10 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="w-[410px] bg-white sticky top-0 self-start h-screen shadow-md p-4 overflow-y-auto scrollbar py-6 ">
+    <aside
+      className="w-[410px] bg-white sticky top-0 self-start h-screen shadow-md p-4 overflow-y-auto scrollbar py-6"
+      style={{ display: isMobile ? "none" : "block" }}
+    >
       <header>
         <Breadcrumb className="">
           <BreadcrumbList className="text-base font-semibold !gap-1.5">

@@ -75,23 +75,6 @@ const Hero = () => {
           </div>
         </div>
       </div>
-
-      {showLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <button
-            className="absolute hidden md:block top-8 right-[220px] z-10 text-white rounded-full p-1"
-            onClick={() => setShowLogin(false)}
-          >
-            <FiX size={20} />
-          </button>
-          <div
-            className="relative max-w-6xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Loginoptions />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

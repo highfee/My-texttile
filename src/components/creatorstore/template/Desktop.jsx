@@ -74,7 +74,6 @@ const Header = ({
   storeLogo,
   activeView,
 }) => {
-  console.log(storeLogo, "storeLogo in header");
   return (
     <header
       className={cn("flex justify-between items-center p-4 px-10", {

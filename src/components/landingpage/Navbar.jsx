@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+"use client";
+import React, { useState, useRef, useEffect } from "react";
 import { FiMenu, FiX, FiUser } from "react-icons/fi";
 import { IoIosArrowDown } from "react-icons/io";
 import Loginoptions from "../signup/Loginoptions";
@@ -21,19 +22,23 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 
-const Navbar = () => {
+const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const dropdownRef = useRef(null);
 
   const { session, clearSession } = useAuthStore();
 
   console.log(session);
 
-  const homeRef = useRef(null);
-  const featuresRef = useRef(null);
-  const creatorsRef = useRef(null);
+  
 
   const scrollToSection = (ref) => {
     if (ref.current) {
@@ -51,6 +56,8 @@ const Navbar = () => {
     // Handle navigation logic here
     setIsDropdownOpen(false);
   };
+
+  if (!isClient) return null;
 
   return (
     <>

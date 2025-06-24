@@ -98,76 +98,6 @@ const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Profile Dropdown - Visible on both mobile and desktop */}
-
-            {/* FAIQA--------- I worked on this already, ignore it when merging conflict */}
-            {/* <div className="relative" ref={dropdownRef}>
-              <button
-                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <img 
-                  src="/dashboard/Profile-pic.svg" 
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                <IoIosArrowDown
-                  className={`w-4 h-4 transition-transform  ${
-                    isDropdownOpen ? "transform rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                  <ul className="py-1">
-                    <li>
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => handleNavigation("account")}
-                      >
-                        Profile
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => handleNavigation("affiliateprogram")}
-                      >
-                        Affiliate Program
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => handleNavigation("store")}
-                      >
-                        Store
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => handleNavigation("campaign")}
-                      >
-                        Campaign
-                      </button>
-                    </li>
-                    {session && (
-                      <li>
-                        <button
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                          onClick={handleLogout}
-                        >
-                          Log out
-                        </button>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div> */}
-
             {session ? (
               <div className="hidden md:flex items-center gap-2">
                 <DropdownMenu>
@@ -206,6 +136,14 @@ const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
                     <DropdownMenuItem className="p-2 cursor-pointer">
                       <Link href={"/dashboard/campaign"}>Campaign</Link>
                     </DropdownMenuItem>
+
+                    <DropdownMenuSeparator className="bg-gray-200" />
+
+                    {session?.user?.is_staff && (
+                      <DropdownMenuItem className="p-2 cursor-pointer">
+                        <Link href={"/admin"}>Admin</Link>
+                      </DropdownMenuItem>
+                    )}
 
                     <DropdownMenuSeparator className="bg-gray-200" />
 

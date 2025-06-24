@@ -4,16 +4,17 @@ import AdminHeader from "./AdminHeader";
 import useMediaQuery from "@/components/hook/usemediaquery";
 import BottomBarAdmin from "../BottomBarAdmin";
 import { useRouter } from "next/router";
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
+import useAuthStore from "@/store/authStore";
 
-
- 
 const inter = Inter({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-})
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+});
 
 export default function AdminDashboardLayout({ children }) {
+  const { session, clearSession } = useAuthStore();
+
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 1024px)");
@@ -22,22 +23,25 @@ export default function AdminDashboardLayout({ children }) {
   const closeSidebar = () => isMobile && setIsSidebarOpen(false);
 
   // Extract current page name from path
-  const currentPage = router.pathname.split('/adminportal/').pop() || 'dashboard';
+  const currentPage = router.pathname.split("/admin/").pop() || "dashboard";
+
+  !session?.user.is_staff && session && router.push("/");
 
   return (
-    <div className={`flex flex-col lg:flex-row h-screen tracking-[-1px] ${inter.className}`}>
-      <div className={`fixed lg:static inset-y-0 left-0 z-20 transform ${
-        isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      } transition-transform duration-300`}>
-        <AdminSideBar 
-          isMobile={isMobile}
-          onClose={closeSidebar}
-        />
+    <div
+      className={`flex flex-col lg:flex-row h-screen tracking-[-1px] ${inter.className}`}
+    >
+      <div
+        className={`fixed lg:static inset-y-0 left-0 z-20 transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        } transition-transform duration-300`}
+      >
+        <AdminSideBar isMobile={isMobile} onClose={closeSidebar} />
       </div>
 
       {/* Overlay for mobile */}
       {isSidebarOpen && isMobile && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
           onClick={closeSidebar}
         />
@@ -51,17 +55,11 @@ export default function AdminDashboardLayout({ children }) {
           isSidebarOpen={isSidebarOpen}
         />
 
-        <div className="flex-1 p-4 overflow-y-auto pb-16"> 
-          {children}
-        </div>
+        <div className="flex-1 p-4 overflow-y-auto pb-16">{children}</div>
       </div>
 
       {/* Mobile bottom bar */}
-      {isMobile && (
-        <BottomBarAdmin 
-          activeItem={currentPage}
-        />
-      )}
+      {isMobile && <BottomBarAdmin activeItem={currentPage} />}
     </div>
   );
 }

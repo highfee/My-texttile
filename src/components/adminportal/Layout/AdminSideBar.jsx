@@ -19,11 +19,11 @@ import { VscSettings } from "react-icons/vsc";
 import { PiStorefrontFill } from "react-icons/pi";
 const AdminSideBar = ({ isMobile, onClose }) => {
   const router = useRouter();
-  const [activeItem, setActiveItem] = useState('dashboard');
+  const [activeItem, setActiveItem] = useState("dashboard");
   const sidebarRef = useRef(null);
   useEffect(() => {
-    const currentPath = router.pathname.split('/').pop();
-    setActiveItem(currentPath || 'admindashboard');
+    const currentPath = router.pathname.split("/").pop();
+    setActiveItem(currentPath || "admindashboard");
   }, [router.pathname]);
 
   useEffect(() => {
@@ -37,20 +37,65 @@ const AdminSideBar = ({ isMobile, onClose }) => {
   }, [isMobile, onClose]);
 
   const handleSidebarItemClick = (path) => {
-    router.push(`/adminportal/${path}`);
+    router.push(`/admin/${path}`);
     if (isMobile) onClose();
   };
 
   const sidebarItems = [
-    { name: "Dashboard", icon: <LayoutDashboardIcon className="w-5 h-5" />, showOnMobile: false, path: "dashboard" },
-    { name: "Creator", icon: <Users className="w-5 h-5" />, showOnMobile: false, path: "creator" },
-    { name: "Store & Product", icon: <PiStorefrontFill className="w-5 h-5" />, showOnMobile: true, path: "storeproduct" },
-    { name: "Campaigns", icon: <HiOutlineMegaphone className="w-5 h-5" />, showOnMobile: false, path: "campaigns" },
-    { name: "Payout", icon: <PiCurrencyDollarSimple className="w-5 h-5" />, showOnMobile: true, path: "payout" },
-    { name: "Analytics", icon: <MdAnalytics className="w-5 h-5" />, showOnMobile: true, path: "analytics" },
-    { name: "Help Center", icon: <PiHeadsetBold className="w-5 h-5" />, showOnMobile: true, path: "help-center" },
-    { name: "Settings", icon: <VscSettings className="w-5 h-5" />, showOnMobile: false, path: "settings" },
-    { name: "Member", icon: <img src="/adminportal/members.svg" alt="Members" />, showOnMobile: true, path: "members" },
+    {
+      name: "Dashboard",
+      icon: <LayoutDashboardIcon className="w-5 h-5" />,
+      showOnMobile: false,
+      path: "/",
+    },
+    {
+      name: "Creator",
+      icon: <Users className="w-5 h-5" />,
+      showOnMobile: false,
+      path: "creator",
+    },
+    {
+      name: "Store & Product",
+      icon: <PiStorefrontFill className="w-5 h-5" />,
+      showOnMobile: true,
+      path: "storeproduct",
+    },
+    {
+      name: "Campaigns",
+      icon: <HiOutlineMegaphone className="w-5 h-5" />,
+      showOnMobile: false,
+      path: "campaigns",
+    },
+    {
+      name: "Payout",
+      icon: <PiCurrencyDollarSimple className="w-5 h-5" />,
+      showOnMobile: true,
+      path: "payout",
+    },
+    {
+      name: "Analytics",
+      icon: <MdAnalytics className="w-5 h-5" />,
+      showOnMobile: true,
+      path: "analytics",
+    },
+    {
+      name: "Help Center",
+      icon: <PiHeadsetBold className="w-5 h-5" />,
+      showOnMobile: true,
+      path: "help-center",
+    },
+    {
+      name: "Settings",
+      icon: <VscSettings className="w-5 h-5" />,
+      showOnMobile: false,
+      path: "settings",
+    },
+    {
+      name: "Member",
+      icon: <img src="/adminportal/members.svg" alt="Members" />,
+      showOnMobile: true,
+      path: "members",
+    },
   ];
 
   return (
@@ -71,7 +116,7 @@ const AdminSideBar = ({ isMobile, onClose }) => {
       </div>
 
       {sidebarItems
-        .filter(item => !isMobile || item.showOnMobile)
+        .filter((item) => !isMobile || item.showOnMobile)
         .map((item) => {
           const isActive = activeItem === item.path;
           return (

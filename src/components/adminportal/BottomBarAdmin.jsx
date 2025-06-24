@@ -1,43 +1,39 @@
-
-import { useRouter } from 'next/router';
-import {
-  LayoutDashboardIcon,
-  Users,
-} from "lucide-react";
+import { useRouter } from "next/router";
+import { LayoutDashboardIcon, Users } from "lucide-react";
 import { HiOutlineMegaphone } from "react-icons/hi2";
 import { VscSettings } from "react-icons/vsc";
 const BottomBarAdmin = () => {
   const router = useRouter();
-  const currentPage = router.pathname.split('/adminportal/').pop() || 'dashboard';
+  const currentPage = router.pathname.split("/admin/").pop() || "dashboard";
   const bottomBarItems = [
-    { 
-      name: "Dashboard", 
-      icon: LayoutDashboardIcon, 
+    {
+      name: "Dashboard",
+      icon: LayoutDashboardIcon,
       path: "dashboard",
-      displayName: "Dashboard"
+      displayName: "Dashboard",
     },
-    { 
-      name: "Creator", 
-      icon: Users, 
+    {
+      name: "Creator",
+      icon: Users,
       path: "creator",
-      displayName: "Creator"
+      displayName: "Creator",
     },
-    { 
-      name: "Campaigns", 
-      icon: HiOutlineMegaphone, 
+    {
+      name: "Campaigns",
+      icon: HiOutlineMegaphone,
       path: "campaigns",
-      displayName: "Campaign"
+      displayName: "Campaign",
     },
-    { 
-      name: "Settings", 
-      icon: VscSettings, 
+    {
+      name: "Settings",
+      icon: VscSettings,
       path: "settings",
-      displayName: "Settings"
+      displayName: "Settings",
     },
   ];
 
   const handleItemClick = (path) => {
-    router.push(`/adminportal/${path}`);
+    router.push(`/admin/${path}`);
   };
 
   return (
@@ -46,15 +42,23 @@ const BottomBarAdmin = () => {
         {bottomBarItems.map((item) => {
           const isActive = currentPage === item.path;
           const Icon = item.icon;
-          
+
           return (
             <div
               key={item.path}
               className="flex flex-col items-center cursor-pointer"
               onClick={() => handleItemClick(item.path)}
             >
-              <Icon className={`h-6 w-6 ${isActive ? "text-bluebutton" : "text-graycolor"}`} />
-              <span className={`text-xs ${isActive ? "text-bluebutton" : "text-graycolor"}`}>
+              <Icon
+                className={`h-6 w-6 ${
+                  isActive ? "text-bluebutton" : "text-graycolor"
+                }`}
+              />
+              <span
+                className={`text-xs ${
+                  isActive ? "text-bluebutton" : "text-graycolor"
+                }`}
+              >
                 {item.displayName}
               </span>
             </div>

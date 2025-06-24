@@ -8,24 +8,26 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default function App({ Component, pageProps, router }) {
   // Use the appropriate layout based on route
-  const getLayout = router.pathname.startsWith("/adminportal")
+  const getLayout = router.pathname.startsWith("/admin")
     ? (page) => <AdminDashboardLayout>{page}</AdminDashboardLayout>
     : router.pathname.startsWith("/dashboard")
     ? (page) => <DashboardLayout>{page}</DashboardLayout>
     : (page) => page;
 
   return getLayout(
-    <QueryClientProvider client={getQueryClient()} style={{
-      overflowY: "auto",
-      scrollbarWidth: "none" /* Firefox */,
-      msOverflowStyle: "none" /* IE and Edge */,
-    }}
-  >
-    <style jsx global>{`
-      ::-webkit-scrollbar {
-        display: none;
-      }
-    `}</style>
+    <QueryClientProvider
+      client={getQueryClient()}
+      style={{
+        overflowY: "auto",
+        scrollbarWidth: "none" /* Firefox */,
+        msOverflowStyle: "none" /* IE and Edge */,
+      }}
+    >
+      <style jsx global>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <Component {...pageProps} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

@@ -38,8 +38,6 @@ const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
 
   console.log(session);
 
-  
-
   const scrollToSection = (ref) => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: "smooth" });

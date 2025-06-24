@@ -6,6 +6,8 @@ import { useState } from "react";
 import Login from "../login/Login";
 import Loginoptions from "../signup/Loginoptions";
 import { FiX } from "react-icons/fi";
+import { AlertDialog, AlertDialogTrigger } from "../ui/alert-dialog";
+import Auth_Dailog from "./Auth_Dailog";
 
 const Hero = () => {
   const { session, clearSession } = useAuthStore();
@@ -30,21 +32,27 @@ const Hero = () => {
             provide everything you need to build your creative empire.
           </p>
           <div className="py-6">
-            <Button
-              // href={"/dashboard/home"}
-              className="bg-[#016FDE] text-white px-6 py-2 rounded-full"
-              onClick={() => {
-                if (session) {
-                  window.location.href = "/dashboard/home";
-                } else {
-                  clearSession();
-                  setShowLogin(true);
-                }
-              }}
-              as={Link}
-            >
-              Start Creating
-            </Button>
+            {session ? (
+              <Link
+                href={"/dashboard/home"}
+                className="bg-[#016FDE] text-white px-6 py-2 rounded-full"
+              >
+                Start Creating
+              </Link>
+            ) : (
+              <AlertDialog>
+                <AlertDialogTrigger asChild className="hidden md:block">
+                  <button
+                    className="bg-[#016FDE] text-white px-6 py-2 rounded-full mx-auto"
+                    // onClick={() => setIsLoginPopupOpen(true)}
+                  >
+                    Start Creating
+                  </button>
+                </AlertDialogTrigger>
+
+                <Auth_Dailog />
+              </AlertDialog>
+            )}
           </div>
         </div>
         <div className="relative  flex flex-col items-center">

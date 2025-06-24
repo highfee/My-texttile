@@ -37,6 +37,7 @@ import { redirect } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/authService";
 import { useRegisterStore } from "@/store/registerStore";
+import { Label } from "../ui/label";
 
 const Auth_Dailog = () => {
   const [activeComponent, setActiveComponent] = useState("login");
@@ -75,7 +76,8 @@ const Auth_Dailog = () => {
                   Create with Mytextil, Sell on Social
                 </p>
                 <small>
-                  Use your email or another service to continue with Owneet (It
+                  Use your email or another service to continue with MyTextil
+                  (It
                   {"'"}s free)
                 </small>
               </>
@@ -247,8 +249,8 @@ const LoginForm = ({ setActiveComponent }) => {
 
           <div className="md:-translate-y-4 text-sm flex items-center justify-between">
             <span className="flex  gap-1 items-center text-gray-500">
-              <Checkbox />
-              Stay signed in
+              <Checkbox id="stay" />
+              <Label htmlFor="stay">Stay signed in</Label>
             </span>
 
             <Button
@@ -296,7 +298,7 @@ const LoginForm = ({ setActiveComponent }) => {
       </div>
 
       <div className="md:mt-10  text-center text-gray-500 text-sm">
-        By Logining in, you agree to Owneet’s{" "}
+        By Logging in, you agree to MyTextil’s{" "}
         <Link href="" className="text-bluebutton">
           Terms of Use
         </Link>{" "}
@@ -526,7 +528,7 @@ const RegisterForm = ({ setActiveComponent }) => {
           />
 
           <div className="md:mt-10  text-center text-gray-500 text-sm mb-5">
-            By continueing, you agree to Owneet’s{" "}
+            By continuing, you agree to MyTextil’s{" "}
             <Link href="" className="text-bluebutton">
               Terms of Use
             </Link>{" "}

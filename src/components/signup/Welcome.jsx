@@ -29,7 +29,7 @@ export default function Welcome({ onBack }) {
           Congratulations
         </h2>
         <p className="text-graycolor opacity-[0.44] text-[10px] lg:text-[13px]">
-          Bring your Prints dreams to reality with Owneet
+          Bring your Prints dreams to reality with MyTextil
         </p>
       </div>
 

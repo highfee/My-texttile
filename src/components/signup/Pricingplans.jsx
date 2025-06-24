@@ -23,7 +23,7 @@ export default function Pricingplans({ onBack }) {
         {/* Center - Title & Subtitle */}
         <div className="flex flex-col items-center">
           <h2 className="text-[16px] lg:text-3xl font-bold">
-            Enjoy the best of Owneet
+            Enjoy the best of MyTextil
           </h2>
           <p className="text-graycolor opacity-[0.44] text-[10px] lg:text-sm text-center">
             Tier 2 offers you the best of our platform and fuels your dreams

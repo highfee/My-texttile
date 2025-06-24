@@ -1,13 +1,16 @@
 import {
   ProjectTemplates,
-  recentProjects,
+  // recentProjects,
 } from "@/data/adminData/userData/home";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
-import { IoIosArrowDown } from "react-icons/io";
-import { useQuery } from "@tanstack/react-query";
-import { httpClient } from "@/lib/httpClient";
+// import { IoIosArrowDown } from "react-icons/io";
+// import { useQuery } from "@tanstack/react-query";
+// import { httpClient } from "@/lib/httpClient";
 import BestSeller from "@/components/dashboard/sidebarcomponents/BestSeller"; // Import the BestSeller component
+import { useGetAllDesigns } from "@/store/apiCalls/useDesignStore";
+import { Empty } from "@/components/ui/empty";
+import { FileX } from "lucide-react";
 
 export default function index() {
   // const { data, isLoading, error } = useQuery({
@@ -20,6 +23,16 @@ export default function index() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [showBestSeller, setShowBestSeller] = useState(false); // New state for showing BestSeller
   const contentRef = useRef(null);
+
+  const { data: recentProjects, isLoading, error } = useGetAllDesigns();
+
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
 
   useEffect(() => {
     const contentElement = contentRef.current;
@@ -117,50 +130,65 @@ export default function index() {
             className=" sm:ml-4"
           />
         </div>
-
-        <div
-          className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
-            isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"
-          } gap-2 px-2 pb-6`}
-        >
-          {recentProjects.map((project, index) => (
-            <div
-              key={index}
-              className="p-1 lg:p-4 rounded-lg transition-shadow duration-300"
-            >
-              <div>
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="w-full h-auto rounded-lg object-cover"
+        {isLoading ? (
+          <div>Loading....</div>
+        ) : error ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <div
+            className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
+              isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"
+            } gap-2 px-2 pb-6`}
+          >
+            {recentProjects.length === 0 ? (
+              <div className="w-[100%] flex justify-center items-center">
+                <Empty
+                  icon={<FileX className="h-10 w-10 text-muted-foreground" />}
+                  title="No Design found"
+                  description="You haven't uploaded any design yet."
                 />
               </div>
-              <h2 className="text-[12px] lg:text-[14px] font-semibold ">
-                {project.name}
-              </h2>
-              <p className="text-sm text-graycolor opacity-[0.44] ">
-                {project.description}
-              </p>
-              <div className="flex flex-row space-x-1">
-                <div className="rounded-sm bg-bluebutton w-[14px] h-[14px]"></div>
-                <div className="rounded-sm bg-[#FF5789] w-[14px] h-[14px]"></div>
-                <div className="rounded-sm bg-[#A1A1A1] w-[14px] h-[14px]"></div>
-                <div className="rounded-sm bg-[#5A57FF] w-[14px] h-[14px]"></div>
-                <div className="rounded-sm bg-[#124A86] w-[14px] h-[14px]"></div>
-                <div className="rounded-sm bg-[#160A0A] w-[14px] h-[14px]"></div>
-              </div>
-              <div className="flex flex-row ">
-                <p className="text-md font-bold text-graycolor opacity-[0.44]">
-                  Starting
-                </p>
-                <p className="text-lg font-bold text-graycolor px-2">
-                  {project.price}
-                </p>
-              </div>
-              <p className="text-graycolor opacity-[0.44]">S - XXL</p>
-            </div>
-          ))}
-        </div>
+            ) : (
+              recentProjects.map((project, index) => (
+                <div
+                  key={index}
+                  className="p-1 lg:p-4 rounded-lg transition-shadow duration-300"
+                >
+                  <div>
+                    <img
+                      src={project.image}
+                      alt={project.name}
+                      className="w-full h-auto rounded-lg object-cover"
+                    />
+                  </div>
+                  <h2 className="text-[12px] lg:text-[14px] font-semibold ">
+                    {project.name}
+                  </h2>
+                  <p className="text-sm text-graycolor opacity-[0.44] ">
+                    {project.description}
+                  </p>
+                  <div className="flex flex-row space-x-1">
+                    <div className="rounded-sm bg-bluebutton w-[14px] h-[14px]"></div>
+                    <div className="rounded-sm bg-[#FF5789] w-[14px] h-[14px]"></div>
+                    <div className="rounded-sm bg-[#A1A1A1] w-[14px] h-[14px]"></div>
+                    <div className="rounded-sm bg-[#5A57FF] w-[14px] h-[14px]"></div>
+                    <div className="rounded-sm bg-[#124A86] w-[14px] h-[14px]"></div>
+                    <div className="rounded-sm bg-[#160A0A] w-[14px] h-[14px]"></div>
+                  </div>
+                  <div className="flex flex-row ">
+                    <p className="text-md font-bold text-graycolor opacity-[0.44]">
+                      Starting
+                    </p>
+                    <p className="text-lg font-bold text-graycolor px-2">
+                      {project.price}
+                    </p>
+                  </div>
+                  <p className="text-graycolor opacity-[0.44]">S - XXL</p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
         <div className="flex flex-row py-2 font-bold">
           <p>Templates</p>

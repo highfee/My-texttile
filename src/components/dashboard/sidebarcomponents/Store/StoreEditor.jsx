@@ -73,7 +73,7 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
   const sections = [
     { id: "Navigation Bar", name: "Navigation Bar" },
     { id: "Hero Banner", name: "Hero Banner" },
-    { id: "Products", name: "Products" },
+    // { id: "Products", name: "Products" },
     { id: "Footer", name: "Footer" },
   ];
 

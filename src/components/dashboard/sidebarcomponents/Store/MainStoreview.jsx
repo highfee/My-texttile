@@ -5,6 +5,8 @@ import Link from "next/link";
 import Desktop from "@/components/creatorstore/template/Desktop";
 import { httpClient } from "@/lib/httpClient";
 import { useQuery } from "@tanstack/react-query";
+import { Empty } from "@/components/ui/empty";
+import { FileX } from "lucide-react";
 
 export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -34,6 +36,8 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
     queryKey: ["shop"],
     queryFn: fetchData,
   });
+
+  console.log(error);
 
   return (
     <div
@@ -110,70 +114,87 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row justify-center gap-10 mt-4">
-        <div className="flex flex-col flex-1">
-          <h3 className="text-lg font-semibold text-left">Desktop View</h3>
-          <p className="opacity-[0.44]">Manage your earnings efficiently</p>
-          <div
-            className="relative flex justify-center py-4 cursor-pointer"
-            onMouseEnter={() => setShowOverlay1(true)}
-            onMouseLeave={() => setShowOverlay1(false)}
-            onClick={() => handleImageClick("desktop")}
+      {error || isLoading ? (
+        <div className="w-[100%] flex justify-center items-center flex-col">
+          <Empty
+            icon={<FileX className="h-14 w-14 text-muted-foreground" />}
+            title="No Shop found"
+            description="You do not have an associated shop."
+          />
+
+          {/* <button
+            className="bg-bluebutton text-white px-4 py-2 rounded"
+            onClick={() => setActiveComponent("editor")}
           >
-            {/* <img
+            Setup store
+          </button> */}
+        </div>
+      ) : (
+        <div className="flex flex-col lg:flex-row justify-center gap-10 mt-4">
+          <div className="flex flex-col flex-1">
+            <h3 className="text-lg font-semibold text-left">Desktop View</h3>
+            <p className="opacity-[0.44]">Manage your earnings efficiently</p>
+            <div
+              className="relative flex justify-center py-4 cursor-pointer"
+              onMouseEnter={() => setShowOverlay1(true)}
+              onMouseLeave={() => setShowOverlay1(false)}
+              onClick={() => handleImageClick("desktop")}
+            >
+              {/* <img
               src="/dashboard/store/desktop.png"
               alt="Desktop View"
               className="w-full max-w-2xl border border-gray-200 rounded-lg"
             /> */}
 
-            <Desktop activeView={"desktop"} data={data} />
-            <div
-              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
-                showOverlay1 ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <div className="bg-white text-black p-3 rounded-full mb-2">
-                <FiEdit2 className="text-lg" />
+              <Desktop activeView={"desktop"} data={data} />
+              <div
+                className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
+                  showOverlay1 ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div className="bg-white text-black p-3 rounded-full mb-2">
+                  <FiEdit2 className="text-lg" />
+                </div>
+                <h3 className="text-sm font-semibold">Edit Desktop View</h3>
+                <p className="text-xs mt-1">
+                  Click to customize your store's desktop appearance
+                </p>
               </div>
-              <h3 className="text-sm font-semibold">Edit Desktop View</h3>
-              <p className="text-xs mt-1">
-                Click to customize your store's desktop appearance
-              </p>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col flex-1">
-          <h3 className="text-lg font-semibold text-left">Mobile View</h3>
-          <p className="opacity-[0.44]">Manage your earnings efficiently</p>
-          <div
-            className="relative flex justify-center py-4 cursor-pointer"
-            onMouseEnter={() => setShowOverlay(true)}
-            onMouseLeave={() => setShowOverlay(false)}
-            onClick={() => handleImageClick("mobile")}
-          >
-            {/* <img
+          <div className="flex flex-col flex-1">
+            <h3 className="text-lg font-semibold text-left">Mobile View</h3>
+            <p className="opacity-[0.44]">Manage your earnings efficiently</p>
+            <div
+              className="relative flex justify-center py-4 cursor-pointer"
+              onMouseEnter={() => setShowOverlay(true)}
+              onMouseLeave={() => setShowOverlay(false)}
+              onClick={() => handleImageClick("mobile")}
+            >
+              {/* <img
               src="/dashboard/store/mobile.png"
               alt="Mobile View"
               className="w-full max-w-xs border border-gray-200 rounded-lg"
             /> */}
-            <Desktop activeView={"mobile"} data={data} />
-            <div
-              className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
-                showOverlay ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <div className="bg-white text-black p-3 rounded-full mb-2">
-                <FiEdit2 className="text-lg" />
+              <Desktop activeView={"mobile"} data={data} />
+              <div
+                className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
+                  showOverlay ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div className="bg-white text-black p-3 rounded-full mb-2">
+                  <FiEdit2 className="text-lg" />
+                </div>
+                <h3 className="text-sm font-semibold">Edit Mobile View</h3>
+                <p className="text-xs mt-1">
+                  Click to customize your store's mobile appearance
+                </p>
               </div>
-              <h3 className="text-sm font-semibold">Edit Mobile View</h3>
-              <p className="text-xs mt-1">
-                Click to customize your store's mobile appearance
-              </p>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

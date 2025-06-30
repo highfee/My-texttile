@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -52,7 +52,7 @@ import { Button } from "@/components/ui/button";
 import { LiaSearchPlusSolid } from "react-icons/lia";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import useDesignStore from "@/store/DesignStore";
+
 import { AVAILABLE_FONTS } from "@/constants";
 import ApparelView from "./ApparelView";
 import ElementRenderer from "./ElementRenderer";
@@ -60,6 +60,28 @@ import { usePublishDesign } from "@/store/usePublishDesign";
 import { useMutation } from "@tanstack/react-query";
 import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { httpClient } from "@/lib/httpClient";
+
+// import { PreviewOverlay } from "./PreviewOverlay";
+
+const PreviewOverlay = dynamic(() => import("./PreviewOverlay"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-ful w-ful bg-muted animate-pulse rounded-lg" />
+  ),
+});
+const DesignPIC = dynamic(() => import("./DesignPIC"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-ful w-ful bg-muted animate-pulse rounded-lg" />
+  ),
+});
+
+import {
+  useDesignStore,
+  useUpdateObjectAndHistory,
+} from "@/store/design-store";
+import dynamic from "next/dynamic";
+import { Switch } from "@/components/ui/switch";
 
 const fonts = [
   "Arial",
@@ -86,13 +108,21 @@ const fonts = [
 
 const Header = () => {
   const {
-    designs,
-    selectedElementId,
-    updateElement,
-    currentDesignId,
-    undo,
-    redo,
+    selectedId,
+    objects,
+    activeView,
+    deleteObject,
+    cloneObject,
+    moveLayer,
   } = useDesignStore();
+  const updateObject = useUpdateObjectAndHistory();
+  const currentObjects = objects[activeView];
+  const selectedObject = currentObjects.find((obj) => obj.id === selectedId);
+
+  const handlePropertyChange = (prop, value) => {
+    if (!selectedId) return;
+    updateObject(selectedId, { [prop]: value });
+  };
 
   const handleColorChange = (color) => {
     if (selectedElementId) {
@@ -100,79 +130,10 @@ const Header = () => {
     }
   };
 
-  // const handleBoldToggle = () => {
-  //   if (selectedElementId) {
-  //     updateElement({
-  //       elementId: selectedElementId,
-  //       updates: { fontWeight: "bold" },
-  //     });
-  //   }
-  // };
-
-  // const handleItalicToggle = () => {
-  //   if (selectedElementId) {
-  //     updateElement({
-  //       elementId: selectedElementId,
-  //       updates: { fontStyle: "italic" },
-  //     });
-  //   }
-  // };
-  // const handleUnderlineToggle = () => {
-  //   if (selectedElementId) {
-  //     updateElement({
-  //       elementId: selectedElementId,
-  //       updates: { textDecoration: "underline" },
-  //     });
-  //   }
-  // };
-
-  const selectedElement = designs
-    ?.find((design) => design.id === currentDesignId)
-    ?.elements?.find((el) => el.id === selectedElementId);
-
-  const toggleStyle = (styleKey, value) => {
-    if (selectedElementId) {
-      const currentValue = selectedElement?.[styleKey];
-      console.log("currentValue", selectedElement);
-      updateElement({
-        elementId: selectedElementId,
-        updates: { [styleKey]: currentValue === value ? null : value },
-      });
-    }
-  };
-
-  const handleFontFamilyChange = (fontFamily) => {
-    if (selectedElementId) {
-      updateElement({
-        elementId: selectedElementId,
-        updates: { fontFamily },
-      });
-    }
-  };
-  const toggleCase = () => {
-    if (selectedElementId) {
-      const currentTransform = selectedElement?.textTransform || "none";
-      let newTransform;
-
-      // Toggle between 'uppercase', 'lowercase', and 'none'
-      if (currentTransform === "none") {
-        newTransform = "uppercase";
-      } else if (currentTransform === "uppercase") {
-        newTransform = "lowercase";
-      } else {
-        newTransform = "none";
-      }
-
-      updateElement({
-        elementId: selectedElementId,
-        updates: { textTransform: newTransform },
-      });
-    }
-  };
   return (
     <header className="bg-white sticky top-0 p-4 shadow-md flex justify-between gap-10 items-center">
       <section className="flex items-center  gap-10 ">
-        <Select onValueChange={handleFontFamilyChange}>
+        <Select onValueChange="">
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Helvica" />
           </SelectTrigger>
@@ -197,13 +158,13 @@ const Header = () => {
               <Input
                 type="color"
                 id="color"
-                className="opacity-0 absolute pointer-events-none bottom-0 left-0 hidde"
-                onChange={(e) => handleColorChange(e.target.value)}
+                className="opacity-0 absolute pointer-events-none bottom-0 left-0  appearance-none"
+                onChange={(e) => handlePropertyChange("fill", e.target.value)}
               />
             </Label>
           </div>
 
-          <div
+          {/* <div
             className={cn(" cursor-pointer p-1 rounded-md", {
               "bg-gray-200": selectedElement?.fontWeight === "bold",
             })}
@@ -213,9 +174,9 @@ const Header = () => {
               size={20}
               onClick={() => toggleStyle("fontWeight", "bold")}
             />
-          </div>
+          </div> */}
 
-          <div
+          {/* <div
             className={cn(" cursor-pointer p-1 rounded-md", {
               "bg-gray-200": selectedElement?.fontStyle === "italic",
             })}
@@ -226,8 +187,9 @@ const Header = () => {
               className=" cursor-pointer"
               onClick={() => toggleStyle("fontStyle", "italic")}
             />
-          </div>
-          <div
+          </div> */}
+
+          {/* <div
             className={cn("cursor-pointer p-1 rounded-md", {
               "bg-gray-200":
                 selectedElement?.textTransform === "uppercase" ||
@@ -239,9 +201,9 @@ const Header = () => {
               size={20}
               onClick={toggleCase}
             />
-          </div>
+          </div> */}
 
-          <div
+          {/* <div
             className={cn(" cursor-pointer p-1 rounded-md", {
               "bg-gray-200": selectedElement?.textDecoration === "underline",
             })}
@@ -252,7 +214,8 @@ const Header = () => {
               className=" cursor-pointer"
               onClick={() => toggleStyle("textDecoration", "underline")}
             />
-          </div>
+          </div> */}
+
           <LuAlignEndHorizontal
             color="rgba(18, 18, 18, 0.44)"
             className=" cursor-pointer"
@@ -525,136 +488,7 @@ export const Access = () => {
   );
 };
 
-export const PreviewOverlay = () => {
-  const PREVIEW_CANVAS_WIDTH = 450;
-  const PREVIEW_CANVAS_HEIGHT = 450;
-  const { designs, currentDesignId } = useDesignStore();
-
-  const currentDesign = designs.find((d) => d.id === currentDesignId);
-
-  const [previewView, setPreviewView] = useState(
-    currentDesign?.apparelView || "front"
-  );
-  const [previewZoomLevel, setPreviewZoomLevel] = useState(1);
-
-  useEffect(() => {
-    if (currentDesign) {
-      setPreviewView(currentDesign.apparelView);
-    }
-  }, [currentDesign?.apparelView, currentDesign]);
-
-  const visibleElements = (currentDesign.elements || []).filter(
-    (el) => el.associatedView === previewView
-  );
-
-  let apparelDisplayWidth = PREVIEW_CANVAS_WIDTH;
-  let apparelDisplayHeight = PREVIEW_CANVAS_HEIGHT;
-
-  const previewContainerStyle = {
-    width: `${PREVIEW_CANVAS_WIDTH}px`,
-    height: `${PREVIEW_CANVAS_HEIGHT}px`, // Keep container fixed
-    transform: `scale(${previewZoomLevel})`,
-    transformOrigin: "center center",
-    transition: "transform 0.1s ease-out",
-  };
-
-  const apparelContainerStyle = {
-    width: `${apparelDisplayWidth}px`,
-    height: `${apparelDisplayHeight}px`,
-    position: "relative",
-    overflow: "hidden", // This is crucial for clipping elements
-    margin: "auto", // Center the apparel within the scaled container
-    backgroundColor: currentDesign.apparelColor, // Fallback if no base image
-  };
-
-  return (
-    <div>
-      <DialogHeader className="flex items-center justify-between flex-row">
-        <DialogTitle>
-          <div>Preview </div>
-        </DialogTitle>
-
-        <Select
-          defaultValue="front"
-          value={previewView}
-          onValueChange={setPreviewView}
-        >
-          <SelectTrigger className=" rounded-md cursor-pointer gap-2 border-primary/40 w-20">
-            <SelectValue placeholder="View" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="front">Front</SelectItem>
-            <SelectItem value="back">Back</SelectItem>
-            <SelectItem value="left">Left</SelectItem>
-            <SelectItem value="right">Right</SelectItem>
-            {/* <SelectItem value="system">System</SelectItem> */}
-          </SelectContent>
-        </Select>
-
-        <div className="flex items-center gap-1">
-          <Button
-            variant="default"
-            className=" border-gray-300 text-sm  [&_svg]:size-5 h-9 "
-          >
-            Publish
-          </Button>
-
-          <DialogClose className="bg-gray-100 rounded-md h-9 w-9 grid place-items-center  cursor-pointer ">
-            <X size={18} />
-          </DialogClose>
-        </div>
-      </DialogHeader>
-
-      <section className="flex flex-col items-center justify-center h-[calc(100vh-4rem) mt-20">
-        <div className="borde border-primary/40  rounded-md p-5">
-          <div style={previewContainerStyle}>
-            {/* Inner container for apparel and elements, with overflow:hidden */}
-            <div
-              id="preview-apparel-container"
-              style={apparelContainerStyle}
-              className="border border-primary/40 rounded-md shadow-lg"
-            >
-              <ApparelView
-                apparelType={currentDesign.apparelType}
-                apparelColor={currentDesign.apparelColor} // ApparelView will use this if no base image
-                apparelView={previewView}
-                // We let ApparelView determine its own image source (custom or placeholder)
-                // and its internal sizing. We just ensure its container clips.
-              />
-              {visibleElements.map((element) => (
-                <ElementRenderer
-                  key={element.id}
-                  element={element}
-                  isSelected={false} // Nothing is selected in preview
-                  onElementContextMenu={() => {}} // No context menu in preview
-                  zoomLevel={1} // Elements inside are rendered at 100% of their size relative to apparel
-                  isPreview={true} // Key: Tells ElementRenderer it's in preview mode
-                  // Pass the dimensions of the apparel display area so elements can scale correctly
-                  // This is a conceptual change; ElementRenderer would need to use these if its % pos is relative to these
-                  canvasWidthForElements={apparelDisplayWidth}
-                  canvasHeightForElements={apparelDisplayHeight}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="flex items-center justify-center gap-2 mt-40">
-        <ZoomOut className="text-primary/40" />
-        <Slider defaultValue={[33]} max={100} step={1} className="w-40" />
-
-        <ZoomIn className="text-primary/40" />
-      </section>
-    </div>
-  );
-};
-
 export const PublishOverlay = () => {
-  const state = useDesignStore();
-  const design = state.designs.find((d) => d.id === state.currentDesignId);
-
-  const { storeLogoFile } = useCreatorStore();
   const {
     productName,
     productColor,
@@ -709,24 +543,7 @@ export const PublishOverlay = () => {
 
   const [openAccordion, setOpenAccordion] = React.useState(null);
 
-  const { designs, currentDesignId } = useDesignStore();
-
-  const currentDesign = designs.find((d) => d.id === currentDesignId);
-
-  const [previewView, setPreviewView] = useState(
-    currentDesign?.apparelView || "front"
-  );
   const [previewZoomLevel, setPreviewZoomLevel] = useState(1);
-
-  useEffect(() => {
-    if (currentDesign) {
-      setPreviewView(currentDesign.apparelView);
-    }
-  }, [currentDesign?.apparelView, currentDesign]);
-
-  const visibleElements = (currentDesign.elements || []).filter(
-    (el) => el.associatedView === previewView
-  );
 
   const toggleAccordion = (key) => {
     setOpenAccordion((prev) => (prev === key ? null : key));
@@ -737,7 +554,7 @@ export const PublishOverlay = () => {
       <DialogHeader>
         <DialogTitle>
           <div>Publish </div>
-          <DialogDescription className="text-base font-ight mt-2">
+          <DialogDescription className="text-base mt-2">
             Optimize your product for visibility, sharing, and sales. Completing
             them ensures your product is well-presented, <br />
             easy to find, and ready to attract buyers.
@@ -778,34 +595,11 @@ export const PublishOverlay = () => {
             <div className="">
               <h3 className="font-semibold mb-2">Product Preview</h3>
 
-              <section
-                className="relative scale-[0.6] -ml-[90px] -mt-20 p-5 rounded-2xl border border-primary/40"
-                style={{ background: currentDesign.apparelColor }}
-              >
-                <div>
-                  <ApparelView
-                    apparelType={currentDesign.apparelType}
-                    // apparelColor={currentDesign.apparelColor} // ApparelView will use this if no base image
-                    apparelView={previewView}
-                    // We let ApparelView determine its own image source (custom or placeholder)
-                    // and its internal sizing. We just ensure its container clips.
-                  />
-                  {visibleElements.map((element) => (
-                    <ElementRenderer
-                      key={element.id}
-                      element={element}
-                      isSelected={false} // Nothing is selected in preview
-                      onElementContextMenu={() => {}} // No context menu in preview
-                      zoomLevel={1} // Elements inside are rendered at 100% of their size relative to apparel
-                      isPreview={true} // Key: Tells ElementRenderer it's in preview mode
-                      // canvasWidthForElements={apparelDisplayWidth}
-                      // canvasHeightForElements={apparelDisplayHeight}
-                    />
-                  ))}
-                </div>
+              <section className="relative overflow-hidden  rounded-2xl border border-primary/40">
+                <DesignPIC />
               </section>
 
-              <div className="-mt-20">
+              <div className="mt-10">
                 <p className="font-semibold">{productName}</p>
 
                 <div className="text-sm">
@@ -841,15 +635,26 @@ export const PublishOverlay = () => {
         </div>
       </div>
 
-      <footer className="mt-10 flex justify-between">
-        <div></div>
-        <Button onClick={onSubmit} className="w-24">
-          {designMutation.isPending ? (
-            <Loader className=" animate-spin" />
-          ) : (
-            "Publish"
-          )}
-        </Button>
+      <footer className="my-10 ">
+        <section className="flex justify-end gap-4">
+          <DialogClose>
+            <Button variant="outline">Back</Button>
+          </DialogClose>
+          <Button onClick={onSubmit} className="w-24">
+            {designMutation.isPending ? (
+              <Loader className=" animate-spin" />
+            ) : (
+              "Publish"
+            )}
+          </Button>
+        </section>
+
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-gray-600 font-medium">
+            Unlimited Product listing
+          </p>
+          <Image src="/design/icons/subscription.svg" width="20" height="20" />
+        </div>
       </footer>
     </div>
   );
@@ -1020,76 +825,138 @@ const ProductInfo = ({ openAccordion, toggleAccordion }) => {
 
 const Visibility = ({ openAccordion, toggleAccordion }) => {
   return (
-    <div
-      className={`p-4 border-b border-primary/40 transition-all cursor-pointer ${
-        openAccordion === "two" ? "opacity-100" : "opacity-50"
-      }`}
-      onClick={() => toggleAccordion("two")}
-    >
-      <div className="flex gap-2 items-center">
-        <div
-          className={cn(
-            "size-9 bg-gray-200 grid place-items-center rounded-full",
-            { "border border-blue": openAccordion === "two" }
-          )}
-        >
-          2
-        </div>
+    <section>
+      <div
+        className={`p-4 border-b border-primary/40 transition-all cursor-pointer ${
+          openAccordion === "two" ? "opacity-100" : "opacity-50"
+        }`}
+        onClick={() => toggleAccordion("two")}
+      >
+        <div className="flex gap-2 items-center">
+          <div
+            className={cn(
+              "size-9 bg-gray-200 grid place-items-center rounded-full",
+              { "border border-blue": openAccordion === "two" }
+            )}
+          >
+            2
+          </div>
 
-        <div>
-          <p className="text-blue">Set Visibility Options</p>
-          <p className="text-gray-500">
-            A subscription plan that caters for every user’s category needs
-          </p>
-        </div>
-        <div className="ml-auto">
-          {openAccordion === "two" ? <ChevronUp /> : <ChevronRight />}
+          <div>
+            <p className="text-blue">Set Visibility Options</p>
+            <p className="text-gray-500">
+              A subscription plan that caters for every user’s category needs
+            </p>
+          </div>
+          <div className="ml-auto">
+            {openAccordion === "two" ? <ChevronUp /> : <ChevronRight />}
+          </div>
         </div>
       </div>
 
       {openAccordion === "two" && (
-        <div className="mt-2 text-sm text-gray-600">
-          This is the content of Accordion Two.
+        <div className="mt-5 text-sm text-gray-600 ml-12 ">
+          <header className="flex items-center justify-between mr-20">
+            <p className="text-lg">Public</p>
+            <Switch checked={true} />
+          </header>
+
+          <div className="mt-4 text-gray-500">
+            <p className="text-lg mb-0.5">Password Protection</p>
+            <p>Add an extra layer of privacy for exclusive products.</p>
+
+            <Input
+              type="password"
+              className="w-80 mt-2"
+              placeholder="Set Password"
+            />
+          </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };
 
 const Advanced = ({ openAccordion, toggleAccordion }) => {
   return (
-    <div
-      className={`p-4 border-b border-primary/40 transition-all cursor-pointer ${
-        openAccordion === "three" ? "opacity-100" : "opacity-50"
-      }`}
-      onClick={() => toggleAccordion("three")}
-    >
-      <div className="flex gap-2 items-center">
-        <div
-          className={cn(
-            "size-9 bg-gray-200 grid place-items-center rounded-full",
-            { "border border-blue": openAccordion === "three" }
-          )}
-        >
-          3
-        </div>
+    <>
+      <div
+        className={`p-4 border-b border-primary/40 transition-all cursor-pointer ${
+          openAccordion === "three" ? "opacity-100" : "opacity-50"
+        }`}
+        onClick={() => toggleAccordion("three")}
+      >
+        <div className="flex gap-2 items-center">
+          <div
+            className={cn(
+              "size-9 bg-gray-200 grid place-items-center rounded-full",
+              { "border border-blue": openAccordion === "three" }
+            )}
+          >
+            3
+          </div>
 
-        <div>
-          <p className="text-blue">Advanced Customization</p>
-          <p className="text-gray-500">
-            A subscription plan that caters for every user’s category needs
-          </p>
-        </div>
-        <div className="ml-auto">
-          {openAccordion === "three" ? <ChevronUp /> : <ChevronRight />}
+          <div>
+            <p className="text-blue">Advanced Customization</p>
+            <p className="text-gray-500">
+              A subscription plan that caters for every user’s category needs
+            </p>
+          </div>
+          <div className="ml-auto">
+            {openAccordion === "three" ? <ChevronUp /> : <ChevronRight />}
+          </div>
         </div>
       </div>
-
       {openAccordion === "three" && (
-        <div className="mt-2 text-sm text-gray-600">
-          This is the content of Accordion Three.
+        <div className="mt-2 text-sm text-gray-600 ml-12">
+          <header>
+            <div className="text-lg text-black font-medium">
+              <span className="text-red-400 font-semibold ">* </span> Content
+              Vetting
+            </div>
+
+            <p className="text-gray-500 mt-2 line-clamp-2">
+              Every design is scanned for potential copyright issues and
+              reviewed for offensive <br /> content to maintain a professional
+              and inclusive community.
+            </p>
+          </header>
+
+          <section className="mt-6 ml-5 mr-20">
+            <div className="flex items-center justify-between gap-20 mb-1">
+              <div>
+                <p className="text-lg font-medium text-gray-800">Copyright</p>
+                <p>
+                  A subscription plan that caters for every user’s category
+                  needs
+                </p>
+              </div>
+              <div className="size-12 border-4 border-bluebutton rounded-full grid place-items-center text-sm border-t-gray-200 rotate-45">
+                <p className="-rotate-45">65%</p>
+              </div>
+            </div>
+
+            <hr />
+
+            <div className="flex items-center justify-between gap-20 mb-1 mt-5">
+              <div>
+                <p className="text-lg font-medium text-gray-800">
+                  Offensive Content
+                </p>
+                <p>
+                  A subscription plan that caters for every user’s category
+                  needs
+                </p>
+              </div>
+              <div className="size-12 border-4 border-gray-200 rounded-full grid place-items-center text-sm border-t-bluebutton rotate-45">
+                <p className="-rotate-45">25%</p>
+              </div>
+            </div>
+
+            <hr />
+          </section>
         </div>
       )}
-    </div>
+    </>
   );
 };

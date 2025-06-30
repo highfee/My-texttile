@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Filter, Plus, Search, UploadCloud } from "lucide-react";
+import { Filter, Plus, Search, Upload, UploadCloud } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,7 +32,11 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
-import useDesignStore from "@/store/DesignStore";
+import { SHAPES } from "./shapes";
+
+// import useDesignStore from "@/store/DesignStore";
+import { useDesignStore, views } from "@/store/design-store";
+
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 import useMediaQuery from "@/components/hook/usemediaquery";
@@ -204,183 +208,244 @@ const Sidebar = () => {
 
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  // Environment variables for Cloudinary configuration
-  const CLOUDINARY_CLOUD_NAME = "dhptrkobw";
-  const CLOUDINARY_UPLOAD_PRESET =
-    " process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;";
-  const CLOUDINARY_API_URL_BASE = `https://api.cloudinary.com/v1_1/`;
+  const { addObject, clearCanvas, setGarmentImage, activeView } =
+    useDesignStore();
+  // const [isShapesLibraryOpen, setShapesLibraryOpen] = useState(false);
 
-  const {
-    designs,
-    currentDesignId,
-    selectedElementId,
-    addDesign,
-    switchDesign,
-    renameDesign,
-    deleteDesignStored,
-    updateApparelType,
-    updateApparelColor,
-    updateApparelView,
-    addElement,
-    deleteElement: deleteElementStored,
-    undo,
-    redo,
-    loadImage,
-    setApparelBaseImage,
-    processAndAddImageElement,
-    setIsLoadingImage,
-  } = useDesignStore();
-
-  const imageElementInputRef = useRef(null);
-  const frontImageInputRef = useRef(null);
-  const backImageInputRef = useRef(null);
-  const leftImageInputRef = useRef(null);
-  const rightImageInputRef = useRef(null);
-
-  const currentDesign = designs.find((d) => d.id === currentDesignId);
-  // const selectedElement = currentDesign?.elements?.find(
-  //   (el) => el.id === selectedElementId
-  // );
-
-  const handleAddElement = (type, options) => {
-    if (!currentDesign) {
-      // toast({
-      //   title: "Error",
-      //   description: "No active design. Please create or select a design.",
-      //   variant: "destructive",
-      // });
-      return;
-    }
-    if (type === "image") {
-      if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-        console.table({
-          title: "Setup Required",
-          description:
-            "Cloudinary environment variables not configured for image uploads.",
-          variant: "destructive",
-        });
-        return;
-      }
-      imageElementInputRef.current?.click();
-      return;
-    }
-    addElement({ type, options });
+  const garmentFileInputRefs = {
+    front: useRef(null),
+    back: useRef(null),
+    left: useRef(null),
+    right: useRef(null),
   };
+  const designImageInputRef = useRef(null);
 
-  const uploadToCloudinary = async (file) => {
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      const errorMsg =
-        "Cloudinary is not configured. Please ensure NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET are set in your environment variables.";
-      toast({
-        title: "Cloudinary Not Configured",
-        description: errorMsg,
-        variant: "destructive",
-      });
-      console.error(errorMsg);
-      throw new Error("Cloudinary environment variables not configured.");
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    // Note: For unsigned uploads, the API Key isn't sent in the FormData like this.
-    // The upload_preset handles authentication and permissions for unsigned uploads.
-
-    const CLOUDINARY_UPLOAD_URL = `${CLOUDINARY_API_URL_BASE}${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response
-        .json()
-        .catch(() => ({ message: response.statusText }));
-      throw new Error(
-        `Cloudinary upload failed: ${
-          errorData.error?.message || response.statusText
-        }`
-      );
-    }
-    return response.json();
-  };
-
-  const handleImageUpload = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file || !currentDesign) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      // 5MB limit
-      console.table({
-        title: "File Too Large",
-        description: "Image size should not exceed 5MB.",
-        variant: "destructive",
-      });
-      if (event.target) event.target.value = "";
-      return;
-    }
-
-    setIsLoadingImage(true);
-    console.table({ title: "Uploading Image...", description: "Please wait." });
-
-    try {
-      const cloudinaryResult = await uploadToCloudinary(file);
-      const imageUrl = cloudinaryResult.secure_url;
-      // const imageId = cloudinaryResult.public_id; // Useful for backend management
-
-      const img = new Image();
-      img.onload = () => {
-        processAndAddImageElement({
-          imageUrl,
-          originalWidth: img.width,
-          originalHeight: img.height,
-          // imageId: imageId // Optionally pass Cloudinary public_id
-        });
-        console.table({
-          title: "Image Element Added",
-          description: "Image uploaded to Cloudinary.",
-        });
-        setIsLoadingImage(false);
-        URL.revokeObjectURL(img.src);
-      };
-      img.onerror = () => {
-        console.table({
-          title: "Error",
-          description: "Could not load image dimensions.",
-          variant: "destructive",
-        });
-        setIsLoadingImage(false);
-        URL.revokeObjectURL(img.src);
-      };
-      img.src = URL.createObjectURL(file);
-    } catch (error) {
-      console.error("Error processing image element:", error);
-      console.table({
-        title: "Upload Error",
-        description: `${error.message}`,
-        variant: "destructive",
-      });
-      setIsLoadingImage(false);
-    } finally {
-      if (event.target) event.target.value = "";
-    }
-  };
-
-  const handleApparelBaseImageUpload = (event, view) => {
-    const file = event.target.files?.[0];
-    if (file && currentDesignId) {
+  const handleGarmentFileChange = (e, view) => {
+    const file = e.target.files?.[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const imageUrl = e.target?.result;
-        if (typeof imageUrl === "string") {
-          setApparelBaseImage({ view, imageUrl });
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setGarmentImage(view, event.target.result);
         }
       };
       reader.readAsDataURL(file);
     }
-    event.target.value = "";
   };
+
+  const triggerGarmentFileInput = (view) => {
+    garmentFileInputRefs[view].current?.click();
+  };
+
+  const handleDesignImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result;
+        if (dataUrl) {
+          const img = new window.Image();
+          img.src = dataUrl;
+          img.onload = () => {
+            const MAX_WIDTH = 200;
+            const scale = MAX_WIDTH / img.width;
+            const width = MAX_WIDTH;
+            const height = img.height * scale;
+            addObject("image", {
+              src: dataUrl,
+              name: file.name,
+              width,
+              height,
+            });
+          };
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+    if (e.target) {
+      e.target.value = "";
+    }
+  };
+
+  const triggerDesignImageInput = () => {
+    designImageInputRef.current?.click();
+  };
+
+  const handleShapeClick = (shape) => {
+    addObject("path", { path: shape.path, name: shape.name });
+  };
+
+  // const {
+  //   designs,
+  //   currentDesignId,
+  //   selectedElementId,
+  //   addDesign,
+  //   switchDesign,
+  //   renameDesign,
+  //   deleteDesignStored,
+  //   updateApparelType,
+  //   updateApparelColor,
+  //   updateApparelView,
+  //   addElement,
+  //   deleteElement: deleteElementStored,
+  //   undo,
+  //   redo,
+  //   loadImage,
+  //   setApparelBaseImage,
+  //   processAndAddImageElement,
+  //   setIsLoadingImage,
+  // } = useDesignStore();
+
+  // const imageElementInputRef = useRef(null);
+  // const frontImageInputRef = useRef(null);
+  // const backImageInputRef = useRef(null);
+  // const leftImageInputRef = useRef(null);
+  // const rightImageInputRef = useRef(null);
+
+  // const currentDesign = designs.find((d) => d.id === currentDesignId);
+  // // const selectedElement = currentDesign?.elements?.find(
+  // //   (el) => el.id === selectedElementId
+  // // );
+
+  // const handleAddElement = (type, options) => {
+  //   if (!currentDesign) {
+  //     // toast({
+  //     //   title: "Error",
+  //     //   description: "No active design. Please create or select a design.",
+  //     //   variant: "destructive",
+  //     // });
+  //     return;
+  //   }
+  //   if (type === "image") {
+  //     if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+  //       console.table({
+  //         title: "Setup Required",
+  //         description:
+  //           "Cloudinary environment variables not configured for image uploads.",
+  //         variant: "destructive",
+  //       });
+  //       return;
+  //     }
+  //     imageElementInputRef.current?.click();
+  //     return;
+  //   }
+  //   addElement({ type, options });
+  // };
+
+  // const uploadToCloudinary = async (file) => {
+  //   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+  //     const errorMsg =
+  //       "Cloudinary is not configured. Please ensure NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET are set in your environment variables.";
+  //     toast({
+  //       title: "Cloudinary Not Configured",
+  //       description: errorMsg,
+  //       variant: "destructive",
+  //     });
+  //     console.error(errorMsg);
+  //     throw new Error("Cloudinary environment variables not configured.");
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+  //   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+  //   // Note: For unsigned uploads, the API Key isn't sent in the FormData like this.
+  //   // The upload_preset handles authentication and permissions for unsigned uploads.
+
+  //   const CLOUDINARY_UPLOAD_URL = `${CLOUDINARY_API_URL_BASE}${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+  //   const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+  //     method: "POST",
+  //     body: formData,
+  //   });
+
+  //   if (!response.ok) {
+  //     const errorData = await response
+  //       .json()
+  //       .catch(() => ({ message: response.statusText }));
+  //     throw new Error(
+  //       `Cloudinary upload failed: ${
+  //         errorData.error?.message || response.statusText
+  //       }`
+  //     );
+  //   }
+  //   return response.json();
+  // };
+
+  // const handleImageUpload = async (event) => {
+  //   const file = event.target.files?.[0];
+  //   if (!file || !currentDesign) return;
+
+  //   if (file.size > 5 * 1024 * 1024) {
+  //     // 5MB limit
+  //     console.table({
+  //       title: "File Too Large",
+  //       description: "Image size should not exceed 5MB.",
+  //       variant: "destructive",
+  //     });
+  //     if (event.target) event.target.value = "";
+  //     return;
+  //   }
+
+  //   setIsLoadingImage(true);
+  //   console.table({ title: "Uploading Image...", description: "Please wait." });
+
+  //   try {
+  //     const cloudinaryResult = await uploadToCloudinary(file);
+  //     const imageUrl = cloudinaryResult.secure_url;
+  //     // const imageId = cloudinaryResult.public_id; // Useful for backend management
+
+  //     const img = new Image();
+  //     img.onload = () => {
+  //       processAndAddImageElement({
+  //         imageUrl,
+  //         originalWidth: img.width,
+  //         originalHeight: img.height,
+  //         // imageId: imageId // Optionally pass Cloudinary public_id
+  //       });
+  //       console.table({
+  //         title: "Image Element Added",
+  //         description: "Image uploaded to Cloudinary.",
+  //       });
+  //       setIsLoadingImage(false);
+  //       URL.revokeObjectURL(img.src);
+  //     };
+  //     img.onerror = () => {
+  //       console.table({
+  //         title: "Error",
+  //         description: "Could not load image dimensions.",
+  //         variant: "destructive",
+  //       });
+  //       setIsLoadingImage(false);
+  //       URL.revokeObjectURL(img.src);
+  //     };
+  //     img.src = URL.createObjectURL(file);
+  //   } catch (error) {
+  //     console.error("Error processing image element:", error);
+  //     console.table({
+  //       title: "Upload Error",
+  //       description: `${error.message}`,
+  //       variant: "destructive",
+  //     });
+  //     setIsLoadingImage(false);
+  //   } finally {
+  //     if (event.target) event.target.value = "";
+  //   }
+  // };
+
+  // const handleApparelBaseImageUpload = (event, view) => {
+  //   const file = event.target.files?.[0];
+  //   if (file && currentDesignId) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       const imageUrl = e.target?.result;
+  //       if (typeof imageUrl === "string") {
+  //         setApparelBaseImage({ view, imageUrl });
+  //       }
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  //   event.target.value = "";
+  // };
 
   return (
     <aside
@@ -546,24 +611,28 @@ const Sidebar = () => {
           </Label>
           <div
             id="base-apparel-images-controls"
-            className="grid grid-cols-2 gap-2 mt-1"
+            className="grid grid-cols-1 gap-2 mt-1"
           >
             <Button
               variant="outline"
-              size="sm"
-              onClick={() => frontImageInputRef.current?.click()}
+              size=""
+              className="h-10"
+              onClick={() => triggerGarmentFileInput(activeView)}
             >
-              <UploadCloud size={14} className="mr-1.5" /> Front
+              <Upload size={14} className="mr-1.5" /> Upload for {activeView}
             </Button>
-            <input
-              type="file"
-              ref={frontImageInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={(e) => handleApparelBaseImageUpload(e, "front")}
-            />
+            {views.map((view) => (
+              <input
+                key={view}
+                type="file"
+                ref={garmentFileInputRefs[view]}
+                onChange={(e) => handleGarmentFileChange(e, view)}
+                accept="image/png, image/jpeg, image/webp"
+                className="hidden"
+              />
+            ))}
 
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               onClick={() => backImageInputRef.current?.click()}
@@ -606,14 +675,14 @@ const Sidebar = () => {
               className="hidden"
               accept="image/*"
               onChange={(e) => handleApparelBaseImageUpload(e, "right")}
-            />
+            /> */}
           </div>
 
           <header className="flex justify-between gap-5 items-center mt-5">
             <Button
               variant="outline"
               className="h-12"
-              onClick={() => handleAddElement("image")}
+              onClick={triggerDesignImageInput}
             >
               <NextImage
                 src={"/design/icons/image.svg"}
@@ -627,15 +696,15 @@ const Sidebar = () => {
                 id="imageUploadInput"
                 accept="image/*"
                 className="hidden"
-                ref={imageElementInputRef}
-                onChange={handleImageUpload}
+                ref={designImageInputRef}
+                onChange={handleDesignImageUpload}
               />
             </Button>
 
             <Button
               variant="outline"
               className="h-12"
-              onClick={() => handleAddElement("text")}
+              onClick={() => addObject("text")}
             >
               <NextImage
                 src={"/design/icons/text-creation.svg"}
@@ -660,20 +729,16 @@ const Sidebar = () => {
               </PopoverTrigger>
               <PopoverContent>
                 <div className="grid grid-cols-5">
-                  {shapes.map((shape) => (
+                  {SHAPES.map((shape) => (
                     <Button
                       variant="ghost"
                       key={shape.id}
                       className="p-0 h-12"
-                      onClick={() =>
-                        handleAddElement("shape", { shapeType: shape.id })
-                      }
+                      onClick={() => handleShapeClick(shape)}
                     >
                       <svg
-                        width="40"
-                        height="40"
-                        viewBox={shape.viewBox}
-                        className="text-black w-full"
+                        viewBox="0 0 24 24"
+                        className="w-full h-full text-foreground group-hover:text-accent-foreground"
                       >
                         <path d={shape.path} fill="currentColor" />
                       </svg>
@@ -685,7 +750,7 @@ const Sidebar = () => {
           </header>
 
           {/* product colors */}
-          <div className="mt-5">
+          {/* <div className="mt-5">
             <p className="text-lg font-semibold">Choose a product color</p>
 
             <div className="flex gap-1.5 flex-wrap mt-2">
@@ -706,7 +771,7 @@ const Sidebar = () => {
                   )}
                   style={{ backgroundColor: color.color }}
                 >
-                  {/* {(selectedColor === color.id ||
+                  {(selectedColor === color.id ||
                     selectedProductColor === color.color) && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -727,11 +792,11 @@ const Sidebar = () => {
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                  )} */}
+                  )}
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* brands */}
           <div className="mt-12">

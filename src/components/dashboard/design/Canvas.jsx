@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import useDesignStore from "@/store/DesignStore";
+// import useDesignStore from "@/store/DesignStore";
 // import useImage from "use-image";
 import ApparelView from "./ApparelView";
 import ElementRenderer from "./ElementRenderer";
@@ -45,6 +45,19 @@ import { LuAlignEndHorizontal } from "react-icons/lu";
 import { PiAlignCenterHorizontal } from "react-icons/pi";
 import { CiAlignLeft, CiAlignRight, CiAlignTop } from "react-icons/ci";
 import NextImage from "next/image";
+import dynamic from "next/dynamic";
+import { useDesignStore } from "@/store/design-store";
+import ContextMenu from "./ContextMenu";
+
+const CanvasArea = dynamic(
+  () => import("@/components/dashboard/design/CanvasArea"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-ful w-ful bg-muted animate-pulse rounded-lg" />
+    ),
+  }
+);
 
 // Element components
 const TextElement = ({ element, isSelected, onSelect }) => {
@@ -236,132 +249,153 @@ const MAX_ZOOM = 3.0;
 const ZOOM_STEP = 0.1;
 
 const Canvas = () => {
+  const [stageSize, setStageSize] = useState({ width: 450, height: 422 });
+  const containerRef = useRef(null);
+
   const {
-    designs,
-    currentDesignId,
-    selectedElementId,
-    selectElement,
-    deleteElement,
-    bringElementToFront,
-    sendElementToBack,
-    bringElementForward,
-    sendElementBackward,
+    activeView,
+    setActiveView,
+    clearCanvas,
     undo,
     redo,
-    updateApparelView,
+    history,
+    historyStep,
+    zoom,
+    setZoom,
+    hideContextMenu,
+    getDesignData,
   } = useDesignStore();
 
-  const currentDesign = designs?.find((d) => d.id === currentDesignId);
+  // const {
+  //   designs,
+  //   currentDesignId,
+  //   selectedElementId,
+  //   selectElement,
+  //   deleteElement,
+  //   bringElementToFront,
+  //   sendElementToBack,
+  //   bringElementForward,
+  //   sendElementBackward,
+  //   undo,
+  //   redo,
+  //   updateApparelView,
+  // } = useDesignStore();
 
-  const [contextMenu, setContextMenu] = useState({
-    open: false,
-    x: 0,
-    y: 0,
-    elementId: null,
-  });
+  // const currentDesign = designs?.find((d) => d.id === currentDesignId);
 
-  const [zoomLevel, setZoomLevel] = useState(1.0);
+  // const [contextMenu, setContextMenu] = useState({
+  //   open: false,
+  //   x: 0,
+  //   y: 0,
+  //   elementId: null,
+  // });
 
-  const handleZoomChange = (newZoom) => {
-    const val = Array.isArray(newZoom) ? newZoom[0] : newZoom;
-    setZoomLevel(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, val)));
-  };
+  // const [zoomLevel, setZoomLevel] = useState(1.0);
 
-  const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(MAX_ZOOM, prev + ZOOM_STEP));
-  };
+  // const handleZoomChange = (newZoom) => {
+  //   const val = Array.isArray(newZoom) ? newZoom[0] : newZoom;
+  //   setZoomLevel(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, val)));
+  // };
 
-  const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(MIN_ZOOM, prev - ZOOM_STEP));
-  };
+  // const handleZoomIn = () => {
+  //   setZoomLevel((prev) => Math.min(MAX_ZOOM, prev + ZOOM_STEP));
+  // };
 
-  const handleCanvasClick = (e) => {
-    const target = e.target;
-    if (target.closest("#zoom-controls-bar")) {
-      return;
-    }
-    if (
-      target === e.currentTarget ||
-      target.id === "design-canvas-scroll-container" ||
-      target.id === "design-canvas-scaler"
-    ) {
-      selectElement({ elementId: null });
-    }
-    if (contextMenu.open) {
-      setContextMenu((prev) => ({ ...prev, open: false }));
-    }
-  };
+  // const handleZoomOut = () => {
+  //   setZoomLevel((prev) => Math.max(MIN_ZOOM, prev - ZOOM_STEP));
+  // };
 
-  const handleElementContextMenu = (event, elementId) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (selectedElementId !== elementId) {
-      selectElement({ elementId });
-    }
-    setContextMenu({
-      open: true,
-      x: event.clientX,
-      y: event.clientY,
-      elementId,
-    });
-  };
+  // const handleCanvasClick = (e) => {
+  //   const target = e.target;
+  //   if (target.closest("#zoom-controls-bar")) {
+  //     return;
+  //   }
+  //   if (
+  //     target === e.currentTarget ||
+  //     target.id === "design-canvas-scroll-container" ||
+  //     target.id === "design-canvas-scaler"
+  //   ) {
+  //     selectElement({ elementId: null });
+  //   }
+  //   if (contextMenu.open) {
+  //     setContextMenu((prev) => ({ ...prev, open: false }));
+  //   }
+  // };
 
-  const handleContextMenuClose = (isOpen) => {
-    if (!isOpen) {
-      setContextMenu((prev) => ({ ...prev, open: false, elementId: null }));
-    }
-  };
+  // const handleElementContextMenu = (event, elementId) => {
+  //   event.preventDefault();
+  //   event.stopPropagation();
+  //   if (selectedElementId !== elementId) {
+  //     selectElement({ elementId });
+  //   }
+  //   setContextMenu({
+  //     open: true,
+  //     x: event.clientX,
+  //     y: event.clientY,
+  //     elementId,
+  //   });
+  // };
 
-  const handleDeleteElementFromMenu = () => {
-    if (contextMenu.elementId) {
-      deleteElement({ elementId: contextMenu.elementId });
-      // toast({ title: "Element Deleted", description: "The element has been removed." });
-      handleContextMenuClose(false);
-    }
-  };
+  // const handleContextMenuClose = (isOpen) => {
+  //   if (!isOpen) {
+  //     setContextMenu((prev) => ({ ...prev, open: false, elementId: null }));
+  //   }
+  // };
 
-  const handleBringToFrontFromMenu = () => {
-    if (contextMenu.elementId)
-      bringElementToFront({ elementId: contextMenu.elementId });
-  };
-  const handleSendToBackFromMenu = () => {
-    if (contextMenu.elementId)
-      sendElementToBack({ elementId: contextMenu.elementId });
-  };
-  const handleBringForwardFromMenu = () => {
-    if (contextMenu.elementId)
-      bringElementForward({ elementId: contextMenu.elementId });
-  };
-  const handleSendBackwardFromMenu = () => {
-    if (contextMenu.elementId)
-      sendElementBackward({ elementId: contextMenu.elementId });
-  };
+  // const handleDeleteElementFromMenu = () => {
+  //   if (contextMenu.elementId) {
+  //     deleteElement({ elementId: contextMenu.elementId });
+  //     // toast({ title: "Element Deleted", description: "The element has been removed." });
+  //     handleContextMenuClose(false);
+  //   }
+  // };
 
-  const canUndo = currentDesign ? (currentDesign.historyIndex || 0) > 0 : false;
-  const canRedo = currentDesign
-    ? (currentDesign.historyIndex || 0) <
-      (currentDesign.history || []).length - 1
-    : false;
+  // const handleBringToFrontFromMenu = () => {
+  //   if (contextMenu.elementId)
+  //     bringElementToFront({ elementId: contextMenu.elementId });
+  // };
+  // const handleSendToBackFromMenu = () => {
+  //   if (contextMenu.elementId)
+  //     sendElementToBack({ elementId: contextMenu.elementId });
+  // };
+  // const handleBringForwardFromMenu = () => {
+  //   if (contextMenu.elementId)
+  //     bringElementForward({ elementId: contextMenu.elementId });
+  // };
+  // const handleSendBackwardFromMenu = () => {
+  //   if (contextMenu.elementId)
+  //     sendElementBackward({ elementId: contextMenu.elementId });
+  // };
 
-  useEffect(() => {
-    const handleEsc = (event) => {
-      if (event.key === "Escape" && contextMenu.open) {
-        handleContextMenuClose(false);
-      }
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => {
-      window.removeEventListener("keydown", handleEsc);
-    };
-  }, [contextMenu.open]);
+  // const canUndo = currentDesign ? (currentDesign.historyIndex || 0) > 0 : false;
+  // const canRedo = currentDesign
+  //   ? (currentDesign.historyIndex || 0) <
+  //     (currentDesign.history || []).length - 1
+  //   : false;
 
-  const visibleElements = currentDesign
-    ? (currentDesign.elements || []).filter(
-        (el) => el.associatedView === currentDesign.apparelView
-      )
-    : [];
+  // useEffect(() => {
+  //   const handleEsc = (event) => {
+  //     if (event.key === "Escape" && contextMenu.open) {
+  //       handleContextMenuClose(false);
+  //     }
+  //   };
+  //   window.addEventListener("keydown", handleEsc);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleEsc);
+  //   };
+  // }, [contextMenu.open]);
+
+  // const visibleElements = currentDesign
+  //   ? (currentDesign.elements || []).filter(
+  //       (el) => el.associatedView === currentDesign.apparelView
+  //     )
+  //   : [];
 
   const isMobile = useMediaQuery("(max-width: 1024px)");
+
+  const handleViewChange = (v) => {
+    setActiveView(v);
+  };
 
   return (
     <main className="flex-1 bg-off-white h-[3000px] overflow-y-auto no-scrollbar">
@@ -370,7 +404,7 @@ const Canvas = () => {
       {isMobile && <MobileHeader />}
 
       {/* text toolbar for mobile */}
-      {isMobile && (
+      {/* {isMobile && (
         <nav className="bg-white shadow-md rounded-md p-2 mx-auto w-max mt-3">
           <div className="flex items-center gap-2">
             <div>
@@ -469,33 +503,40 @@ const Canvas = () => {
             />
           </div>
         </nav>
-      )}
+      )} */}
 
       <section className="flex flex-col items-center justify-center lg:h-[calc(100vh-4rem)] mt-10 lg:mt-0 overflow-auto">
         <header className="p-2 lg:bg-primary md:w-[450px] w-[80%] max-w-[450px] rounded-md mb-4 flex items-center gap-3 px-4">
           <div
             className="grid place-items-center size-[30px] bg-dark-gray rounded-md cursor-pointer"
-            // onClick={clearCanvas}
+            onClick={clearCanvas}
           >
             <Trash2 color="white" size={20} />
           </div>
 
           <div
-            className={`cursor-pointer ${canUndo ? "" : "opacity-50"}`}
+            className={`cursor-pointer ${historyStep <= 0 ? "" : "opacity-50"}`}
             onClick={undo}
+            disabled={historyStep <= 0}
           >
             <Undo
-              color={canUndo ? "white" : "rgb(255,255,255,0.44)"}
+              color={historyStep ? "white" : "rgb(255,255,255,0.44)"}
               size={20}
             />
           </div>
 
           <div
-            className={`cursor-pointer ${canRedo ? "" : "opacity-50"}`}
+            className={`cursor-pointer ${
+              historyStep >= history.length - 1 ? "" : "opacity-50"
+            }`}
             onClick={redo}
           >
             <Redo
-              color={canRedo ? "white" : "rgb(255,255,255,0.44)"}
+              color={
+                historyStep >= history.length - 1
+                  ? "white"
+                  : "rgb(255,255,255,0.44)"
+              }
               size={20}
             />
           </div>
@@ -510,12 +551,12 @@ const Canvas = () => {
           <div className="lg:ml-auto">
             <div className="hidden lg:block">
               <Select
-                value={currentDesign.apparelView}
-                onValueChange={(value) => updateApparelView({ view: value })}
+                value={activeView}
+                onValueChange={(value) => handleViewChange(value)}
               >
                 <SelectTrigger className="bg-dark-gray data-[placeholder]:text-white rounded-md cursor-pointer border-none gap-2 text-white">
                   <SelectValue
-                    placeholder={currentDesign.apparelView}
+                    placeholder={activeView}
                     className="text-white capitalize"
                   />
                 </SelectTrigger>
@@ -530,7 +571,7 @@ const Canvas = () => {
           </div>
         </header>
 
-        <section
+        {/* <section
           className="md:w-[450px] md:h-[425px] w-[80%] max-w-[450px] bg-white border border-primary/40 rounded-md shadow-sm overflow-hidde"
           id="design-canvas-scaler"
           onContextMenu={(e) => {
@@ -581,9 +622,16 @@ const Canvas = () => {
               )}
             </div>
           </div>
-        </section>
+        </section> */}
 
-        {contextMenu.open && contextMenu.elementId && (
+        <div
+          ref={containerRef}
+          className="mt-4 aspect-square w-ful bg-muted rounded-lg border-2 border-dashed overflow-hidden"
+        >
+          <CanvasArea stageSize={stageSize} />
+        </div>
+
+        {/* {contextMenu.open && contextMenu.elementId && (
           <DropdownMenu
             open={contextMenu.open}
             onOpenChange={handleContextMenuClose}
@@ -622,8 +670,10 @@ const Canvas = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )}
+        )} */}
       </section>
+
+      <ContextMenu />
     </main>
   );
 };

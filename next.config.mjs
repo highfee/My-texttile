@@ -24,6 +24,13 @@ const nextConfig = {
         pathname: "/dhptrkobw/image/upload/**",
         search: "",
       },
+      {
+        protocol: "http",
+        hostname: "23.88.47.163",
+        port: "",
+        pathname: "/media/**",
+        search: "",
+      },
     ],
   },
 

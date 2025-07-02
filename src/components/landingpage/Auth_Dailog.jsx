@@ -107,7 +107,7 @@ const Auth_Dailog = () => {
     <>
       <AlertDialogContent
         className={cn(
-          "max-w-[90%] md:max-w-[850px] md:min-w-[650px] lg:min-w-[950px] max-h-[95vh]  overflow-auto",
+          "max-w-[90%] md:max-w-[850px] md:min-w-[650px] lg:min-w-[1100px] max-h-[95vh]  overflow-auto",
           { "p-0": ["checkout"].includes(activeComponent) }
         )}
       >
@@ -1054,8 +1054,8 @@ function PlanCard({
 const Checkout = ({ setActiveComponent }) => {
   const [method, setMethod] = useState("card");
   return (
-    <section className="grid grid-cols-5 grid-rows-6 min-h-[650px]">
-      <div className="col-span-3 row-span-6 p-7 py-7 flex flex-col justify-between gap-10">
+    <section className="grid grid-cols-7 grid-rows-6 min-h-[650px]">
+      <div className="col-span-4 row-span-6 p-7 py-7 flex flex-col justify-between gap-10">
         <div>
           <p className="font-bold text-2xl text-gray-900">Checkout</p>
           <p className="text-xs text-gray-600 my-4">
@@ -1180,10 +1180,52 @@ const Checkout = ({ setActiveComponent }) => {
       </div>
 
       {/*  */}
-      <div className="col-span-2 row-span-2 bg-black"></div>
+      <section className="col-span-3 row-span-2 bg-black relative">
+        <div className="p-5 absolute bottom-0 translate-y-1/2 bg-bluebutton rounded-lg left-1/2 -translate-x-1/2 w-[80%] text-white">
+          <header className="flex items-center justify-between">
+            <div className="text-lg font-medium">
+              <p>Tier 3</p>
+              <p className="text-gray-300">Pro Creator</p>
+            </div>
+            <p className="text-3xl">$7</p>
+          </header>
+
+          <p className="text-gray-300 text- my-4">
+            Your Creative Starting Point: A solid foundation for new creators.
+          </p>
+
+          <p className="text-">$1000 in total sales or 50 products sold.</p>
+
+          <p className="text-gray-300 mt-3 mb-1 text-center">OR</p>
+          <Button className="h-12 bg-white text-black w-full">
+            Buy this plan for $69.99
+          </Button>
+        </div>
+      </section>
 
       {/*  */}
-      <div className="col-span-2 row-span-4 bg-[#F2F8FD]"></div>
+      <div className="col-span-3 row-span-4 bg-[#F2F8FD] ">
+        <div className="h-full flex flex-col justify-end gap-2 w-[80%] mx-auto pb-14">
+          {[
+            <>
+              Everything from{" "}
+              <span className="font-bold text-black">
+                Emerging Creator tier.
+              </span>
+            </>,
+            "Unlimited design",
+            "Ability to set promotional prices and create discount sales codes",
+            "Featured on platform as a top creator in relevant categories",
+          ].map((feature, index) => (
+            <li key={index} className="flex items-center ">
+              <div>
+                <GiCheckMark className="text-black mr-2" />
+              </div>
+              <p>{feature}</p>
+            </li>
+          ))}
+        </div>
+      </div>
     </section>
   );
 };

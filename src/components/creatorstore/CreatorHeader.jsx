@@ -23,7 +23,7 @@ export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
           </span>
           {/* <span className="text-sm text-gray-700">My-Store</span> */}
           <Image
-            src={data?.shop_logo}
+            src={"http://23.88.47.163" + data?.shop_logo}
             alt="Logo"
             width={50}
             height={50}

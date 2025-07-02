@@ -8,7 +8,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, Eye, EyeOff, Loader, Lock, X } from "lucide-react";
+import { ChevronLeft, Copy, Eye, EyeOff, Loader, Lock, X } from "lucide-react";
 import { Button, buttonVariants } from "../ui/button";
 import Image from "next/image";
 
@@ -38,52 +38,120 @@ import { useRouter } from "next/navigation";
 import { authService } from "@/lib/authService";
 import { useRegisterStore } from "@/store/registerStore";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { GiCheckMark } from "react-icons/gi";
+
+const plans = [
+  {
+    title: "Free plan",
+    price: "0",
+    description:
+      "Your Creative Starting Point. A solid foundation for new creators.",
+    features: [
+      <>
+        ✔ <strong>Access</strong> to product creation tools (print-on-demand)
+      </>,
+      "✔ Ability to list products in the store",
+      "✔ Limited design amount peaked at 10 designs max",
+    ],
+    buttonText: "Active",
+    isActive: true,
+    badge: null,
+    isPopular: false,
+    idealFor: "Ideal For: Hobbyists",
+  },
+  {
+    title: "Tier 2",
+    price: "19",
+    description: "Sell 10 products, or $200 in total revenue",
+    features: [
+      "✔ Everything from the Starter Creator tier",
+      <>
+        ✔ <strong>25 designs</strong> max
+      </>,
+      "✔ Access to the Affiliate Program",
+      "✔ Access to advanced design features",
+      "✔ Enhanced analytics dashboard",
+      "✔ Early access to new platform features",
+    ],
+    buttonText: "Buy this plan for $19",
+    isActive: false,
+    badge: "Emerging Creator",
+    isPopular: true,
+    idealFor: "Ideal For: Entrepreneurs",
+  },
+  {
+    title: "Tier 3",
+    price: "69.99",
+    description: "$1000 in total sales or 50 products sold.",
+    features: [
+      "✔ Everything from the Emerging Creator tier",
+      <>
+        ✔ <strong>Unlimited</strong> designs
+      </>,
+      "✔ Ability to set promotional prices and create discount codes",
+      "✔ Featured on platform as a top creator in relevant categories",
+    ],
+    buttonText: "Buy this plan for $69.99",
+    isActive: false,
+    badge: "Pro Creator",
+    isPopular: false,
+    idealFor: "Ideal For: Enterprises",
+  },
+];
 
 const Auth_Dailog = () => {
-  const [activeComponent, setActiveComponent] = useState("login");
+  const [activeComponent, setActiveComponent] = useState("pricing");
 
   return (
     <>
-      <AlertDialogContent className="max-w-[90%] md:max-w-[800px] md:min-w-[650px] lg:min-w-[800px] max-h-[95vh]  overflow-auto">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex justify-center md:justify-start">
-            <Image
-              src="/mytexttile-logo.svg"
-              alt="Alert Dialog"
-              width={200}
-              height={100}
-              className="lg:mb-4 w-28 "
-            />
-          </AlertDialogTitle>
-          <AlertDialogDescription className=" md:mx-10">
-            {activeComponent === "login" && (
-              <div className="flex gap-4 items-center justify-between">
-                <p className="text-sm md:text-xl font-semibold text-gray-800 w-ma">
-                  Welcome Back to MyTextil,{" "}
-                  <span className="text-bluebutton">Sign in</span>
-                </p>
-                <Button
-                  onClick={() => setActiveComponent("register")}
-                  className="h-8 md:h-9 text-sm md:text-base"
-                >
-                  Register
-                </Button>
-              </div>
-            )}
-            {activeComponent === "register" && (
-              <>
-                <p className="text-sm md:text-xl font-semibold text-gray-800 ">
-                  Create with Mytextil, Sell on Social
-                </p>
-                <small>
-                  Use your email or another service to continue with MyTextil
-                  (It
-                  {"'"}s free)
-                </small>
-              </>
-            )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <AlertDialogContent
+        className={cn(
+          "max-w-[90%] md:max-w-[850px] md:min-w-[650px] lg:min-w-[950px] max-h-[95vh]  overflow-auto",
+          { "p-0": ["checkout"].includes(activeComponent) }
+        )}
+      >
+        {!["pricing", "checkout"].includes(activeComponent) && (
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex justify-center md:justify-start">
+              <Image
+                src="/mytexttile-logo.svg"
+                alt="Alert Dialog"
+                width={200}
+                height={100}
+                className="lg:mb-4 w-28 "
+              />
+            </AlertDialogTitle>
+            <AlertDialogDescription className=" md:mx-10">
+              {activeComponent === "login" && (
+                <div className="flex gap-4 items-center justify-between">
+                  <p className="text-sm md:text-xl font-semibold text-gray-800 w-ma">
+                    Welcome Back to MyTextil,{" "}
+                    <span className="text-bluebutton">Sign in</span>
+                  </p>
+                  <Button
+                    onClick={() => setActiveComponent("register")}
+                    className="h-8 md:h-9 text-sm md:text-base"
+                  >
+                    Register
+                  </Button>
+                </div>
+              )}
+              {activeComponent === "register" && (
+                <>
+                  <p className="text-sm md:text-xl font-semibold text-gray-800 ">
+                    Create with Mytextil, Sell on Social
+                  </p>
+                  <small>
+                    Use your email or another service to continue with MyTextil
+                    (It
+                    {"'"}s free)
+                  </small>
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        )}
 
         <section className="">
           {activeComponent === "login" && (
@@ -101,22 +169,32 @@ const Auth_Dailog = () => {
           {activeComponent === "confirmation" && (
             <Confirmation setActiveComponent={setActiveComponent} />
           )}
+
+          {activeComponent === "pricing" && (
+            <Pricing setActiveComponent={setActiveComponent} />
+          )}
+
+          {activeComponent === "checkout" && (
+            <Checkout setActiveComponent={setActiveComponent} />
+          )}
         </section>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                size: "icon",
-              }),
-              "w-5 md:w-8 h-5 md:h-8 bg-bluebutton rounded-full hover:bg-blue-600 border-0 absolute top-2 m:-right-20 right-2"
-            )}
-          >
-            <X color="white" size={25} />
-          </AlertDialogCancel>
-          {/* <AlertDialogAction>Continue</AlertDialogAction> */}
-        </AlertDialogFooter>
+        {!["pricing", "checkout"].includes(activeComponent) && (
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className={cn(
+                buttonVariants({
+                  variant: "ghost",
+                  size: "icon",
+                }),
+                "w-5 md:w-8 h-5 md:h-8 bg-bluebutton rounded-full hover:bg-blue-600 border-0 absolute top-2 m:-right-20 right-2"
+              )}
+            >
+              <X color="white" size={25} />
+            </AlertDialogCancel>
+            {/* <AlertDialogAction>Continue</AlertDialogAction> */}
+          </AlertDialogFooter>
+        )}
       </AlertDialogContent>
     </>
   );
@@ -436,9 +514,7 @@ const RegisterForm = ({ setActiveComponent }) => {
 
   function onSubmit(values) {
     registerMutation.mutate({
-      first_name: values.name.split(" ")[0],
-      last_name: values.name.split(" ")[1] || "Dummy",
-      // name: values.name,
+      name: values.name,
       email: values.email,
       password: values.password,
     });
@@ -607,7 +683,7 @@ const Confirmation = ({ setActiveComponent }) => {
     },
     onSuccess: (data) => {
       if (data["response status"] === "success") {
-        // setShowCreateAccount(true);
+        setActiveComponent("pricing");
       } else {
         setError(data["response description"] || "Invalid or expired code");
       }
@@ -744,6 +820,370 @@ const Confirmation = ({ setActiveComponent }) => {
       <p className="text-sm text-center text-gray-400 mt-4 md:mt-10">
         Please check your email for the confirmation email
       </p>
+    </section>
+  );
+};
+
+const Pricing = ({ setActiveComponent }) => {
+  const [monthly, setMonthly] = useState(true);
+  return (
+    <section>
+      <header className="fle items-center justify-between relative">
+        <span> </span>
+        <p className="font-semibold text-2xl text-center">
+          Upgrade to enjoy the best of MyTextil
+        </p>
+        <Button
+          className={cn(
+            buttonVariants({
+              variant: "ghost",
+              size: "icon",
+            }),
+            "text-gray-500 bg-transparent shadow-none hover:bg-transparent border-0 absolute top-0 right-0"
+          )}
+          onClick={() => setActiveComponent("login")}
+        >
+          Skip
+        </Button>
+      </header>
+
+      <p className="text-gray-600 text-center mt-3  text-xs">
+        Tier 2 offers you the best of our platform and fuels your dreams
+      </p>
+
+      <div className="flex items-center justify-center mt-11 gap-10 text-sm text-gray-500">
+        <p className={cn({ "font-semibold text-gray-800": monthly })}>
+          Monthly
+        </p>
+        <Switch
+          className="data-[state=checked]:bg-bluebutton"
+          onCheckedChange={() => setMonthly(!monthly)}
+        />
+        <p className={cn({ "font-semibold text-gray-800": !monthly })}>
+          Annually
+        </p>
+      </div>
+
+      {/* plans */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+        {/* {plans.map((plan, index) => (
+          <PricingCard key={index} {...plan} />
+        ))} */}
+        <PlanCard
+          title="Free plan"
+          subtitle="Starter Creator"
+          price="$0"
+          description="Your Creative Starting Point: A solid foundation for new creators."
+          heading="Basic Design Tools"
+          features={[
+            "Access to product creation tools (print-on-demand)",
+            "Ability to list products in the store",
+            <>
+              Limited designs amount peaked at{" "}
+              <spam span className="font-bold text-black">
+                10 designs max
+              </spam>{" "}
+              .
+            </>,
+          ]}
+          idealFor="hobbyists"
+          buttonText="Active"
+          tier="tier1"
+          buttonDisabled={false}
+          onClick={() => setActiveComponent("login")}
+        />
+
+        <PlanCard
+          title="Tier 2"
+          subtitle="Emerging Creator"
+          price={`$${monthly ? "19" : "200"}`}
+          description="Your Creative Starting Point: A solid foundation for new creators."
+          heading="Sell 10 products, or $200 in total revenue"
+          features={[
+            <>
+              Everything from the{" "}
+              <span className="font-bold text-black">
+                Starter creator tier.
+              </span>
+            </>,
+            <span className="font-bold text-black">25 designs max</span>,
+            "Access to Affiliate Program",
+            "Access to advanced design features",
+            "Enhanced analytics dashboard",
+            "Early access to new platform features",
+          ]}
+          idealFor="Entrepreneurs"
+          buttonText={`Buy this plan for $${monthly ? "19" : "200"}`}
+          tier="tier2"
+          extraText="OR"
+          onClick={() => setActiveComponent("checkout")}
+        />
+
+        <PlanCard
+          title="Tier 3"
+          subtitle="Pro Creator"
+          price={`$${monthly ? "69.99" : "899"}`}
+          description="Your Creative Starting Point: A solid foundation for new creators."
+          heading="$1000 in total sales or 50 products sold."
+          features={[
+            <>
+              Everything from{" "}
+              <span className="font-bold text-black">
+                Emerging Creator tier.
+              </span>
+            </>,
+            "Unlimited design",
+            "Ability to set promotional prices and create discount sales codes",
+            "Featured on platform as a top creator in relevant categories",
+          ]}
+          idealFor="Enterprises"
+          buttonText={`Buy this plan for $${monthly ? "69.99" : "899"}`}
+          tier="tier3"
+          extraText="OR"
+          onClick={() => setActiveComponent("checkout")}
+        />
+      </div>
+    </section>
+  );
+};
+
+function PlanCard({
+  title,
+  subtitle,
+  price,
+  description,
+  features,
+  idealFor,
+  buttonText,
+  buttonDisabled,
+  tier,
+  heading,
+  extraText,
+  onClick,
+}) {
+  return (
+    <div className="rounded-lg flex flex-col items-center text-center">
+      <div
+        className={`rounded-lg w-full p-4 h-[256px] flex flex-col justify-between ${
+          tier === "tier2" ? "bg-bluebutton" : "bg-bluebg"
+        }`}
+      >
+        <div>
+          <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col text-left">
+              <p
+                className={`text-[14px] font-semibold ${
+                  tier === "tier2" ? "text-white" : "text-black"
+                }`}
+              >
+                {title}
+              </p>
+              <p
+                className={`text-graycolor opacity-[0.44] text-[13px] ${
+                  tier === "tier2" ? "text-white" : "text-black"
+                }`}
+              >
+                {subtitle}
+              </p>
+            </div>
+            <h4
+              className={`text-3xl font-bold ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {price}
+            </h4>
+          </div>
+
+          <div className="flex flex-col items-start w-full text-left py-6 tracking-[-1px] leading-[19.6px]">
+            <p
+              className={`text-[13px] opacity-[0.44] ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {description}
+            </p>
+            <p
+              className={`text-[14px] font-semibold ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {heading}
+            </p>
+          </div>
+
+          {extraText && (
+            <p
+              className={`text-[12px] font-medium  ${
+                tier === "tier2" ? "text-white" : "text-black"
+              }`}
+            >
+              {extraText}
+            </p>
+          )}
+        </div>
+
+        {/* Button with Conditional Styling */}
+        <button
+          className={cn("w-full rounded-sm h-9 text-sm cursor-pointer", {
+            "bg-[#898F95] text-white ": tier === "tier1",
+            "bg-white text-gray-900 ": tier === "tier2",
+            "bg-black text-white ": tier === "tier3",
+          })}
+          disabled={buttonDisabled}
+          onClick={onClick}
+        >
+          {buttonText}
+        </button>
+      </div>
+      <ul className="text-sm text-gray-600 space-y-2 mt-4 text-left w-full">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-center">
+            <div>
+              <GiCheckMark className="text-black mr-2" />
+            </div>
+            <p>{feature}</p>
+          </li>
+        ))}
+        <li className="text-graycolor opacity-[0.44]">Ideal For: {idealFor}</li>
+      </ul>
+    </div>
+  );
+}
+
+const Checkout = ({ setActiveComponent }) => {
+  const [method, setMethod] = useState("card");
+  return (
+    <section className="grid grid-cols-5 grid-rows-6 min-h-[650px]">
+      <div className="col-span-3 row-span-6 p-7 py-7 flex flex-col justify-between gap-10">
+        <div>
+          <p className="font-bold text-2xl text-gray-900">Checkout</p>
+          <p className="text-xs text-gray-600 my-4">
+            Complete your subscription payment quickly and securely. Choose your
+            preferred payment methods.
+          </p>
+
+          <div className="flex justify-between items-center gap-5">
+            <Button
+              className={cn("h-12", {
+                "border-2 border-bluebutton": method === "card",
+              })}
+              variant="outline"
+              onClick={() => setMethod("card")}
+            >
+              <Image
+                src={"/signup/mastercard.svg"}
+                alt=""
+                height={20}
+                width={20}
+              />
+              Card Payment
+            </Button>
+            <Button
+              className={cn("h-12", {
+                "border-2 border-bluebutton": method === "crypto",
+              })}
+              variant="outline"
+              onClick={() => setMethod("crypto")}
+            >
+              <Image src={"/signup/crypto.svg"} alt="" height={20} width={20} />
+              Pay with crypto
+            </Button>
+            <Button
+              className={cn("h-12", {
+                "border-2 border-bluebutton": method === "paypal",
+              })}
+              variant="outline"
+              onClick={() => setMethod("paypal")}
+              disabled
+            >
+              <Image src={"/signup/paypal.svg"} alt="" height={20} width={20} />
+              Paypal
+            </Button>
+          </div>
+        </div>
+
+        {/* card details */}
+        {method === "card" && (
+          <div className="">
+            <div className="grid grid-cols-2 gap-5">
+              <div className="col-span-2">
+                <Label>Credit card number</Label>
+                <Input
+                  placeholder="xxxx   -   xxxx   -   xxx   -   xxxx "
+                  className="h-12 text-base focus-visible:ring-bluebutton "
+                />
+              </div>
+              <div>
+                <Label>Exp. date</Label>
+                <Input
+                  placeholder="12/27"
+                  className="h-12 text-base focus-visible:ring-bluebutton"
+                />
+              </div>
+
+              <div>
+                <Label>CVV</Label>
+                <Input
+                  placeholder="****"
+                  className="h-12 text-base focus-visible:ring-bluebutton"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {method === "crypto" && (
+          <div className="grid place-items-center gap-5">
+            <p className="text-sm text-gray-600 ">Scan to make Payment</p>
+            <Image
+              src={"/signup/qr.svg"}
+              alt="crypto-qr"
+              height={150}
+              width={150}
+            />
+
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-blue max-w-[240px] overflow-clip overflow-ellipsis">
+                0xfd6423ca76a0bb9520c7f8c8969156cd17ef3g3h3j4jkkk4l6l6lllbhgy5n6k
+              </p>
+
+              <span className="flex items-center gap-1 cursor-pointer text-xs bg-gray-100 text-gray-500 p-0.5 px-1 rounded-md hover:bg-gray-200">
+                <Copy size={10} className="text-gray-500" onClick={() => {}} />
+                <p>Copy</p>
+              </span>
+            </div>
+
+            <Button variant="ghost" className="text-base">
+              Connect Wallet
+            </Button>
+          </div>
+        )}
+
+        <div>
+          <p className="text-gray-700 text-lg font-medium mb-4">
+            Order Summary
+          </p>
+          <div className="font-bold text-sm flex justify-between items-center mb-3">
+            <p>Tier 3- Pro Creator</p>
+            <p>{"a"}</p>
+          </div>
+          <div className="font-bold text-sm flex justify-between items-center">
+            <p>Tax/fees</p>
+            <p>{"a"}</p>
+          </div>
+
+          <Button className="w-full h-12 my-5 text-lg font-light">
+            Make Payment
+          </Button>
+        </div>
+      </div>
+
+      {/*  */}
+      <div className="col-span-2 row-span-2 bg-black"></div>
+
+      {/*  */}
+      <div className="col-span-2 row-span-4 bg-[#F2F8FD]"></div>
     </section>
   );
 };

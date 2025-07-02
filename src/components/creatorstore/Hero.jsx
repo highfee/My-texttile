@@ -39,7 +39,7 @@ const Hero = ({ heroState, setHeroState, data }) => {
     <div className="w-full leading-[100%] tracking-[-0.02em]">
       <div className="relative w-full h-[400px] isolate">
         <img
-          src={data?.shop_banner}
+          src={"http://23.88.47.163" + data?.shop_banner}
           alt="Hero"
           className="w-full h-full object-cover isolate relative"
         />

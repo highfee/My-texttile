@@ -74,6 +74,7 @@ const Header = ({
   storeLogo,
   activeView,
 }) => {
+  console.log(storeLogo, "storeLogo in header");
   return (
     <header
       className={cn("flex justify-between items-center p-4 px-10", {
@@ -86,7 +87,7 @@ const Header = ({
         className={cn("flex items-center", { hidden: activeView === "mobile" })}
       >
         <Image
-          src={storeLogo}
+          src={"http://23.88.47.163" + storeLogo}
           alt="Store Logo"
           width={80}
           height={30}
@@ -165,7 +166,7 @@ const Hero = ({ activeView }) => {
         }
       )}
       style={{
-        backgroundImage: `url(${heroBannerImage})`,
+        backgroundImage: `url(${"http://23.88.47.163" + heroBannerImage})`,
       }}
     >
       <div className="absolute bg-black/50 inset-0 -z-10"></div>

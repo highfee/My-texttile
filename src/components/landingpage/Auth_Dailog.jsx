@@ -101,7 +101,7 @@ const plans = [
 ];
 
 const Auth_Dailog = () => {
-  const [activeComponent, setActiveComponent] = useState("pricing");
+  const [activeComponent, setActiveComponent] = useState("login");
 
   return (
     <>

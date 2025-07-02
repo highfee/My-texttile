@@ -22,12 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 import Image from "next/image";
 import {
@@ -54,11 +48,10 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 import { AVAILABLE_FONTS } from "@/constants";
-import ApparelView from "./ApparelView";
-import ElementRenderer from "./ElementRenderer";
+
 import { usePublishDesign } from "@/store/usePublishDesign";
 import { useMutation } from "@tanstack/react-query";
-import { useCreatorStore } from "@/store/useCreatorShopFront";
+// import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { httpClient } from "@/lib/httpClient";
 
 // import { PreviewOverlay } from "./PreviewOverlay";
@@ -79,9 +72,11 @@ const DesignPIC = dynamic(() => import("./DesignPIC"), {
 import {
   useDesignStore,
   useUpdateObjectAndHistory,
+  views,
 } from "@/store/design-store";
 import dynamic from "next/dynamic";
 import { Switch } from "@/components/ui/switch";
+import { get } from "react-hook-form";
 
 const fonts = [
   "Arial",
@@ -498,6 +493,8 @@ export const PublishOverlay = () => {
     productType,
   } = usePublishDesign();
 
+  const { getDesignData } = useDesignStore();
+
   const designMutation = useMutation({
     mutationFn: async (data) => {
       const response = await httpClient.post("/designs/create/", data, {
@@ -522,22 +519,97 @@ export const PublishOverlay = () => {
     },
   });
 
+  const handlePublish = async () => {
+    const stage = useDesignStore.getState().stageRef?.current;
+    if (!stage) {
+      console.error("Stage is not available.");
+      alert("Error: Design canvas not ready for publishing.");
+      return;
+    }
+
+    alert("Preparing template data... This may take a moment.");
+    console.log("Preparing template data...");
+
+    const {
+      activeView: originalView,
+      objects,
+      garmentImages,
+      setActiveView,
+      setSelectedId,
+    } = useDesignStore.getState();
+
+    const templatePayload = {
+      design_description: "My New Awesome Template",
+      product_category: "t_shirt",
+      shop_price: "100.00",
+      size: ["M", "L"],
+      isPublic: false,
+      password: "",
+      design_view_data: {},
+    };
+
+    setSelectedId(null);
+    const marginLayer = stage.findOne(".margin-layer");
+    if (marginLayer) {
+      marginLayer.hide();
+    }
+    stage.batchDraw();
+
+    for (const view of views) {
+      if (objects[view] && objects[view].length > 0) {
+        setActiveView(view);
+
+        // Wait for canvas to re-render with the new view's state
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const imageDataUrl = stage.toDataURL({
+          mimeType: "image/png",
+          quality: 1,
+          pixelRatio: 2,
+        });
+
+        templatePayload.design_view_data[view] = {
+          imageDataUrl,
+          designData: {
+            objects: objects[view],
+            garmentImage: garmentImages[view],
+          },
+        };
+        console.log(`Generated image and data for '${view}' view.`);
+      }
+    }
+
+    // Restore the canvas to its original state
+    if (marginLayer) {
+      marginLayer.show();
+    }
+    setActiveView(originalView);
+    stage.batchDraw();
+
+    // console.log("\n--- SAMPLE TEMPLATE PUBLISH REQUEST ---");
+    return JSON.stringify(templatePayload, null, 2);
+  };
   const onSubmit = () => {
+    const designData = getDesignData();
+    if (!designData) {
+      alert("Error: Design data is not available.");
+      return;
+    }
+
+    const templateData = handlePublish();
+    if (!templateData) {
+      alert("Error: Template data is not ready.");
+      return;
+    }
+
     const formData = new FormData();
-    // const emptyFile = new File([""], "empty.png", { type: "image/png" });
+    formData.append("design_data", templateData);
+    formData.append("product_name", productName);
+    formData.append("product_color", productColor);
+    formData.append("product_size", JSON.stringify(productSize));
+    formData.append("product_price", productPrice);
+    formData.append("product_type", productType);
 
-    formData.append("design_description", productName);
-    formData.append("product_category", productType);
-    formData.append("shop_price", productPrice);
-    // Create an empty file for front_view
-    // formData.append("front_view", emptyFile);
-    // formData.append("back_view", emptyFile);
-    // formData.append("left_view", emptyFile);
-    // formData.append("right_view", emptyFile);
-    formData.append("desgin_view_data", JSON.stringify(design));
-
-    // console.log(productType);
-    // console.log(JSON.stringify(design));
     designMutation.mutate(formData);
   };
 

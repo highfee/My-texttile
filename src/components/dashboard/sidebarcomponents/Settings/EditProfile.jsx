@@ -1,7 +1,8 @@
 import useAuthStore from "@/store/authStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUpdateUserProfile } from "@/store/apiCalls/useDesignStore";
 import { Loader } from "lucide-react";
+import { GetCountries } from "@/pages/api/countries";
 
 const EditProfile = ({ isOpen, onClose }) => {
   const { session } = useAuthStore();
@@ -17,10 +18,51 @@ const EditProfile = ({ isOpen, onClose }) => {
   });
 
   const { mutate, isLoading } = useUpdateUserProfile();
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await GetCountries();
+        //const data = response.json();
+        //console.log(response);
+        setCountries(response);
+      } catch (error) {
+        console.error("Failed to fetch countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "country_code") {
+      const selectedCountry = countries.find((c) => c.countryCode === value);
+      if (selectedCountry) {
+        setFormData((prev) => ({
+          ...prev,
+          country_code: value,
+          country: selectedCountry.name,
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, country_code: value }));
+      }
+    } else if (name === "country") {
+      const selectedCountry = countries.find((c) => c.name === value);
+      if (selectedCountry) {
+        setFormData((prev) => ({
+          ...prev,
+          country: value,
+          country_code: selectedCountry.countryCode,
+          postalCode: selectedCountry.postalCode || "",
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, country: value }));
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -83,8 +125,18 @@ const EditProfile = ({ isOpen, onClose }) => {
         />
         <label className="block text-sm font-medium">Mobile Number</label>
         <div className="flex space-x-2">
-          <select className="p-2 border rounded w-1/4">
-            <option>+1</option>
+          <select
+            name="country_code"
+            value={formData.country_code}
+            onChange={handleChange}
+            className="p-2 border rounded w-1/4"
+          >
+            <option value="">Code</option>
+            {countries.map((country) => (
+              <option key={country.code} value={country.countryCode}>
+                {country.countryCode}
+              </option>
+            ))}
           </select>
           <input
             type="tel"
@@ -99,17 +151,27 @@ const EditProfile = ({ isOpen, onClose }) => {
         <div className="flex flex-row gap-x-4">
           <div className="flex flex-col">
             <label className="block text-sm font-medium">Country</label>
-            <input
-              type="text"
-              placeholder="Afghanistan"
+            <select
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
               className="w-full p-2 border rounded"
-              disabled
-            />
+            >
+              <option value="">Select Country</option>
+              {countries.map((country) => (
+                <option key={country.code} value={country.name}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex flex-col">
             <label className="block text-sm font-medium">Postal Code</label>
             <input
               type="text"
+              name="postalCode"
+              value={formData.postalCode}
+              onChange={handleChange}
               placeholder="Enter postal code"
               className="w-full p-2 border rounded"
             />

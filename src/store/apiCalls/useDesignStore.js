@@ -35,7 +35,7 @@ const designApi = {
   },
 
   updateUserProfile: async (userData) => {
-    const response = await httpClient.post("/users/profile/update/", userData);
+    const response = await httpClient.put("/users/profile/update/", userData);
     return response.data.response_data;
   },
 

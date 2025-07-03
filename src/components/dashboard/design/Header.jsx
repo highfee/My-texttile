@@ -22,12 +22,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 import Image from "next/image";
 import {
@@ -54,11 +48,10 @@ import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 
 import { AVAILABLE_FONTS } from "@/constants";
-import ApparelView from "./ApparelView";
-import ElementRenderer from "./ElementRenderer";
+
 import { usePublishDesign } from "@/store/usePublishDesign";
 import { useMutation } from "@tanstack/react-query";
-import { useCreatorStore } from "@/store/useCreatorShopFront";
+// import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { httpClient } from "@/lib/httpClient";
 
 // import { PreviewOverlay } from "./PreviewOverlay";
@@ -79,9 +72,12 @@ const DesignPIC = dynamic(() => import("./DesignPIC"), {
 import {
   useDesignStore,
   useUpdateObjectAndHistory,
+  views,
 } from "@/store/design-store";
 import dynamic from "next/dynamic";
 import { Switch } from "@/components/ui/switch";
+import { get } from "react-hook-form";
+import { toast } from "sonner";
 
 const fonts = [
   "Arial",
@@ -498,47 +494,107 @@ export const PublishOverlay = () => {
     productType,
   } = usePublishDesign();
 
+  const { clearCanvasAndHistory } = useDesignStore();
+
   const designMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await httpClient.post("/designs/create/", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(response);
+      console.log(data);
+      const response = await httpClient.post("/designs/create/", data);
+
       return response.data;
     },
     onSuccess: (data) => {
-      router.push("/creatorstore");
       if (data["response status"] === "success") {
-        router.push("/creatorstore");
+        toast("Design created successfully");
+        clearCanvasAndHistory();
+        router.push("/dashboard/home");
       } else {
         setError(data["response description"] || "Error creating store");
+        console.log(data["response description"]);
+        toast(data["response description"] || "Error creating store");
       }
     },
     onError: (error) => {
-      setError(error.message || "Error creating store");
-      console.log(error);
+      toast(error.message || "Error creating store");
     },
   });
 
-  const onSubmit = () => {
-    const formData = new FormData();
-    // const emptyFile = new File([""], "empty.png", { type: "image/png" });
+  const handlePublish = async () => {
+    const stage = useDesignStore.getState().stageRef?.current;
+    if (!stage) {
+      console.error("Stage is not available.");
+      alert("Error: Design canvas not ready for publishing.");
+      return;
+    }
 
-    formData.append("design_description", productName);
-    formData.append("product_category", productType);
-    formData.append("shop_price", productPrice);
-    // Create an empty file for front_view
-    // formData.append("front_view", emptyFile);
-    // formData.append("back_view", emptyFile);
-    // formData.append("left_view", emptyFile);
-    // formData.append("right_view", emptyFile);
-    formData.append("desgin_view_data", JSON.stringify(design));
+    const {
+      activeView: originalView,
+      objects,
+      garmentImages,
+      setActiveView,
+      setSelectedId,
+    } = useDesignStore.getState();
 
-    // console.log(productType);
-    // console.log(JSON.stringify(design));
-    designMutation.mutate(formData);
+    const templatePayload = {
+      design_description: "Urban Explorer Collection",
+      product_category: "t_shirt",
+      shop_price: "100.00",
+      size: ["M", "L"],
+      isPublic: false,
+      password: "",
+      design_view_data: {},
+    };
+
+    setSelectedId(null);
+    const marginLayer = stage.findOne(".margin-layer");
+    if (marginLayer) {
+      marginLayer.hide();
+    }
+    stage.batchDraw();
+
+    for (const view of views) {
+      // We only want to process views that actually have designs
+      if (objects[view] && objects[view].length > 0) {
+        setActiveView(view);
+
+        // Wait for canvas to re-render with the new view's state
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const imageDataUrl = stage.toDataURL({
+          mimeType: "image/png",
+          quality: 1,
+          pixelRatio: 2,
+        });
+
+        templatePayload.design_view_data[view] = {
+          imageDataUrl,
+          designData: {
+            objects: objects[view],
+            garmentImage: garmentImages[view],
+          },
+        };
+        // console.log(`Generated image and data for '${view}' view.`);
+      }
+    }
+
+    // Restore the canvas to its original state
+    if (marginLayer) {
+      marginLayer.show();
+    }
+    setActiveView(originalView);
+    stage.batchDraw();
+
+    const payload = templatePayload;
+
+    // return JSON.stringify(templatePayload, null, 2);
+
+    return payload;
+  };
+
+  const onSubmit = async () => {
+    const designData = await handlePublish();
+    console.log(designData);
+    designMutation.mutate(designData);
   };
 
   const [openAccordion, setOpenAccordion] = React.useState(null);
@@ -640,7 +696,13 @@ export const PublishOverlay = () => {
           <DialogClose>
             <Button variant="outline">Back</Button>
           </DialogClose>
-          <Button onClick={onSubmit} className="w-24">
+
+          <Button
+            onClick={onSubmit}
+            // onClick={() => clearCanvasAndHistory()}
+            className="w-24"
+            disabled={designMutation.isPending}
+          >
             {designMutation.isPending ? (
               <Loader className=" animate-spin" />
             ) : (

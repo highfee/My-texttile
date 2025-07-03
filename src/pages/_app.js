@@ -5,6 +5,7 @@ import DashboardLayout from "@/components/dashboard/Layout/Dashboardlayout";
 import { QueryClientProvider } from "@tanstack/react-query";
 import getQueryClient from "@/lib/client";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function App({ Component, pageProps, router }) {
   // Use the appropriate layout based on route
@@ -29,6 +30,7 @@ export default function App({ Component, pageProps, router }) {
         }
       `}</style>
       <Component {...pageProps} />
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

@@ -77,6 +77,7 @@ import {
 import dynamic from "next/dynamic";
 import { Switch } from "@/components/ui/switch";
 import { get } from "react-hook-form";
+import { toast } from "sonner";
 
 const fonts = [
   "Arial",
@@ -493,29 +494,28 @@ export const PublishOverlay = () => {
     productType,
   } = usePublishDesign();
 
-  const { getDesignData } = useDesignStore();
+  const { clearCanvasAndHistory } = useDesignStore();
 
   const designMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await httpClient.post("/designs/create/", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(response);
+      console.log(data);
+      const response = await httpClient.post("/designs/create/", data);
+
       return response.data;
     },
     onSuccess: (data) => {
-      router.push("/creatorstore");
       if (data["response status"] === "success") {
-        router.push("/creatorstore");
+        toast("Design created successfully");
+        clearCanvasAndHistory();
+        router.push("/dashboard/home");
       } else {
         setError(data["response description"] || "Error creating store");
+        console.log(data["response description"]);
+        toast(data["response description"] || "Error creating store");
       }
     },
     onError: (error) => {
-      setError(error.message || "Error creating store");
-      console.log(error);
+      toast(error.message || "Error creating store");
     },
   });
 
@@ -527,9 +527,6 @@ export const PublishOverlay = () => {
       return;
     }
 
-    alert("Preparing template data... This may take a moment.");
-    console.log("Preparing template data...");
-
     const {
       activeView: originalView,
       objects,
@@ -539,7 +536,7 @@ export const PublishOverlay = () => {
     } = useDesignStore.getState();
 
     const templatePayload = {
-      design_description: "My New Awesome Template",
+      design_description: "Urban Explorer Collection",
       product_category: "t_shirt",
       shop_price: "100.00",
       size: ["M", "L"],
@@ -556,6 +553,7 @@ export const PublishOverlay = () => {
     stage.batchDraw();
 
     for (const view of views) {
+      // We only want to process views that actually have designs
       if (objects[view] && objects[view].length > 0) {
         setActiveView(view);
 
@@ -575,7 +573,7 @@ export const PublishOverlay = () => {
             garmentImage: garmentImages[view],
           },
         };
-        console.log(`Generated image and data for '${view}' view.`);
+        // console.log(`Generated image and data for '${view}' view.`);
       }
     }
 
@@ -586,31 +584,17 @@ export const PublishOverlay = () => {
     setActiveView(originalView);
     stage.batchDraw();
 
-    // console.log("\n--- SAMPLE TEMPLATE PUBLISH REQUEST ---");
-    return JSON.stringify(templatePayload, null, 2);
+    const payload = templatePayload;
+
+    // return JSON.stringify(templatePayload, null, 2);
+
+    return payload;
   };
-  const onSubmit = () => {
-    const designData = getDesignData();
-    if (!designData) {
-      alert("Error: Design data is not available.");
-      return;
-    }
 
-    const templateData = handlePublish();
-    if (!templateData) {
-      alert("Error: Template data is not ready.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("design_data", templateData);
-    formData.append("product_name", productName);
-    formData.append("product_color", productColor);
-    formData.append("product_size", JSON.stringify(productSize));
-    formData.append("product_price", productPrice);
-    formData.append("product_type", productType);
-
-    designMutation.mutate(formData);
+  const onSubmit = async () => {
+    const designData = await handlePublish();
+    console.log(designData);
+    designMutation.mutate(designData);
   };
 
   const [openAccordion, setOpenAccordion] = React.useState(null);
@@ -712,7 +696,13 @@ export const PublishOverlay = () => {
           <DialogClose>
             <Button variant="outline">Back</Button>
           </DialogClose>
-          <Button onClick={onSubmit} className="w-24">
+
+          <Button
+            onClick={onSubmit}
+            // onClick={() => clearCanvasAndHistory()}
+            className="w-24"
+            disabled={designMutation.isPending}
+          >
             {designMutation.isPending ? (
               <Loader className=" animate-spin" />
             ) : (

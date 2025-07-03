@@ -246,6 +246,16 @@ export const useDesignStore = create((set, get) => ({
   showContextMenu: (x, y) => set({ contextMenu: { visible: true, x, y } }),
   hideContextMenu: () =>
     set((state) => ({ contextMenu: { ...state.contextMenu, visible: false } })),
+
+  clearCanvasAndHistory: () =>
+    set((state) => ({
+      objects: initialObjectsState,
+      history: initialHistoryState,
+      historyStep: 0,
+      selectedId: null,
+      garmentImages: initialGarmentImagesState,
+      contextMenu: { visible: false, x: 0, y: 0 },
+    })),
 }));
 
 // A wrapper action for property panel updates

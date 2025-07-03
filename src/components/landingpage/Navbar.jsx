@@ -107,7 +107,7 @@ const Navbar = ({ homeRef, featuresRef, creatorsRef }) => {
                         <AvatarImage src={session?.user?.profile_photo} />
                         <AvatarFallback>
                           {session?.user.first_name[0].toUpperCase()}
-                          {session?.user.last_name[0].toUpperCase()}
+                          {/* {session?.user.last_name[0].toUpperCase()} */}
                         </AvatarFallback>
                       </Avatar>
                       <ChevronDown color="#333" size={16} />

@@ -133,8 +133,6 @@ async function refreshTokens(refreshToken) {
 }
 
 function getErrorMessage(error) {
-  console.log(error);
-
   return error.response
     ? error.response.data["response description"]
     : "Network error - Something went wrong";

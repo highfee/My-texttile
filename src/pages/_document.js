@@ -6,6 +6,7 @@ export default function Document() {
       <Head />
       <body className="antialiased" suppressHydrationWarning={true}>
         <Main />
+
         <NextScript />
       </body>
     </Html>

@@ -34,6 +34,8 @@ export default function index() {
     refetch,
   } = useGetAllDesigns();
 
+  console.log(recentProjects);
+
   const retryConnection = () => {
     refetch();
   };

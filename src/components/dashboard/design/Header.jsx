@@ -54,7 +54,7 @@ import { useMutation } from "@tanstack/react-query";
 // import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { httpClient } from "@/lib/httpClient";
 
-// import { PreviewOverlay } from "./PreviewOverlay";
+import { useRouter } from "next/navigation";
 
 const PreviewOverlay = dynamic(() => import("./PreviewOverlay"), {
   ssr: false,
@@ -103,14 +103,8 @@ const fonts = [
 ];
 
 const Header = () => {
-  const {
-    selectedId,
-    objects,
-    activeView,
-    deleteObject,
-    cloneObject,
-    moveLayer,
-  } = useDesignStore();
+  const { selectedId, objects, activeView } = useDesignStore();
+
   const updateObject = useUpdateObjectAndHistory();
   const currentObjects = objects[activeView];
   const selectedObject = currentObjects.find((obj) => obj.id === selectedId);
@@ -485,13 +479,15 @@ export const Access = () => {
 };
 
 export const PublishOverlay = () => {
+  const router = useRouter();
   const {
     productName,
     productColor,
     productSize,
-
     productPrice,
     productType,
+    visibility,
+    visibilityPassword,
   } = usePublishDesign();
 
   const { clearCanvasAndHistory } = useDesignStore();
@@ -536,12 +532,12 @@ export const PublishOverlay = () => {
     } = useDesignStore.getState();
 
     const templatePayload = {
-      design_description: "Urban Explorer Collection",
-      product_category: "t_shirt",
-      shop_price: "100.00",
-      size: ["M", "L"],
-      isPublic: false,
-      password: "",
+      design_description: productName,
+      product_category: productType,
+      shop_price: productPrice,
+      size: productSize,
+      isPublic: visibility,
+      password: visibilityPassword,
       design_view_data: {},
     };
 
@@ -886,6 +882,12 @@ const ProductInfo = ({ openAccordion, toggleAccordion }) => {
 };
 
 const Visibility = ({ openAccordion, toggleAccordion }) => {
+  const {
+    setVisibilityPassword,
+    setVisibility,
+    visibility,
+    visibilityPassword,
+  } = usePublishDesign();
   return (
     <section>
       <div
@@ -920,7 +922,7 @@ const Visibility = ({ openAccordion, toggleAccordion }) => {
         <div className="mt-5 text-sm text-gray-600 ml-12 ">
           <header className="flex items-center justify-between mr-20">
             <p className="text-lg">Public</p>
-            <Switch checked={true} />
+            <Switch onCheckedChange={() => setVisibility(!visibility)} />
           </header>
 
           <div className="mt-4 text-gray-500">
@@ -929,8 +931,11 @@ const Visibility = ({ openAccordion, toggleAccordion }) => {
 
             <Input
               type="password"
-              className="w-80 mt-2"
+              className="w-80 mt-2 border-2"
               placeholder="Set Password"
+              value={visibilityPassword}
+              disabled={visibility}
+              onInput={(e) => setVisibilityPassword(e.target.value)}
             />
           </div>
         </div>

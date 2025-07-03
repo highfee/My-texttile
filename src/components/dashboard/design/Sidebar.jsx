@@ -40,6 +40,7 @@ import { useDesignStore, views } from "@/store/design-store";
 import { Label } from "@/components/ui/label";
 import { useRef } from "react";
 import useMediaQuery from "@/components/hook/usemediaquery";
+import { useGetAllDesigns } from "@/store/apiCalls/useDesignStore";
 
 const recentlyUsed = [
   { id: 1, name: "Template 1", image: "/design/images/template 1.png" },
@@ -203,6 +204,13 @@ const uploads = [
 ];
 
 const Sidebar = () => {
+  const {
+    data: recentProjects,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllDesigns();
+
   const [searchTerm, setSearchTerm] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState(null);
 
@@ -210,7 +218,6 @@ const Sidebar = () => {
 
   const { addObject, clearCanvas, setGarmentImage, activeView } =
     useDesignStore();
-  // const [isShapesLibraryOpen, setShapesLibraryOpen] = useState(false);
 
   const garmentFileInputRefs = {
     front: useRef(null),
@@ -274,178 +281,6 @@ const Sidebar = () => {
   const handleShapeClick = (shape) => {
     addObject("path", { path: shape.path, name: shape.name });
   };
-
-  // const {
-  //   designs,
-  //   currentDesignId,
-  //   selectedElementId,
-  //   addDesign,
-  //   switchDesign,
-  //   renameDesign,
-  //   deleteDesignStored,
-  //   updateApparelType,
-  //   updateApparelColor,
-  //   updateApparelView,
-  //   addElement,
-  //   deleteElement: deleteElementStored,
-  //   undo,
-  //   redo,
-  //   loadImage,
-  //   setApparelBaseImage,
-  //   processAndAddImageElement,
-  //   setIsLoadingImage,
-  // } = useDesignStore();
-
-  // const imageElementInputRef = useRef(null);
-  // const frontImageInputRef = useRef(null);
-  // const backImageInputRef = useRef(null);
-  // const leftImageInputRef = useRef(null);
-  // const rightImageInputRef = useRef(null);
-
-  // const currentDesign = designs.find((d) => d.id === currentDesignId);
-  // // const selectedElement = currentDesign?.elements?.find(
-  // //   (el) => el.id === selectedElementId
-  // // );
-
-  // const handleAddElement = (type, options) => {
-  //   if (!currentDesign) {
-  //     // toast({
-  //     //   title: "Error",
-  //     //   description: "No active design. Please create or select a design.",
-  //     //   variant: "destructive",
-  //     // });
-  //     return;
-  //   }
-  //   if (type === "image") {
-  //     if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-  //       console.table({
-  //         title: "Setup Required",
-  //         description:
-  //           "Cloudinary environment variables not configured for image uploads.",
-  //         variant: "destructive",
-  //       });
-  //       return;
-  //     }
-  //     imageElementInputRef.current?.click();
-  //     return;
-  //   }
-  //   addElement({ type, options });
-  // };
-
-  // const uploadToCloudinary = async (file) => {
-  //   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-  //     const errorMsg =
-  //       "Cloudinary is not configured. Please ensure NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET are set in your environment variables.";
-  //     toast({
-  //       title: "Cloudinary Not Configured",
-  //       description: errorMsg,
-  //       variant: "destructive",
-  //     });
-  //     console.error(errorMsg);
-  //     throw new Error("Cloudinary environment variables not configured.");
-  //   }
-
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-  //   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  //   // Note: For unsigned uploads, the API Key isn't sent in the FormData like this.
-  //   // The upload_preset handles authentication and permissions for unsigned uploads.
-
-  //   const CLOUDINARY_UPLOAD_URL = `${CLOUDINARY_API_URL_BASE}${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-  //   const response = await fetch(CLOUDINARY_UPLOAD_URL, {
-  //     method: "POST",
-  //     body: formData,
-  //   });
-
-  //   if (!response.ok) {
-  //     const errorData = await response
-  //       .json()
-  //       .catch(() => ({ message: response.statusText }));
-  //     throw new Error(
-  //       `Cloudinary upload failed: ${
-  //         errorData.error?.message || response.statusText
-  //       }`
-  //     );
-  //   }
-  //   return response.json();
-  // };
-
-  // const handleImageUpload = async (event) => {
-  //   const file = event.target.files?.[0];
-  //   if (!file || !currentDesign) return;
-
-  //   if (file.size > 5 * 1024 * 1024) {
-  //     // 5MB limit
-  //     console.table({
-  //       title: "File Too Large",
-  //       description: "Image size should not exceed 5MB.",
-  //       variant: "destructive",
-  //     });
-  //     if (event.target) event.target.value = "";
-  //     return;
-  //   }
-
-  //   setIsLoadingImage(true);
-  //   console.table({ title: "Uploading Image...", description: "Please wait." });
-
-  //   try {
-  //     const cloudinaryResult = await uploadToCloudinary(file);
-  //     const imageUrl = cloudinaryResult.secure_url;
-  //     // const imageId = cloudinaryResult.public_id; // Useful for backend management
-
-  //     const img = new Image();
-  //     img.onload = () => {
-  //       processAndAddImageElement({
-  //         imageUrl,
-  //         originalWidth: img.width,
-  //         originalHeight: img.height,
-  //         // imageId: imageId // Optionally pass Cloudinary public_id
-  //       });
-  //       console.table({
-  //         title: "Image Element Added",
-  //         description: "Image uploaded to Cloudinary.",
-  //       });
-  //       setIsLoadingImage(false);
-  //       URL.revokeObjectURL(img.src);
-  //     };
-  //     img.onerror = () => {
-  //       console.table({
-  //         title: "Error",
-  //         description: "Could not load image dimensions.",
-  //         variant: "destructive",
-  //       });
-  //       setIsLoadingImage(false);
-  //       URL.revokeObjectURL(img.src);
-  //     };
-  //     img.src = URL.createObjectURL(file);
-  //   } catch (error) {
-  //     console.error("Error processing image element:", error);
-  //     console.table({
-  //       title: "Upload Error",
-  //       description: `${error.message}`,
-  //       variant: "destructive",
-  //     });
-  //     setIsLoadingImage(false);
-  //   } finally {
-  //     if (event.target) event.target.value = "";
-  //   }
-  // };
-
-  // const handleApparelBaseImageUpload = (event, view) => {
-  //   const file = event.target.files?.[0];
-  //   if (file && currentDesignId) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       const imageUrl = e.target?.result;
-  //       if (typeof imageUrl === "string") {
-  //         setApparelBaseImage({ view, imageUrl });
-  //       }
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  //   event.target.value = "";
-  // };
 
   return (
     <aside
@@ -515,23 +350,29 @@ const Sidebar = () => {
                 </header>
                 <Carousel>
                   <CarouselContent>
-                    {/* {filteredTemplates.recent.map((template) => (
-                      <CarouselItem
-                        key={template.id}
-                        className="basis-1/2 cursor-pointer"
-                        onClick={() => handleTemplateSelect(template)}
-                      >
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <Image
-                            src={template.image}
-                            alt={template.name}
-                            width={200}
-                            height={240}
-                            className="w-full rounded-md"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))} */}
+                    {!isLoading &&
+                      recentProjects
+                        .filter((item) => item.isPublic)
+                        .map((template) => (
+                          <CarouselItem
+                            key={template.id}
+                            className="basis-1/2 cursor-pointer"
+                            // onClick={() => handleTemplateSelect(template)}
+                          >
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <NextImage
+                                src={
+                                  process.env.NEXT_PUBLIC_BASE_URL +
+                                  template.design_view_data.front.imageDataUrl
+                                }
+                                alt={"template.name"}
+                                width={200}
+                                height={240}
+                                className="w-full rounded-md"
+                              />
+                            </div>
+                          </CarouselItem>
+                        ))}
                   </CarouselContent>
                   <CarouselPrevious className="-left-4 bg-gray-900" />
                   <CarouselNext className="-right-4 bg-gray-900" />

@@ -7,8 +7,8 @@ export const usePublishDesign = create((set) => ({
   productSize: [],
   listing: "",
   productPrice: 0,
-  visibily: "public",
-  visibilyPassword: "",
+  visibility: false,
+  visibilityPassword: "",
   setProductName: (name) => set({ productName: name }),
   setProductType: (type) => set({ productType: type }),
   setProductColor: (color) => set({ productColor: color }),
@@ -23,8 +23,8 @@ export const usePublishDesign = create((set) => ({
     }),
   setListing: (listing) => set({ listing }),
   setProductPrice: (price) => set({ productPrice: price }),
-  setVisibily: (visibily) => set({ visibily }),
-  setVisibilyPassword: (password) => set({ visibilyPassword: password }),
+  setVisibility: (visibility) => set({ visibility }),
+  setVisibilityPassword: (password) => set({ visibilityPassword: password }),
   reset: () =>
     set({
       productName: "",
@@ -33,7 +33,7 @@ export const usePublishDesign = create((set) => ({
       productSize: [],
       listing: "",
       productPrice: 0,
-      visibily: "public",
-      visibilyPassword: "",
+      visibility: "public",
+      visibilityPassword: "",
     }),
 }));

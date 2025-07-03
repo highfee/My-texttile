@@ -172,7 +172,6 @@ const InfoCard = ({ icon, title, value, color }) => (
   </div>
 );
 
-
 const PieChartWidget = ({ data, colors, title }) => (
   <div className="bg-white rounded-md shadow-sm p-2 flex flex-col">
     <div className="flex justify-between items-center mb-3">
@@ -397,13 +396,14 @@ const AffiliateProgramWidget = ({ data }) => (
   </div>
 );
 
-
 const index = () => {
   return (
-    <div className="flex flex-col gap-4 bg-[#F7F8FA] p-2 lg:p-6 "style={{
-        overflowY: 'auto',
-        scrollbarWidth: 'none',  /* Firefox */
-        msOverflowStyle: 'none',  /* IE and Edge */
+    <div
+      className="flex flex-col gap-4 bg-[#F7F8FA] p-2 lg:p-6 "
+      style={{
+        overflowY: "auto",
+        scrollbarWidth: "none" /* Firefox */,
+        msOverflowStyle: "none" /* IE and Edge */,
       }}
     >
       {/* Add this style tag to hide scrollbar in WebKit browsers */}

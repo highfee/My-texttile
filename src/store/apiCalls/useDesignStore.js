@@ -34,6 +34,11 @@ const designApi = {
     return response.data.response_data;
   },
 
+  updateUserProfile: async (userData) => {
+    const response = await httpClient.put("/users/profile/update/", userData);
+    return response.data.response_data;
+  },
+
   // Publish a design
   publishDesign: async ({ designId, publishData }) => {
     const response = await httpClient.post(
@@ -166,6 +171,29 @@ export const useUpdateDesign = () => {
     },
     onError: (error) => {
       setError(error.message || "Failed to update design");
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
+};
+
+// Hook to update user profile
+export const useUpdateUserProfile = () => {
+  const queryClient = useQueryClient();
+  const setLoading = useDesignApiStore((state) => state.setLoading);
+  const setError = useDesignApiStore((state) => state.setError);
+
+  return useMutation({
+    mutationFn: designApi.updateUserProfile,
+    onMutate: () => {
+      setLoading(true);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+    onError: (error) => {
+      setError(error.message || "Failed to update profile");
     },
     onSettled: () => {
       setLoading(false);

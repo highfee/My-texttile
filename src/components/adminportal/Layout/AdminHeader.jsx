@@ -5,6 +5,7 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { MdNotes } from "react-icons/md";
 import { CiCalendar } from "react-icons/ci";
 import Notification from "./Notification";
+import Link from "next/link";
 
 const AdminHeader = ({ toggleSidebar, currentComponent }) => {
   const [startDate, setStartDate] = useState("");
@@ -15,7 +16,10 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
   // Close notifications when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setShowNotifications(false);
       }
     };
@@ -75,7 +79,7 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
         </div>
         <div className="flex items-center gap-4">
           <div className="relative" ref={notificationRef}>
-            <button 
+            <button
               onClick={toggleNotifications}
               className="p-1 cursor-pointer relative"
             >
@@ -105,9 +109,16 @@ const AdminHeader = ({ toggleSidebar, currentComponent }) => {
         </div>
       </div>
       <div className="flex lg:flex-row flex-col-reverse justify-between items-center px-6 lg:px-2 gap-4">
-        <button className="hidden lg:flex border border-[#12121270] rounded-full px-4 py-1 text-sm text-graycolor hover:bg-gray-100 transition">
-          + add creator
-        </button>
+        <div className="flex gap-3 items-center justify-center">
+          <button className="hidden lg:flex border border-[#12121270] rounded-full px-4 py-1 text-sm text-graycolor hover:bg-gray-100 transition">
+            + add creator
+          </button>
+          <Link href="/admin/stores">
+            <button className="hidden lg:flex border border-[#12121270] rounded-full px-4 py-1 text-sm text-graycolor hover:bg-gray-100 transition">
+              View Stores
+            </button>
+          </Link>
+        </div>
         <div className="border border-[#12121270] rounded-full px-3 py-1 text-sm text-graycolor flex items-center w-full lg:w-auto">
           <CiCalendar className="text-graycolor text-lg mr-2" />
           <input

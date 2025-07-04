@@ -1,5 +1,5 @@
 // components/dashboard/Layout/DashboardLayout.jsx
-import React, { useState, Children } from "react";
+import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import useMediaQuery from "@/components/hook/usemediaquery";
@@ -14,8 +14,6 @@ export default function DashboardLayout({ children }) {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => isMobile && setIsSidebarOpen(false);
-
-  console.log(router);
 
   return (
     <div className="flex flex-col lg:flex-row h-screen font-sans tracking-[-1px]">

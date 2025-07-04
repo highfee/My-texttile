@@ -3,7 +3,7 @@ import { create } from "zustand";
 export const usePublishDesign = create((set) => ({
   productName: "",
   productType: "t_shirt",
-  productColor: "#000000",
+  productColors: [],
   productSize: [],
   listing: "",
   productPrice: 0,
@@ -11,7 +11,15 @@ export const usePublishDesign = create((set) => ({
   visibilityPassword: "",
   setProductName: (name) => set({ productName: name }),
   setProductType: (type) => set({ productType: type }),
-  setProductColor: (color) => set({ productColor: color }),
+  setProductColor: (color) =>
+    set((state) => {
+      const exists = state.productColors.includes(color);
+      return {
+        productColors: exists
+          ? state.productColors.filter((c) => c !== color)
+          : [...state.productColors, color],
+      };
+    }),
   setProductSize: (size) =>
     set((state) => {
       const exists = state.productSize.includes(size);
@@ -28,8 +36,8 @@ export const usePublishDesign = create((set) => ({
   reset: () =>
     set({
       productName: "",
-      productType: "T-shirt",
-      productColor: "#000000",
+      productType: "t_shirt",
+      productColors: [],
       productSize: [],
       listing: "",
       productPrice: 0,

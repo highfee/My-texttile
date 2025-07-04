@@ -123,13 +123,20 @@ const Header = () => {
   return (
     <header className="bg-white sticky top-0 p-4 shadow-md flex justify-between gap-10 items-center">
       <section className="flex items-center  gap-10 ">
-        <Select onValueChange="">
+        <Select
+          value={
+            selectedObject && selectedObject.type == "text"
+              ? selectedObject.fontFamily
+              : "PT Sans"
+          }
+          onValueChange={(v) => handlePropertyChange("fontFamily", v)}
+        >
           <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Helvica" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {AVAILABLE_FONTS.map((font) => (
-              <SelectItem key={font} value={font}>
+              <SelectItem key={font} value={font} style={{ fontFamily: font }}>
                 {font}
               </SelectItem>
             ))}
@@ -156,28 +163,38 @@ const Header = () => {
 
           {/* <div
             className={cn(" cursor-pointer p-1 rounded-md", {
-              "bg-gray-200": selectedElement?.fontWeight === "bold",
+              "bg-gray-200": selectedObject?.fontWeight === "bold",
             })}
           >
             <Bold
               color={"rgba(18, 18, 18, 0.44)"}
               size={20}
-              onClick={() => toggleStyle("fontWeight", "bold")}
+              onClick={() =>
+                handlePropertyChange(
+                  "fontWeight",
+                  selectedObject.fontWeight === "bold" ? "normal" : "bold"
+                )
+              }
             />
           </div> */}
 
-          {/* <div
+          <div
             className={cn(" cursor-pointer p-1 rounded-md", {
-              "bg-gray-200": selectedElement?.fontStyle === "italic",
+              "bg-gray-200": selectedObject?.fontStyle === "italic",
             })}
           >
             <Italic
               color="rgba(18, 18, 18, 0.44)"
               size={20}
               className=" cursor-pointer"
-              onClick={() => toggleStyle("fontStyle", "italic")}
+              onClick={() =>
+                handlePropertyChange(
+                  "fontStyle",
+                  selectedObject.fontStyle === "italic" ? "normal" : "italic"
+                )
+              }
             />
-          </div> */}
+          </div>
 
           {/* <div
             className={cn("cursor-pointer p-1 rounded-md", {
@@ -482,12 +499,13 @@ export const PublishOverlay = () => {
   const router = useRouter();
   const {
     productName,
-    productColor,
+    productColors,
     productSize,
     productPrice,
     productType,
     visibility,
     visibilityPassword,
+    reset,
   } = usePublishDesign();
 
   const { clearCanvasAndHistory } = useDesignStore();
@@ -503,6 +521,7 @@ export const PublishOverlay = () => {
       if (data["response status"] === "success") {
         toast("Design created successfully");
         clearCanvasAndHistory();
+        reset();
         router.push("/dashboard/home");
       } else {
         setError(data["response description"] || "Error creating store");
@@ -514,6 +533,20 @@ export const PublishOverlay = () => {
       toast(error.message || "Error creating store");
     },
   });
+
+  const isFormValid = () => {
+    if (
+      !productName ||
+      !productType ||
+      !productPrice ||
+      !productSize.length ||
+      !productColors.length ||
+      (!visibility && !visibilityPassword) // If not public, password is required
+    ) {
+      return false;
+    }
+    return true;
+  };
 
   const handlePublish = async () => {
     const stage = useDesignStore.getState().stageRef?.current;
@@ -537,8 +570,9 @@ export const PublishOverlay = () => {
       shop_price: productPrice,
       size: productSize,
       isPublic: visibility,
-      password: visibilityPassword,
+      password: visibility ? "" : visibilityPassword,
       design_view_data: {},
+      color: productColors,
     };
 
     setSelectedId(null);
@@ -661,8 +695,19 @@ export const PublishOverlay = () => {
                   </p>
 
                   {/* colors */}
-                  <div>
+                  <div className="flex gap-1 items-center">
                     <p className="text-primary/40 mt-1">Colors: </p>
+
+                    <div className="flex gap-0.5">
+                      {productColors.map((color) => (
+                        <div
+                          key={color}
+                          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer"
+                          style={{ backgroundColor: color }}
+                          // onClick={() => setProductColor(color)}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
 
                   <p className="text-primary/40 mt-1">
@@ -697,7 +742,7 @@ export const PublishOverlay = () => {
             onClick={onSubmit}
             // onClick={() => clearCanvasAndHistory()}
             className="w-24"
-            disabled={designMutation.isPending}
+            disabled={designMutation.isPending || !isFormValid()}
           >
             {designMutation.isPending ? (
               <Loader className=" animate-spin" />
@@ -721,7 +766,7 @@ export const PublishOverlay = () => {
 const ProductInfo = ({ openAccordion, toggleAccordion }) => {
   const {
     productName,
-    productColor,
+    productColors,
     productSize,
     listing,
     productPrice,
@@ -863,17 +908,29 @@ const ProductInfo = ({ openAccordion, toggleAccordion }) => {
           </div>
 
           {/* color */}
-          <div>
+          <div className="">
             <Label className="mb-2">Select Color</Label>
-            <Select defaultValue="" onValueChange={setProductType} disabled>
-              <SelectTrigger className="w-full border-primary/40">
-                <SelectValue placeholder="Color" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="T-Shirts">Store</SelectItem>
-                <SelectItem value="Hoodies">Hoodies</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 items-center w-full">
+              <div className="flex gap-2 items-center w-full">
+                <Label className="cursor-pointer relative w-full">
+                  <div className="border border-primary/40 h-9 rounded-md min-w-full flex gap-1 items-center px-3">
+                    {productColors.map((color) => (
+                      <div
+                        key={color}
+                        className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer"
+                        style={{ backgroundColor: color }}
+                        onClick={() => setProductColor(color)}
+                      ></div>
+                    ))}
+                  </div>
+                  <Input
+                    type="color"
+                    className="opacity-0 absolute pointer-events-none bottom-0 left-0  appearance-none"
+                    onChange={(e) => setProductColor(e.target.value)}
+                  />
+                </Label>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -922,18 +979,21 @@ const Visibility = ({ openAccordion, toggleAccordion }) => {
         <div className="mt-5 text-sm text-gray-600 ml-12 ">
           <header className="flex items-center justify-between mr-20">
             <p className="text-lg">Public</p>
-            <Switch onCheckedChange={() => setVisibility(!visibility)} />
+            <Switch
+              onCheckedChange={() => setVisibility(!visibility)}
+              checked={visibility}
+            />
           </header>
 
-          <div className="mt-4 text-gray-500">
+          <div className="mt-4 text-gray-700">
             <p className="text-lg mb-0.5">Password Protection</p>
             <p>Add an extra layer of privacy for exclusive products.</p>
 
             <Input
               type="password"
-              className="w-80 mt-2 border-2"
+              className="w-80 mt-2 border-2 border-black/80"
               placeholder="Set Password"
-              value={visibilityPassword}
+              value={!visibility ? visibilityPassword : ""}
               disabled={visibility}
               onInput={(e) => setVisibilityPassword(e.target.value)}
             />

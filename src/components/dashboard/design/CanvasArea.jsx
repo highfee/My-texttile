@@ -270,7 +270,7 @@ export default function CanvasArea({ stageSize }) {
       const box = editingNode.getClientRect({ skipTransform: false });
       const rotation = editingNode.rotation();
       const scaleX = stage.scaleX() * editingNode.scaleX();
-      const scaleY = stage.scaleY() * editingNode.scaleY();
+      // const scaleY = stage.scaleY() * editingNode.scaleY();
 
       editorStyle = {
         position: "absolute",
@@ -292,6 +292,8 @@ export default function CanvasArea({ stageSize }) {
         transform: `rotateZ(${rotation}deg)`,
         color: editingNode.fill(),
         textAlign: editingNode.align(),
+        fontWeight: editingNode.fontWeight(),
+        fontStyle: editingNode.fontStyle(),
       };
     }
   }

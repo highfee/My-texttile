@@ -3,6 +3,8 @@ import { create } from "zustand";
 
 export const views = ["front", "back", "left", "right"];
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 const initialObjectsState = { front: [], back: [], left: [], right: [] };
 const initialHistoryState = {
   front: [[]],
@@ -256,6 +258,78 @@ export const useDesignStore = create((set, get) => ({
       garmentImages: initialGarmentImagesState,
       contextMenu: { visible: false, x: 0, y: 0 },
     })),
+
+  // loadTemplate: (designViewData) => {
+  //   console.log("Loading template with data:", designViewData);
+  //   const newObjects = { ...initialObjectsState };
+  //   const newGarmentImages = { ...initialGarmentImagesState };
+  //   const newHistory = { front: [[]], back: [[]], left: [[]], right: [[]] };
+
+  //   for (const view of views) {
+  //     if (designViewData[view] && designViewData[view].designData) {
+  //       newObjects[view] = designViewData[view].designData.objects || [];
+  //       newGarmentImages[view] =
+  //         designViewData[view].designData.garmentImage || null;
+  //     }
+  //     newHistory[view] = [newObjects[view]];
+  //   }
+
+  //   set({
+  //     objects: newObjects,
+  //     garmentImages: newGarmentImages,
+  //     history: newHistory,
+  //     activeView: "front",
+  //     historyStep: 0,
+  //     selectedId: null,
+  //   });
+  // },
+
+  loadTemplate: (designViewData) => {
+    const newObjects = { ...initialObjectsState };
+    const newGarmentImages = { ...initialGarmentImagesState };
+    const newHistory = { front: [[]], back: [[]], left: [[]], right: [[]] };
+
+    const toAbsoluteUrl = (path) => {
+      if (
+        path &&
+        typeof path === "string" &&
+        !path.startsWith("http") &&
+        !path.startsWith("data:")
+      ) {
+        return `${API_BASE_URL}${path}`;
+      }
+      return path;
+    };
+
+    for (const view of views) {
+      if (designViewData[view] && designViewData[view].designData) {
+        const designData = designViewData[view].designData;
+
+        newGarmentImages[view] = toAbsoluteUrl(designData.garmentImage);
+
+        const objects = designData.objects || [];
+        newObjects[view] = objects.map((obj) => {
+          if (obj.type === "image" && obj.src) {
+            return { ...obj, src: toAbsoluteUrl(obj.src) };
+          }
+          return obj;
+        });
+      } else {
+        newObjects[view] = [];
+        newGarmentImages[view] = null;
+      }
+      newHistory[view] = [newObjects[view]];
+    }
+
+    set({
+      objects: newObjects,
+      garmentImages: newGarmentImages,
+      history: newHistory,
+      activeView: "front",
+      historyStep: 0,
+      selectedId: null,
+    });
+  },
 }));
 
 // A wrapper action for property panel updates

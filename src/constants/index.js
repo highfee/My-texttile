@@ -10,6 +10,10 @@ export const AVAILABLE_FONTS = [
   "Roboto",
   "Open Sans",
   "Lato",
+  "PT Sans",
+  "Playfair Display",
+  "Tahoma",
+  "Trebuchet MS",
 ];
 
 export const DEFAULT_ELEMENT_COLOR = "#333333";

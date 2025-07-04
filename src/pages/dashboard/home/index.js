@@ -38,14 +38,6 @@ export default function index() {
     refetch();
   };
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (error) {
-  //   return <div>Error: {error.message}</div>;
-  // }
-
   useEffect(() => {
     const contentElement = contentRef.current;
     if (!contentElement) return;
@@ -73,6 +65,8 @@ export default function index() {
       />
     );
   }
+
+  console.log(recentProjects);
 
   return (
     <div className=" flex flex-col ">
@@ -144,7 +138,7 @@ export default function index() {
         </div>
         {isLoading ? (
           <div className="w-[100%] flex justify-center items-center py-12">
-            <Loader size="large" type="pulsing" />
+            <Loader size="large" />
           </div>
         ) : error ? (
           <div className="w-[100%] flex justify-center items-center">
@@ -177,41 +171,47 @@ export default function index() {
                   key={index}
                   className="p-1 lg:p-4 rounded-lg transition-shadow duration-300"
                 >
-                  <div>
-                    <img
-                      src={
-                        process.env.NEXT_PUBLIC_BASE_URL +
-                        project.design_view_data.front.imageDataUrl
-                      }
-                      alt={project.name}
-                      className="w-full h-auto rounded-lg object-cover"
-                    />
-                  </div>
-                  <h2 className="text-[12px] lg:text-[14px] font-semibold ">
-                    {project.design_description}
-                  </h2>
-                  <p className="text-sm text-graycolor opacity-[0.44] ">
-                    {project.design_description}
-                  </p>
-                  <div className="flex flex-row space-x-1">
-                    <div className="rounded-sm bg-bluebutton w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#FF5789] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#A1A1A1] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#5A57FF] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#124A86] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#160A0A] w-[14px] h-[14px]"></div>
-                  </div>
-                  <div className="flex flex-row ">
-                    <p className="text-md font-bold text-graycolor opacity-[0.44]">
-                      Starting
+                  <Link href={`/home/single/${project.id}`}>
+                    <div>
+                      <img
+                        src={
+                          process.env.NEXT_PUBLIC_BASE_URL +
+                          project?.design_view_data.front?.imageDataUrl
+                        }
+                        alt={project?.name}
+                        className="w-full h-auto rounded-lg object-cover"
+                      />
+                    </div>
+                    <h2 className="text-[12px] lg:text-[14px] font-semibold ">
+                      {project?.design_description}
+                    </h2>
+                    <p className="text-sm text-graycolor opacity-[0.44] ">
+                      {project.design_description}
                     </p>
-                    <p className="text-lg font-bold text-graycolor px-2">
-                      {project.shop_price}
+                    {/* colors */}
+                    <div className=" flex gap-1 items-center">
+                      {project.color.map((color) => (
+                        <div
+                          key={color}
+                          className="w-4 h-4 rounded-md border border-gray-300 cursor-pointer"
+                          style={{ backgroundColor: color }}
+                          onClick={() => setProductColor(color)}
+                        ></div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-row ">
+                      <p className="text-md font-bold text-graycolor opacity-[0.44]">
+                        Starting
+                      </p>
+                      <p className="text-lg font-bold text-graycolor px-2">
+                        ${project.shop_price}
+                      </p>
+                    </div>
+                    <p className="text-graycolor opacity-[0.44]">
+                      Sizes - {project?.size.join(", ")}
                     </p>
-                  </div>
-                  <p className="text-graycolor opacity-[0.44]">
-                    Sizes - {project.size.join(", ")}
-                  </p>
+                  </Link>
                 </div>
               ))}
           </div>
@@ -223,14 +223,9 @@ export default function index() {
           <p>Templates</p>
         </div>
 
-        {/* <div
-          className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${
-            isSidebarCollapsed ? "xl:grid-cols-5" : "xl:grid-cols-4"
-          } gap-2 px-2 pb-6`}
-        > */}
         {isLoading ? (
           <div className="w-[100%] flex justify-center items-center py-12">
-            <Loader size="large" type="pulsing" />
+            <Loader size="large" />
           </div>
         ) : error ? (
           <div className="w-[100%] flex justify-center items-center">
@@ -268,42 +263,43 @@ export default function index() {
                     <img
                       src={
                         process.env.NEXT_PUBLIC_BASE_URL +
-                        project.design_view_data.front.imageDataUrl
+                        project?.design_view_data.front.imageDataUrl
                       }
                       alt={project.name}
                       className="w-full h-auto rounded-lg object-cover"
                     />
                   </div>
                   <h2 className="text-[12px] lg:text-[14px] font-semibold ">
-                    {project.design_description}
+                    {project?.design_description}
                   </h2>
                   <p className="text-sm text-graycolor opacity-[0.44] ">
-                    {project.design_description}
+                    {project?.design_description}
                   </p>
-                  <div className="flex flex-row space-x-1">
-                    <div className="rounded-sm bg-bluebutton w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#FF5789] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#A1A1A1] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#5A57FF] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#124A86] w-[14px] h-[14px]"></div>
-                    <div className="rounded-sm bg-[#160A0A] w-[14px] h-[14px]"></div>
+                  <div className=" flex gap-1 items-center">
+                    {project.color.map((color) => (
+                      <div
+                        key={color}
+                        className="w-4 h-4 rounded-md border border-gray-300 cursor-pointer"
+                        style={{ backgroundColor: color }}
+                        onClick={() => setProductColor(color)}
+                      ></div>
+                    ))}
                   </div>
                   <div className="flex flex-row ">
                     <p className="text-md font-bold text-graycolor opacity-[0.44]">
                       Starting
                     </p>
                     <p className="text-lg font-bold text-graycolor px-2">
-                      {project.shop_price}
+                      {project?.shop_price}
                     </p>
                   </div>
                   <p className="text-graycolor opacity-[0.44]">
-                    Sizes - {project.size.join(", ")}
+                    Sizes - {project?.size.join(", ")}
                   </p>
                 </div>
               ))}
           </div>
         )}
-        {/* </div> */}
       </div>
     </div>
   );

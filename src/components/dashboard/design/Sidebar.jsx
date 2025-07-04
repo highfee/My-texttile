@@ -216,7 +216,7 @@ const Sidebar = () => {
 
   const isMobile = useMediaQuery("(max-width: 1024px)");
 
-  const { addObject, clearCanvas, setGarmentImage, activeView } =
+  const { addObject, clearCanvas, setGarmentImage, activeView, loadTemplate } =
     useDesignStore();
 
   const garmentFileInputRefs = {
@@ -357,13 +357,15 @@ const Sidebar = () => {
                           <CarouselItem
                             key={template.id}
                             className="basis-1/2 cursor-pointer"
-                            // onClick={() => handleTemplateSelect(template)}
+                            onClick={() =>
+                              loadTemplate(template.design_view_data)
+                            }
                           >
                             <div className="flex flex-col items-center justify-center gap-2">
                               <NextImage
                                 src={
                                   process.env.NEXT_PUBLIC_BASE_URL +
-                                  template.design_view_data.front.imageDataUrl
+                                  template.design_view_data.front?.imageDataUrl
                                 }
                                 alt={"template.name"}
                                 width={200}

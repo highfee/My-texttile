@@ -8,7 +8,7 @@ import Desktop from "@/components/creatorstore/template/Desktop";
 import Mobile from "@/components/creatorstore/template/Mobile";
 import { Button } from "@/components/ui/button";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
 import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { authService } from "@/lib/authService";
@@ -16,6 +16,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Loader } from "lucide-react";
 
 export default function StoreEditor({ onBack, initialView = "desktop" }) {
   const router = useRouter();
@@ -80,6 +81,16 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     { id: "Store Colors", name: "Store Colors" },
   ];
 
+  const fetchData = async () => {
+    const response = await httpClient.get("/shops/profile/");
+    return response.data["response data"];
+  };
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["shop"],
+    queryFn: fetchData,
+  });
+
   const {
     storeName,
     storeLogoFile,
@@ -96,26 +107,36 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     footerForegroundColor,
     products,
     heroBannerImageFile,
+    storeAvailableColors,
   } = useCreatorStore();
 
   const storeMutation = useMutation({
     mutationFn: async (data) => {
-      const response = await httpClient.post("/shops/users/create/", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      let response;
+      if (!data) {
+        response = await httpClient.post("/shops/users/create/", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        response = await httpClient.put("/shops/update", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
       return response.data;
     },
     onSuccess: (data) => {
       if (data["response status"] === "success") {
         router.push("/creatorsstore");
       } else {
-        setError(data["response description"] || "Error creating store");
+        // setError(data["response description"] || "Error creating store");
       }
     },
     onError: (error) => {
-      setError(error.message || "Error creating store");
+      // setError(error.message || "Error creating store");
       console.log(error);
     },
   });
@@ -143,6 +164,7 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     formData.append("menu_item_colour", navigationForegroudColor);
     formData.append("payout_method", "crypto");
     formData.append("hero_title", heroBannerTitle);
+    formData.append("colors", storeAvailableColors);
 
     // for (let [key, value] of formData.entries()) {
     //   console.log(`${key}: ${value}`);
@@ -220,7 +242,13 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
             </div>
           ))}
           <Button onClick={onSubmit}>
-            {storeMutation.isPending ? "Creating Store..." : "Create Store"}
+            {storeMutation.isPending ? (
+              <Loader className=" animate-spin" />
+            ) : data ? (
+              "Update Store"
+            ) : (
+              "Create Store"
+            )}
           </Button>
         </div>
       </div>

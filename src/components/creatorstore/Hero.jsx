@@ -6,18 +6,20 @@ import ProductDetail from "./ProductDetail";
 // import { products } from "@/data/adminData/creator/herosection";
 import { httpClient } from "@/lib/httpClient";
 import { useQuery } from "@tanstack/react-query";
+import useCartStore from "@/store/cart_store";
+import { useParams } from "next/navigation";
 
 const Hero = ({ heroState, setHeroState, data }) => {
+  const param = useParams();
+
+  const { addItem } = useCartStore();
+
   const handleAddToCart = (product) => {
-    console.log("Added to cart:", product.name);
+    addItem({ ...product, quantity: 1 });
   };
 
   const fetchData = async () => {
-    const response = await httpClient.get("/designs/shop/view/", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await httpClient.get(`/designs/shop/view/`);
     return response.data["response data"].result;
   };
 
@@ -55,7 +57,6 @@ const Hero = ({ heroState, setHeroState, data }) => {
             }
             className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
           >
-            {/* {data?.hero_button_text} */}
             Shop Now
           </button>
         </div>
@@ -73,7 +74,14 @@ const Hero = ({ heroState, setHeroState, data }) => {
                 className="w-full bg-gray-100 rounded-lg overflow-hidden"
               >
                 <img
-                  src={product.image}
+                  src={
+                    product?.design_view_data.front?.imageDataUrl.startsWith(
+                      "data:"
+                    )
+                      ? product?.design_view_data.front?.imageDataUrl
+                      : process.env.NEXT_PUBLIC_BASE_URL +
+                        product?.design_view_data.front?.imageDataUrl
+                  }
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition"
                 />
@@ -84,8 +92,10 @@ const Hero = ({ heroState, setHeroState, data }) => {
                     setHeroState({ showShop: false, selectedProduct: product })
                   }
                 >
-                  <h3 className="text-sm font-semibold">{product.name}</h3>
-                  <p className="text-gray-500 text-sm">{product.price}</p>
+                  <h3 className="text-sm font-semibold">
+                    {product.design_description}
+                  </h3>
+                  <p className="text-gray-500 text-sm">{product.shop_price}</p>
                 </div>
                 <button
                   onClick={() => handleAddToCart(product)}

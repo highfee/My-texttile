@@ -14,6 +14,8 @@ import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { authService } from "@/lib/authService";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function StoreEditor({ onBack, initialView = "desktop" }) {
   const router = useRouter();
@@ -75,6 +77,7 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     { id: "Hero Banner", name: "Hero Banner" },
     // { id: "Products", name: "Products" },
     { id: "Footer", name: "Footer" },
+    { id: "Store Colors", name: "Store Colors" },
   ];
 
   const {
@@ -205,6 +208,15 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
                   initialSettings={footerSettings}
                 />
               )}
+
+              {editingSection === section.id &&
+                section.id === "Store Colors" && (
+                  <ColorBar
+                    onSave={handleSaveFooter}
+                    onCancel={() => setEditingSection(null)}
+                    initialSettings={footerSettings}
+                  />
+                )}
             </div>
           ))}
           <Button onClick={onSubmit}>
@@ -237,11 +249,41 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
         {/* views */}
         <div className="flex items-cente  p-4">
           <div className="relative b">
-            {/* {activeView === "desktop" ? <Desktop /> : <Mobile />} */}
-            <Desktop activeView={activeView} />
+            {/* <Desktop activeView={activeView} /> */}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const ColorBar = ({ onSave, onCancel, initialSettings }) => {
+  const { setStoreAvailableColors, storeAvailableColors } = useCreatorStore();
+
+  return (
+    <div className="">
+      <Label className="mb-2">Select Color</Label>
+      <div className="flex gap-2 items-center w-full">
+        <div className="flex gap-2 items-center w-full">
+          <Label className="cursor-pointer relative w-full">
+            <div className="border border-primary/40 h-9 rounded-md min-w-full flex gap-1 items-center px-3">
+              {storeAvailableColors.map((color) => (
+                <div
+                  key={color}
+                  className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer"
+                  style={{ backgroundColor: color }}
+                  onClick={() => setStoreAvailableColors(color)}
+                ></div>
+              ))}
+            </div>
+            <Input
+              type="color"
+              className="opacity-0 absolute pointer-events-none bottom-0 left-0  appearance-none"
+              onChange={(e) => setStoreAvailableColors(e.target.value)}
+            />
+          </Label>
+        </div>
+      </div>
+    </div>
+  );
+};

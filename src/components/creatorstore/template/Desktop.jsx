@@ -19,8 +19,8 @@ const Desktop = ({ activeView, data }) => {
     if (data) {
       setAllFromServer(data);
     }
-    // Only run on mount or when data changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    console.log(useCreatorStore.getState(), "useCreatorStore state in desktop");
   }, [data]);
 
   return (

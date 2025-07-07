@@ -54,7 +54,9 @@ import { useMutation } from "@tanstack/react-query";
 // import { useCreatorStore } from "@/store/useCreatorShopFront";
 import { httpClient } from "@/lib/httpClient";
 
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+
+import { useRouter } from "next/router";
 
 const PreviewOverlay = dynamic(() => import("./PreviewOverlay"), {
   ssr: false,
@@ -534,6 +536,32 @@ export const PublishOverlay = () => {
     },
   });
 
+  const editDesignMutation = useMutation({
+    mutationFn: async (data) => {
+      console.log(data);
+      const response = await httpClient.put(
+        `/designs/update/${router.query.id}/`,
+        data
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data["response status"] === "success") {
+        toast("Design updated successfully");
+        clearCanvasAndHistory();
+        reset();
+        router.push("/dashboard/home");
+      } else {
+        setError(data["response description"] || "Error updating design");
+        console.log(data["response description"]);
+        toast(data["response description"] || "Error updating design");
+      }
+    },
+    onError: (error) => {
+      toast(error.message || "Error updating design");
+    },
+  });
+
   const isFormValid = () => {
     if (
       !productName ||
@@ -546,6 +574,46 @@ export const PublishOverlay = () => {
       return false;
     }
     return true;
+  };
+
+  const waitForImagesToLoad = (stage) => {
+    return new Promise((resolve) => {
+      const konvaImages = stage.find("Image");
+      const imageElements = konvaImages
+        .map((img) => img.image())
+        .filter(Boolean);
+
+      if (imageElements.length === 0) {
+        resolve(true);
+        return;
+      }
+
+      const promises = imageElements.map((imgEl) => {
+        if (imgEl.complete) {
+          return Promise.resolve();
+        }
+        return new Promise((resolveImg) => {
+          const onLoad = () => {
+            imgEl.removeEventListener("load", onLoad);
+            imgEl.removeEventListener("error", onError);
+            resolveImg();
+          };
+          const onError = () => {
+            imgEl.removeEventListener("load", onLoad);
+            imgEl.removeEventListener("error", onError);
+            console.warn(`Could not load image: ${imgEl.src}`);
+            resolveImg();
+          };
+          imgEl.addEventListener("load", onLoad);
+          imgEl.addEventListener("error", onError);
+        });
+      });
+
+      Promise.all(promises).then(() => {
+        stage.batchDraw();
+        setTimeout(() => resolve(true), 100);
+      });
+    });
   };
 
   const handlePublish = async () => {
@@ -575,6 +643,8 @@ export const PublishOverlay = () => {
       color: productColors,
     };
 
+    // console.log(garmentImages);
+
     setSelectedId(null);
     const marginLayer = stage.findOne(".margin-layer");
     if (marginLayer) {
@@ -588,7 +658,7 @@ export const PublishOverlay = () => {
         setActiveView(view);
 
         // Wait for canvas to re-render with the new view's state
-        await new Promise((resolve) => setTimeout(resolve, 150));
+        await waitForImagesToLoad(stage);
 
         const imageDataUrl = stage.toDataURL({
           mimeType: "image/png",
@@ -603,7 +673,6 @@ export const PublishOverlay = () => {
             garmentImage: garmentImages[view],
           },
         };
-        // console.log(`Generated image and data for '${view}' view.`);
       }
     }
 
@@ -616,14 +685,16 @@ export const PublishOverlay = () => {
 
     const payload = templatePayload;
 
-    // return JSON.stringify(templatePayload, null, 2);
-
     return payload;
   };
 
   const onSubmit = async () => {
     const designData = await handlePublish();
     console.log(designData);
+    if (router.query.edit) {
+      editDesignMutation.mutate(designData);
+      return;
+    }
     designMutation.mutate(designData);
   };
 
@@ -742,9 +813,13 @@ export const PublishOverlay = () => {
             onClick={onSubmit}
             // onClick={() => clearCanvasAndHistory()}
             className="w-24"
-            disabled={designMutation.isPending || !isFormValid()}
+            disabled={
+              designMutation.isPending ||
+              !isFormValid() ||
+              editDesignMutation.isPending
+            }
           >
-            {designMutation.isPending ? (
+            {designMutation.isPending || editDesignMutation.isPending ? (
               <Loader className=" animate-spin" />
             ) : (
               "Publish"

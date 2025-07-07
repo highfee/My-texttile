@@ -7,6 +7,7 @@ import { httpClient } from "@/lib/httpClient";
 import { useQuery } from "@tanstack/react-query";
 import { Empty } from "@/components/ui/empty";
 import { FileX } from "lucide-react";
+import useAuthStore from "@/store/authStore";
 
 export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -24,11 +25,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
   };
 
   const fetchData = async () => {
-    const response = await httpClient.get("/shops/profile/", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await httpClient.get("/shops/profile/");
     return response.data["response data"];
   };
 
@@ -36,8 +33,6 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
     queryKey: ["shop"],
     queryFn: fetchData,
   });
-
-  console.log(error);
 
   return (
     <div
@@ -57,9 +52,12 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
           <div>
-            <a href="#" className="text-bluebutton underline">
+            <Link
+              href={`/shop/${data?.id}`}
+              className="text-bluebutton underline"
+            >
               https://www.my-store-1029a69b.com
-            </a>
+            </Link>
             <h2 className="text-xl font-bold">my-store-1029a69b</h2>
             <p className="opacity-[0.44]">
               Welcome to your custom print-on-demand store! Here
@@ -73,7 +71,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               Setup store
             </button>
             <Link
-              href="/creatorsstore"
+              href={`/shop/${data?.id}`}
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
             >
               View stores
@@ -121,13 +119,6 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             title="No Shop found"
             description="You do not have an associated shop."
           />
-
-          {/* <button
-            className="bg-bluebutton text-white px-4 py-2 rounded"
-            onClick={() => setActiveComponent("editor")}
-          >
-            Setup store
-          </button> */}
         </div>
       ) : (
         <div className="flex flex-col lg:flex-row justify-center gap-10 mt-4">
@@ -140,13 +131,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay1(false)}
               onClick={() => handleImageClick("desktop")}
             >
-              {/* <img
-              src="/dashboard/store/desktop.png"
-              alt="Desktop View"
-              className="w-full max-w-2xl border border-gray-200 rounded-lg"
-            /> */}
-
-              <Desktop activeView={"desktop"} data={data} />
+              {/* <Desktop activeView={"desktop"} data={data} /> */}
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay1 ? "opacity-100" : "opacity-0"
@@ -172,12 +157,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay(false)}
               onClick={() => handleImageClick("mobile")}
             >
-              {/* <img
-              src="/dashboard/store/mobile.png"
-              alt="Mobile View"
-              className="w-full max-w-xs border border-gray-200 rounded-lg"
-            /> */}
-              <Desktop activeView={"mobile"} data={data} />
+              {/* <Desktop activeView={"mobile"} data={data} /> */}
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay ? "opacity-100" : "opacity-0"

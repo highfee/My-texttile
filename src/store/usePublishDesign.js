@@ -33,6 +33,8 @@ export const usePublishDesign = create((set) => ({
   setProductPrice: (price) => set({ productPrice: price }),
   setVisibility: (visibility) => set({ visibility }),
   setVisibilityPassword: (password) => set({ visibilityPassword: password }),
+  setEditProductColors: (colors) => set({ productColors: colors }),
+  setEditProductSize: (sizes) => set({ productSize: sizes }),
   reset: () =>
     set({
       productName: "",

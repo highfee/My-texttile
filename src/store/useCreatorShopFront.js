@@ -40,6 +40,7 @@ export const useCreatorStore = create(
     heroBannerCtaText: null,
     heroBannerCtaLink: null,
     footerCopyrightText: null,
+    storeAvailableColors: [],
     footerSocialIcons: {
       instagram: "",
       facebook: "",
@@ -81,9 +82,18 @@ export const useCreatorStore = create(
     setHeroBannerImageFile: (heroBannerImageFile) =>
       set({ heroBannerImageFile }),
 
+    setStoreAvailableColors: (size) =>
+      set((state) => {
+        const exists = state.storeAvailableColors.includes(size);
+        return {
+          storeAvailableColors: exists
+            ? state.storeAvailableColors.filter((s) => s !== size)
+            : [...state.storeAvailableColors, size],
+        };
+      }),
+
     setAllFromServer: (data) =>
       set((state) => ({
-        // Map backend keys to frontend state keys
         storeName: data.shop_name || state.storeName,
         storeLogo: data.shop_logo || state.storeLogo,
         navigationBackgroudColor:
@@ -109,9 +119,4 @@ export const useCreatorStore = create(
         },
       })),
   })
-
-  // {
-  //   name: "creator-store",
-  // }
-  // )
 );

@@ -66,8 +66,6 @@ export default function index() {
     );
   }
 
-  console.log(recentProjects);
-
   return (
     <div className=" flex flex-col ">
       <div
@@ -171,12 +169,16 @@ export default function index() {
                   key={index}
                   className="p-1 lg:p-4 rounded-lg transition-shadow duration-300"
                 >
-                  <Link href={`/home/single/${project.id}`}>
+                  <Link href={`/dashboard/home/fahad/${project.id}`}>
                     <div>
                       <img
                         src={
-                          process.env.NEXT_PUBLIC_BASE_URL +
-                          project?.design_view_data.front?.imageDataUrl
+                          project?.design_view_data.front?.imageDataUrl.startsWith(
+                            "data:"
+                          )
+                            ? project?.design_view_data.front?.imageDataUrl
+                            : process.env.NEXT_PUBLIC_BASE_URL +
+                              project?.design_view_data.front?.imageDataUrl
                         }
                         alt={project?.name}
                         className="w-full h-auto rounded-lg object-cover"
@@ -262,8 +264,12 @@ export default function index() {
                   <div>
                     <img
                       src={
-                        process.env.NEXT_PUBLIC_BASE_URL +
-                        project?.design_view_data.front.imageDataUrl
+                        project?.design_view_data.front.imageDataUrl.startsWith(
+                          "data:"
+                        )
+                          ? project?.design_view_data.front.imageDataUrl
+                          : process.env.NEXT_PUBLIC_BASE_URL +
+                            project?.design_view_data.front.imageDataUrl
                       }
                       alt={project.name}
                       className="w-full h-auto rounded-lg object-cover"

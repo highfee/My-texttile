@@ -121,18 +121,6 @@ const TransformerComponent = ({ selectedNodeId }) => {
   );
 };
 
-// const selector = (state) => ({
-//   activeView: state.activeView,
-//   objects: state.objects[state.activeView],
-//   selectedId: state.selectedId,
-//   zoom: state.zoom,
-//   garmentImages: state.garmentImages,
-//   setSelectedId: state.setSelectedId,
-//   showContextMenu: state.showContextMenu,
-//   hideContextMenu: state.hideContextMenu,
-//   setStageRef: state.setStageRef,
-// });
-
 export default function CanvasArea({ stageSize }) {
   const {
     activeView,
@@ -292,7 +280,7 @@ export default function CanvasArea({ stageSize }) {
         transform: `rotateZ(${rotation}deg)`,
         color: editingNode.fill(),
         textAlign: editingNode.align(),
-        fontWeight: editingNode.fontWeight(),
+        // fontWeight: editingNode.fontWeight(),
         fontStyle: editingNode.fontStyle(),
       };
     }

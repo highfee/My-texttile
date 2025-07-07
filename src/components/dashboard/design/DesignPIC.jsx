@@ -86,8 +86,6 @@ const DesignPIC = () => {
     garmentProps = { x, y, width: newWidth, height: newHeight, visible: true };
   }
 
-  console.log(activeView, "activeView", previewView);
-
   return (
     <div>
       <section className="flex flex-col items-center justify-center">

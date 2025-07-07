@@ -1,13 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import useCartStore from "@/store/cart_store";
+import { useState } from "react";
 
 export default function Checkout() {
-  const [coupon, setCoupon] = useState('');
+  const [coupon, setCoupon] = useState("");
+
+  const {
+    items,
+    decrementQuantity,
+    incrementQuantity,
+    removeItem,
+    getTotalPrice,
+  } = useCartStore();
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8 min-h-screen bg-gray-50">
-
       {/* Left Side (Customer Details) */}
       <div className="flex-1 bg-white p-6 rounded-xl shadow-sm">
         <h2 className="text-lg font-semibold mb-6">Customer's Details</h2>
@@ -108,7 +116,6 @@ export default function Checkout() {
               />
             </div>
           </div>
-
         </form>
       </div>
 
@@ -145,7 +152,7 @@ export default function Checkout() {
         </div>
 
         {/* Total */}
-        <div className="text-2xl font-bold">$32.50</div>
+        <div className="text-2xl font-bold">${getTotalPrice().toFixed(2)}</div>
         <p className="text-xs text-gray-400">Delivery fees not included yet.</p>
 
         {/* Place Order Button */}
@@ -155,8 +162,11 @@ export default function Checkout() {
 
         {/* PayPal Button */}
         <button className="w-full border py-3 rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-gray-100">
-          <img src="/creatorstore/paypalicon.svg" alt="Paypal" className="h-5" />
-          
+          <img
+            src="/creatorstore/paypalicon.svg"
+            alt="Paypal"
+            className="h-5"
+          />
         </button>
       </div>
     </div>

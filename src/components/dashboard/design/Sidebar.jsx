@@ -364,8 +364,14 @@ const Sidebar = () => {
                             <div className="flex flex-col items-center justify-center gap-2">
                               <NextImage
                                 src={
-                                  process.env.NEXT_PUBLIC_BASE_URL +
-                                  template.design_view_data.front?.imageDataUrl
+                                  template.design_view_data.front?.imageDataUrl.startsWith(
+                                    "data:"
+                                  )
+                                    ? template.design_view_data.front
+                                        ?.imageDataUrl
+                                    : process.env.NEXT_PUBLIC_BASE_URL +
+                                      template.design_view_data.front
+                                        ?.imageDataUrl
                                 }
                                 alt={"template.name"}
                                 width={200}

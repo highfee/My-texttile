@@ -25,10 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// import useDesignStore from "@/store/DesignStore";
-// import useImage from "use-image";
-import ApparelView from "./ApparelView";
-import ElementRenderer from "./ElementRenderer";
 import {
   DropdownMenu,
   DropdownMenuContent,

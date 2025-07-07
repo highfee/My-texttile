@@ -1,10 +1,12 @@
 "use client";
 
+import useCartStore from "@/store/cart_store";
 import { Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 
 export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
-  console.log(data);
+  const { items } = useCartStore();
+
   return (
     <div
       style={{
@@ -60,7 +62,7 @@ export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
             className="flex items-center space-x-1 cursor-pointer"
           >
             <ShoppingBag className="h-5 w-5 text-black" />
-            <span className="text-sm text-gray-700">0</span>
+            <span className="text-sm text-gray-700">{items.length}</span>
           </div>
         </div>
       </header>

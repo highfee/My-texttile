@@ -1,15 +1,21 @@
 "use client";
 
+import useCartStore from "@/store/cart_store";
 import { useState } from "react";
-
-const colors = ["black", "white", "red", "brown", "blue", "green", "lime"];
+import { MdDelete } from "react-icons/md";
 
 const ProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("description"); // NEW: managing which tab is active
+  const [activeTab, setActiveTab] = useState("description");
+
+  const { addItem, incrementQuantity, decrementQuantity, items } =
+    useCartStore();
+
+  const itemInCart = items.find((item) => item.id === product.id);
 
   if (!product) return null;
 
+  console.log(itemInCart);
   return (
     <div className="flex flex-col gap-10 p-8 px-16 ">
       {/* Left Side (Image) */}
@@ -18,7 +24,14 @@ const ProductDetail = ({ product }) => {
           <div className="flex flex-col items-center gap-4 ">
             <div className="bg-gray-100 rounded-xl ">
               <img
-                src={product.image}
+                src={
+                  product?.design_view_data.front?.imageDataUrl.startsWith(
+                    "data:"
+                  )
+                    ? product?.design_view_data.front?.imageDataUrl
+                    : process.env.NEXT_PUBLIC_BASE_URL +
+                      product?.design_view_data.front?.imageDataUrl
+                }
                 alt={product.name}
                 className=" w-[300px]  h-[300px] "
               />
@@ -28,19 +41,25 @@ const ProductDetail = ({ product }) => {
           {/* Right Side (Details) */}
           <div className="flex flex-col gap-6 max-w-xl">
             <div className="flex flex-col gap-2">
-              <h1 className="text-2xl font-semibold">{product.name}</h1>
+              <h1 className="text-2xl font-semibold">
+                {product.design_description}
+              </h1>
               <p className="text-xl font-bold">{product.price}</p>
               <p className="text-gray-600 text-sm">
-              The Vintage Vibes T-Shirt is a must-have for anyone who loves a classic look with a modern twist. Made from soft, breathable cotton. it pairs effortlessly with jeans or shorts, making it a versatile addition to your wardrobe. Embrace nostalgia and express your unique personality with this stylish t-shirt!
+                The Vintage Vibes T-Shirt is a must-have for anyone who loves a
+                classic look with a modern twist. Made from soft, breathable
+                cotton. it pairs effortlessly with jeans or shorts, making it a
+                versatile addition to your wardrobe. Embrace nostalgia and
+                express your unique personality with this stylish t-shirt!
               </p>
             </div>
 
             {/* Colors */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium w-16">Colour:</span>
+                <span className="text-sm font-medium w-16">Color:</span>
                 <div className="flex gap-2">
-                  {colors.map((color) => (
+                  {product.color.map((color) => (
                     <button
                       key={color}
                       className="w-6 h-6 rounded-full"
@@ -54,7 +73,7 @@ const ProductDetail = ({ product }) => {
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium w-16">Size:</span>
                 <div className="flex gap-2">
-                  {["XS", "S", "M", "L", "XL"].map((size) => (
+                  {product.size.map((size) => (
                     <button
                       key={size}
                       className="px-3 py-1 border rounded-md text-sm hover:bg-gray-100"
@@ -68,29 +87,50 @@ const ProductDetail = ({ product }) => {
               {/* Category */}
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium w-16">Category:</span>
-                <span className="text-sm text-gray-700">Apparel</span>
+                <span className="text-sm text-gray-700">
+                  {product.product_category.toUpperCase().replace("_", " ")}
+                </span>
               </div>
 
               {/* Quantity and Add to Cart */}
               <div className="flex items-center gap-4">
-                <div className="flex items-center border rounded-md overflow-hidden">
+                {itemInCart && (
+                  <div className="flex items-center border rounded-md overflow-hidden">
+                    <button
+                      onClick={() => decrementQuantity(product.id)}
+                      className="px-3 py-2 bg-gray-100 text-lg"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 py-2">
+                      {itemInCart?.quantity || 1}
+                    </span>
+                    <button
+                      onClick={() => incrementQuantity(product.id)}
+                      className="px-3 py-2 bg-gray-100 text-lg"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+
+                {!itemInCart ? (
                   <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-2 bg-gray-100 text-lg"
+                    className="px-6 py-3 bg-black text-white rounded-xl text-sm hover:bg-gray-800"
+                    onClick={() => {
+                      addItem({ ...product, quantity: 1 });
+                    }}
                   >
-                    -
+                    Add To Cart
                   </button>
-                  <span className="px-4 py-2">{quantity}</span>
+                ) : (
                   <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-2 bg-gray-100 text-lg"
+                    className="border px-3 py-1 text-sm rounded-md hover:bg-gray-100 flex flex-row justify-center"
+                    onClick={() => removeItem(itemInCart.id)}
                   >
-                    +
+                    <MdDelete className="text-xl" /> Remove
                   </button>
-                </div>
-                <button className="px-6 py-3 bg-black text-white rounded-xl text-sm hover:bg-gray-800">
-                  Add To Cart
-                </button>
+                )}
               </div>
             </div>
 

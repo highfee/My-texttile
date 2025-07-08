@@ -4,14 +4,15 @@ import { useCreatorStore } from "@/store/useCreatorShopFront";
 
 export default function NavigationBarEditor() {
   const {
-    navigationBackgroudColor,
-    navigationForegroudColor,
+    navigationBackgroundColor,
+    navigationForegroundColor,
     storeLogo,
     setStoreName,
     setStoreLogo,
-    setNavigationBackgroudColor,
-    setNavigationForegroudColor,
+    setNavigationBackgroundColor,
+    setNavigationForegroundColor,
     setStoreLogoFile,
+    storeName,
   } = useCreatorStore();
 
   const handleLogoUpload = (e) => {
@@ -44,7 +45,15 @@ export default function NavigationBarEditor() {
         />
         {storeLogo && (
           <div className="mt-2">
-            <img src={storeLogo} alt="Logo preview" className="h-10" />
+            <img
+              src={
+                storeLogo.startsWith("data:")
+                  ? storeLogo
+                  : process.env.NEXT_PUBLIC_BASE_URL + storeLogo
+              }
+              alt="Logo preview"
+              className="h-10"
+            />
           </div>
         )}
       </div>
@@ -55,7 +64,7 @@ export default function NavigationBarEditor() {
         </label>
         <input
           type="text"
-          // value={storeName}
+          value={storeName}
           onChange={(e) => setStoreName(e.target.value)}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="Enter site title"
@@ -69,12 +78,12 @@ export default function NavigationBarEditor() {
         <div className="flex items-center">
           <input
             type="color"
-            value={navigationBackgroudColor}
-            onChange={(e) => setNavigationBackgroudColor(e.target.value)}
+            value={navigationBackgroundColor}
+            onChange={(e) => setNavigationBackgroundColor(e.target.value)}
             className="h-10 w-10 rounded border border-gray-300"
           />
           <span className="ml-2 text-sm text-gray-600">
-            {navigationBackgroudColor}
+            {navigationBackgroundColor}
           </span>
         </div>
       </div>
@@ -86,23 +95,23 @@ export default function NavigationBarEditor() {
         <div className="flex items-center">
           <input
             type="color"
-            value={navigationForegroudColor}
-            onChange={(e) => setNavigationForegroudColor(e.target.value)}
+            value={navigationForegroundColor}
+            onChange={(e) => setNavigationForegroundColor(e.target.value)}
             className="h-10 w-10 rounded border border-gray-300"
           />
           <span className="ml-2 text-sm text-gray-600">
-            {navigationForegroudColor}
+            {navigationForegroundColor}
           </span>
         </div>
       </div>
 
-      <div className="pt-2 flex justify-end space-x-3">
+      {/* <div className="pt-2 flex justify-end space-x-3">
         <button
           className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
           onClick={() => {
             // Reset to initial values
-            setNavigationBackgroudColor("#979797");
-            setNavigationForegroudColor("#333333");
+            setNavigationBackgroundColor("#979797");
+            setNavigationForegroundColor("#333333");
             setStoreName("");
             setStoreLogo(null);
           }}
@@ -122,7 +131,7 @@ export default function NavigationBarEditor() {
         >
           Save
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

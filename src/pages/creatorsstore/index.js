@@ -100,7 +100,12 @@ export default function StorePage() {
         <SupportPage onBackClick={resetNavigation} />
       ) : (
         <>
-          <Hero heroState={heroState} setHeroState={setHeroState} data={data} />
+          <Hero
+            heroState={heroState}
+            setHeroState={setHeroState}
+            data={data}
+            owner={true}
+          />
         </>
       )}
       {!heroState.showShop && (

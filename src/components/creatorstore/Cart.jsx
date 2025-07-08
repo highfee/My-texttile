@@ -26,8 +26,6 @@ export default function Cart() {
     image: "/creatorstore/shirt2.png", // Update with your correct image path
   };
 
-  console.log("Cart Items:", getTotalPrice());
-
   if (checkout) return <Checkout />;
 
   return (

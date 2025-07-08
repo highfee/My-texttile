@@ -8,30 +8,36 @@ import { httpClient } from "@/lib/httpClient";
 import { useQuery } from "@tanstack/react-query";
 import useCartStore from "@/store/cart_store";
 import { useParams } from "next/navigation";
+import {
+  useGetAllDesigns,
+  useGetCreatorDesigns,
+} from "@/store/apiCalls/useDesignStore";
+import { useEffect } from "react";
 
-const Hero = ({ heroState, setHeroState, data }) => {
-  const param = useParams();
-
+const Hero = ({ heroState, setHeroState, data, owner }) => {
   const { addItem } = useCartStore();
 
   const handleAddToCart = (product) => {
     addItem({ ...product, quantity: 1 });
   };
 
-  const fetchData = async () => {
-    const response = await httpClient.get(`/designs/shop/view/`);
-    return response.data["response data"].result;
-  };
+  const {
+    data: ownerProducts,
+    isLoading: ownerLoading,
+    isError: OwnerIsError,
+    error: OwnerError,
+  } = useGetAllDesigns();
 
   const {
     data: products,
     isLoading,
     isError,
     error,
-  } = useQuery({
-    queryKey: ["products"],
-    queryFn: fetchData,
-  });
+  } = useGetCreatorDesigns(data.owner.id);
+
+  if (isLoading || ownerLoading) return "Loading.....";
+
+  console.log(ownerProducts.length);
 
   if (heroState.showShop) return <Shop />;
   if (heroState.selectedProduct)
@@ -65,6 +71,7 @@ const Hero = ({ heroState, setHeroState, data }) => {
       {/* products */}
       <div className="py-12 px-8 md:px-32 grid grid-cols-2 md:grid-cols-4 gap-6">
         {products?.length > 0 &&
+          !owner &&
           products.map((product) => (
             <div key={product.id} className="cursor-pointer group relative">
               <div
@@ -107,7 +114,51 @@ const Hero = ({ heroState, setHeroState, data }) => {
             </div>
           ))}
 
-        {products?.length === 0 && (
+        {ownerProducts?.length > 0 &&
+          owner &&
+          ownerProducts.map((product) => (
+            <div key={product.id} className="cursor-pointer group relative">
+              <div
+                onClick={() =>
+                  setHeroState({ showShop: false, selectedProduct: product })
+                }
+                className="w-full bg-gray-100 rounded-lg overflow-hidden"
+              >
+                <img
+                  src={
+                    product?.design_view_data.front?.imageDataUrl.startsWith(
+                      "data:"
+                    )
+                      ? product?.design_view_data.front?.imageDataUrl
+                      : process.env.NEXT_PUBLIC_BASE_URL +
+                        product?.design_view_data.front?.imageDataUrl
+                  }
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition"
+                />
+              </div>
+              <div className="flex justify-between items-center mt-2">
+                <div
+                  onClick={() =>
+                    setHeroState({ showShop: false, selectedProduct: product })
+                  }
+                >
+                  <h3 className="text-sm font-semibold">
+                    {product.design_description}
+                  </h3>
+                  <p className="text-gray-500 text-sm">{product.shop_price}</p>
+                </div>
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  className="text-gray-600 hover:text-black transition"
+                >
+                  <ShoppingCart size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+        {(products?.length === 0 || ownerProducts.length == 0) && (
           <div className="col-span-4 text-center text-gray-500">
             No products available
           </div>

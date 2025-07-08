@@ -17,9 +17,19 @@ import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
+import {
+  useCreateOwnShop,
+  useUpdateOwnShop,
+} from "@/store/apiCalls/UseShopStore";
 
-export default function StoreEditor({ onBack, initialView = "desktop" }) {
-  const router = useRouter();
+export default function StoreEditor({ onBack, initialView = "desktop", data }) {
+  const {
+    mutate: createStore,
+    isPending: createPending,
+    error: createError,
+  } = useCreateOwnShop();
+
+  const { mutate: updateStore, isPending, error } = useUpdateOwnShop();
 
   const [activeView, setActiveView] = useState(initialView);
   const [editingSection, setEditingSection] = useState(null);
@@ -81,21 +91,11 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     { id: "Store Colors", name: "Store Colors" },
   ];
 
-  const fetchData = async () => {
-    const response = await httpClient.get("/shops/profile/");
-    return response.data["response data"];
-  };
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["shop"],
-    queryFn: fetchData,
-  });
-
   const {
     storeName,
     storeLogoFile,
-    navigationBackgroudColor,
-    navigationForegroudColor,
+    navigationBackgroundColor,
+    navigationForegroundColor,
     heroBannerTitle,
     heroBannerSubtitle,
     heroBannerImage,
@@ -110,36 +110,36 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     storeAvailableColors,
   } = useCreatorStore();
 
-  const storeMutation = useMutation({
-    mutationFn: async (data) => {
-      let response;
-      if (!data) {
-        response = await httpClient.post("/shops/users/create/", data, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      } else {
-        response = await httpClient.put("/shops/update", data, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      }
-      return response.data;
-    },
-    onSuccess: (data) => {
-      if (data["response status"] === "success") {
-        router.push("/creatorsstore");
-      } else {
-        // setError(data["response description"] || "Error creating store");
-      }
-    },
-    onError: (error) => {
-      // setError(error.message || "Error creating store");
-      console.log(error);
-    },
-  });
+  // const storeMutation = useMutation({
+  //   mutationFn: async (data) => {
+  //     let response;
+  //     if (!data) {
+  //       response = await httpClient.post("/shops/users/create/", data, {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+  //     } else {
+  //       response = await httpClient.put("/shops/update", data, {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+  //     }
+  //     return response.data;
+  //   },
+  //   onSuccess: (data) => {
+  //     if (data["response status"] === "success") {
+  //       router.push("/creatorsstore");
+  //     } else {
+  //       // setError(data["response description"] || "Error creating store");
+  //     }
+  //   },
+  //   onError: (error) => {
+  //     // setError(error.message || "Error creating store");
+  //     console.log(error);
+  //   },
+  // });
 
   const onSubmit = () => {
     const formData = new FormData();
@@ -154,22 +154,28 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
     formData.append("shop_bank_swift_code", "test");
     formData.append("background_image", heroBannerImageFile);
     formData.append("user_bio", "test");
-    formData.append("background_colour", navigationBackgroudColor);
-    formData.append("text_colour", navigationForegroudColor);
+    formData.append("background_colour", navigationBackgroundColor);
+    formData.append("text_colour", navigationForegroundColor);
     formData.append("hero_text", heroBannerSubtitle);
     formData.append("instagram_link", footerSocialIcons.instagram);
     formData.append("facebook_link", footerSocialIcons.facebook);
     formData.append("tiktok_link", footerSocialIcons.tiktok);
     formData.append("x_twiter_link", footerSocialIcons.twitter);
-    formData.append("menu_item_colour", navigationForegroudColor);
+    formData.append("menu_item_colour", navigationForegroundColor);
     formData.append("payout_method", "crypto");
     formData.append("hero_title", heroBannerTitle);
     formData.append("colors", storeAvailableColors);
 
+    // Log all FormData entries
     // for (let [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
+    //   console.log(`${key}:`, value);
     // }
-    storeMutation.mutate(formData);
+
+    if (!data) {
+      createStore(formData);
+      return;
+    }
+    updateStore(formData);
   };
 
   return (
@@ -242,7 +248,7 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
             </div>
           ))}
           <Button onClick={onSubmit}>
-            {storeMutation.isPending ? (
+            {isPending || createPending ? (
               <Loader className=" animate-spin" />
             ) : data ? (
               "Update Store"
@@ -277,7 +283,7 @@ export default function StoreEditor({ onBack, initialView = "desktop" }) {
         {/* views */}
         <div className="flex items-cente  p-4">
           <div className="relative b">
-            {/* <Desktop activeView={activeView} /> */}
+            <Desktop activeView={activeView} />
           </div>
         </div>
       </div>

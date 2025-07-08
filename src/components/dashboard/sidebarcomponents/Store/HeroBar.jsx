@@ -31,8 +31,6 @@ export default function HeroBar() {
       };
       reader.readAsDataURL(file);
     }
-
-    console.log(file);
   };
 
   return (
@@ -46,12 +44,16 @@ export default function HeroBar() {
           {heroBannerImage ? (
             <>
               <img
-                src={heroBannerImage}
+                src={
+                  heroBannerImage.startsWith("data")
+                    ? heroBannerImage
+                    : process.env.NEXT_PUBLIC_BASE_URL + heroBannerImage
+                }
                 alt="Background"
                 className="object-cover w-full h-48 rounded-md"
               />
               <button
-                onClick={() => setHeroBannerImage(null)}
+                onClick={() => setHeroBannerImage("")}
                 className="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-red-600"
               >
                 Change Image

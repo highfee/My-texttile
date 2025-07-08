@@ -9,8 +9,8 @@ import { FaInstagram, FaTiktok, FaX } from "react-icons/fa6";
 
 const Desktop = ({ activeView, data }) => {
   const {
-    navigationBackgroudColor,
-    navigationForegroudColor,
+    navigationBackgroundColor,
+    navigationForegroundColor,
     storeLogo,
     setAllFromServer,
   } = useCreatorStore();
@@ -19,8 +19,6 @@ const Desktop = ({ activeView, data }) => {
     if (data) {
       setAllFromServer(data);
     }
-
-    console.log(useCreatorStore.getState(), "useCreatorStore state in desktop");
   }, [data]);
 
   return (
@@ -47,8 +45,8 @@ const Desktop = ({ activeView, data }) => {
       <section className="border border-gray-300 rounded-2xl mt-4 pointer-events-none overflow-hidden">
         {/* header */}
         <Header
-          navigationBackgroudColor={navigationBackgroudColor}
-          navigationForegroudColor={navigationForegroudColor}
+          navigationBackgroundColor={navigationBackgroundColor}
+          navigationForegroundColor={navigationForegroundColor}
           storeLogo={storeLogo}
           activeView={activeView}
         />
@@ -69,8 +67,8 @@ const Desktop = ({ activeView, data }) => {
 export default Desktop;
 
 const Header = ({
-  navigationBackgroudColor,
-  navigationForegroudColor,
+  navigationBackgroundColor,
+  navigationForegroundColor,
   storeLogo,
   activeView,
 }) => {
@@ -80,14 +78,18 @@ const Header = ({
       className={cn("flex justify-between items-center p-4 px-10", {
         "px-4": activeView === "mobile",
       })}
-      style={{ backgroundColor: navigationBackgroudColor }}
+      style={{ backgroundColor: navigationBackgroundColor }}
     >
       {/* logo */}
       <div
         className={cn("flex items-center", { hidden: activeView === "mobile" })}
       >
         <Image
-          src={"http://23.88.47.163" + storeLogo}
+          src={
+            storeLogo.startsWith("data:")
+              ? storeLogo
+              : process.env.NEXT_PUBLIC_BASE_URL + storeLogo
+          }
           alt="Store Logo"
           width={80}
           height={30}
@@ -113,7 +115,7 @@ const Header = ({
         className={cn("flex space-x-4 text-base", {
           hidden: activeView === "mobile",
         })}
-        style={{ color: navigationForegroudColor }}
+        style={{ color: navigationForegroundColor }}
       >
         <Link href={""} className="font-medium">
           Home
@@ -166,7 +168,11 @@ const Hero = ({ activeView }) => {
         }
       )}
       style={{
-        backgroundImage: `url(${"http://23.88.47.163" + heroBannerImage})`,
+        backgroundImage: `url(${
+          heroBannerImage.startsWith("data")
+            ? heroBannerImage
+            : process.env.NEXT_PUBLIC_BASE_URL + heroBannerImage
+        })`,
       }}
     >
       <div className="absolute bg-black/50 inset-0 -z-10"></div>
@@ -203,14 +209,14 @@ const Hero = ({ activeView }) => {
 };
 
 const Products = ({ activeView }) => {
-  const { navigationBackgroudColor, products, addProduct } = useCreatorStore();
+  const { navigationBackgroundColor, products, addProduct } = useCreatorStore();
 
   return (
     <section
       className={cn("min-h-48 mx-10 mt-5", {
         "mx-4": activeView === "mobile",
       })}
-      // style={{ background: navigationBackgroudColor }}
+      // style={{ background: navigationBackgroundColor }}
     >
       {products.length > 0 ? (
         <div

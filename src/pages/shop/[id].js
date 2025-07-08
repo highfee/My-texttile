@@ -9,15 +9,20 @@ import SupportPage from "@/components/creatorstore/SupportPage"; // Import your 
 import { Inter } from "next/font/google";
 import { useQuery } from "@tanstack/react-query";
 import { httpClient } from "@/lib/httpClient";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
+import { useGetShopByIdUser } from "@/store/apiCalls/UseShopStore";
 
 const inter = Inter({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
-export default function StorePage() {
-  const param = useParams();
+export default function ShopPage() {
+  const router = useRouter();
+
+  // const { id } = router.query;
+
+  // console.log(router.query);
 
   const [showCart, setShowCart] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
@@ -26,22 +31,9 @@ export default function StorePage() {
     selectedProduct: null,
   });
 
-  // const fetchData = async () => {
-  //   const response = await httpClient.get("/shops/profile/");
-  //   return response.data["response data"];
-  // };
-
-  const fetchData = async () => {
-    const response = await httpClient.get(
-      `/shops/all/users/view?shop_id=${param.id}`
-    );
-    return response.data["response data"];
-  };
-
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["shop"],
-    queryFn: fetchData,
-  });
+  const { data, isLoading, error, isError } = useGetShopByIdUser(
+    router.query.id
+  );
 
   if (isLoading) {
     return <div>Loading...</div>;

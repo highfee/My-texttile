@@ -28,6 +28,9 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+a {
+  color: inherit;
+}
 
 @layer base {
   :root {

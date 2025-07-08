@@ -1,6 +1,9 @@
 import { httpClient } from "../../lib/httpClient";
 import { create } from "zustand";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/router";
+import { useDesignStore } from "../design-store";
 
 // API functions for designs
 const designApi = {
@@ -13,18 +16,27 @@ const designApi = {
   // Get a specific design by ID
   getDesignById: async (designId) => {
     const response = await httpClient.get(`/designs/${designId}`);
-    return response.data.response_data;
+    return response.data["response data"].result;
+  },
+
+  // get creator design by user id
+  getCreatorDesigns: async (userId) => {
+    const response = await httpClient.get(`/designs/user/${userId}/designs/`);
+    return response.data["response data"].result;
   },
 
   // Create a new design
   createDesign: async (designData) => {
-    const response = await httpClient.post("/designs", designData);
-    return response.data.response_data;
+    const response = await httpClient.post("/designs/create/", designData);
+    return response.data;
   },
 
   // Update an existing design
-  updateDesign: async ({ designId, designData }) => {
-    const response = await httpClient.put(`/designs/${designId}`, designData);
+  updateDesign: async (designData) => {
+    const response = await httpClient.put(
+      `/designs/update/${router.query.id}/`,
+      designData
+    );
     return response.data.response_data;
   },
 
@@ -66,7 +78,6 @@ const designApi = {
   },
 };
 
-// Zustand store for design-related state
 export const useDesignApiStore = create((set) => ({
   // Loading states
   isLoading: false,
@@ -129,8 +140,30 @@ export const useGetDesignById = (designId) => {
   });
 };
 
+// hook to get all public and approved creator design
+export const useGetCreatorDesigns = (userId) => {
+  const setLoading = useDesignApiStore((state) => state.setLoading);
+  const setError = useDesignApiStore((state) => state.setError);
+
+  return useQuery({
+    queryKey: ["creator designs", userId],
+    queryFn: () => designApi.getCreatorDesigns(userId),
+    enabled: !!userId,
+    onError: (error) => {
+      setError(error.message || "Failed to fetch design");
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
+};
+
 // Hook to create a new design
 export const useCreateDesign = () => {
+  const router = useRouter();
+  const { reset } = usePublishDesign();
+  const { clearCanvasAndHistory } = useDesignStore();
+
   const queryClient = useQueryClient();
   const setLoading = useDesignApiStore((state) => state.setLoading);
   const setError = useDesignApiStore((state) => state.setError);
@@ -141,10 +174,15 @@ export const useCreateDesign = () => {
       setLoading(true);
     },
     onSuccess: () => {
+      toast("Design created successfully");
+      clearCanvasAndHistory();
+      reset();
+      router.push("/dashboard/home");
       queryClient.invalidateQueries({ queryKey: ["designs"] });
     },
     onError: (error) => {
       setError(error.message || "Failed to create design");
+      toast(data["response description"] || "Error creating store");
     },
     onSettled: () => {
       setLoading(false);
@@ -154,6 +192,9 @@ export const useCreateDesign = () => {
 
 // Hook to update a design
 export const useUpdateDesign = () => {
+  const router = useRouter();
+  const { reset } = usePublishDesign();
+  const { clearCanvasAndHistory } = useDesignStore();
   const queryClient = useQueryClient();
   const setLoading = useDesignApiStore((state) => state.setLoading);
   const setError = useDesignApiStore((state) => state.setError);
@@ -164,13 +205,18 @@ export const useUpdateDesign = () => {
       setLoading(true);
     },
     onSuccess: (_, variables) => {
+      toast("Design updated successfully");
+      clearCanvasAndHistory();
+      reset();
+      router.push("/dashboard/home");
       queryClient.invalidateQueries({
-        queryKey: ["design", variables.designId],
+        queryKey: ["design", router.query.id],
       });
       queryClient.invalidateQueries({ queryKey: ["designs"] });
     },
     onError: (error) => {
       setError(error.message || "Failed to update design");
+      toast(error.message || "Error updating design");
     },
     onSettled: () => {
       setLoading(false);

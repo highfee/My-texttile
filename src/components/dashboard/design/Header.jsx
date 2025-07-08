@@ -80,6 +80,10 @@ import dynamic from "next/dynamic";
 import { Switch } from "@/components/ui/switch";
 import { get } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  useCreateDesign,
+  useUpdateDesign,
+} from "@/store/apiCalls/useDesignStore";
 
 const fonts = [
   "Arial",
@@ -498,6 +502,18 @@ export const Access = () => {
 };
 
 export const PublishOverlay = () => {
+  const {
+    mutate: createDesign,
+    isPending: pendingDesign,
+    error,
+  } = useCreateDesign();
+
+  const {
+    mutate: updateDesign,
+    isPending: pendingUpdate,
+    error: updateError,
+  } = useUpdateDesign();
+
   const router = useRouter();
   const {
     productName,
@@ -514,7 +530,6 @@ export const PublishOverlay = () => {
 
   const designMutation = useMutation({
     mutationFn: async (data) => {
-      console.log(data);
       const response = await httpClient.post("/designs/create/", data);
 
       return response.data;
@@ -538,7 +553,6 @@ export const PublishOverlay = () => {
 
   const editDesignMutation = useMutation({
     mutationFn: async (data) => {
-      console.log(data);
       const response = await httpClient.put(
         `/designs/update/${router.query.id}/`,
         data
@@ -692,10 +706,10 @@ export const PublishOverlay = () => {
     const designData = await handlePublish();
     console.log(designData);
     if (router.query.edit) {
-      editDesignMutation.mutate(designData);
+      updateDesign(designData);
       return;
     }
-    designMutation.mutate(designData);
+    createDesign(designData);
   };
 
   const [openAccordion, setOpenAccordion] = React.useState(null);
@@ -813,11 +827,7 @@ export const PublishOverlay = () => {
             onClick={onSubmit}
             // onClick={() => clearCanvasAndHistory()}
             className="w-24"
-            disabled={
-              designMutation.isPending ||
-              !isFormValid() ||
-              editDesignMutation.isPending
-            }
+            disabled={pendingDesign || !isFormValid() || pendingUpdate}
           >
             {designMutation.isPending || editDesignMutation.isPending ? (
               <Loader className=" animate-spin" />

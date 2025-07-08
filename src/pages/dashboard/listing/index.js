@@ -78,8 +78,7 @@ const Index = () => {
       activeTab.replace(" ", "_").replace("-", "_").toLowerCase()
   );
 
-  console.log(products);
-
+  console.log(recentProjects, products);
   return (
     <div className="lg:px-16">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center w-full">
@@ -158,12 +157,9 @@ const Index = () => {
         </div>
       </div>
       <div className="mt-4">
-        {activeTab !== "Ordered" && <Tshirt data={products} />}
-        {/* {activeTab === "Hoodies" && <Hoodies />}
-        {activeTab === "Turtle necks" && <Turtleneck />}
-        {activeTab === "Polos" && <Polo />}
-        {activeTab === "Denim" && <Denim />}
-       */}
+        {isLoading
+          ? "loading"
+          : activeTab !== "Ordered" && <Tshirt data={products} />}
         {activeTab === "Ordered" && <Ordered />}
       </div>
     </div>

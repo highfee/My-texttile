@@ -20,9 +20,7 @@ export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
           className="flex items-center space-x-2 cursor-pointer"
           onClick={onHomeClick}
         >
-          <span className="text-black font-bold text-lg">
-            {data?.shop_name}
-          </span>
+          <span className=" font-bold text-lg">{data?.shop_name}</span>
           {/* <span className="text-sm text-gray-700">My-Store</span> */}
           <Image
             src={"http://23.88.47.163" + data?.shop_logo}
@@ -36,12 +34,12 @@ export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
         {/* Center: Navigation */}
         <nav className="flex space-x-4">
           <span
-            className="text-black text-sm font-semibold cursor-pointer"
+            className=" text-sm font-semibold cursor-pointer"
             onClick={onHomeClick}
           >
             Home
           </span>
-          <span className="text-gray-500 text-sm">Apparel</span>
+          <span className="text-sm">Apparel</span>
         </nav>
 
         {/* Right: Search & Cart */}

@@ -52,10 +52,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
           <div>
-            <Link
-              href={`/shop/${data?.id}`}
-              className="text-bluebutton underline"
-            >
+            <Link href={`/creatorsstore`} className="text-bluebutton underline">
               https://www.my-store-1029a69b.com
             </Link>
             <h2 className="text-xl font-bold">my-store-1029a69b</h2>
@@ -71,7 +68,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               Setup store
             </button>
             <Link
-              href={`/shop/${data?.id}`}
+              href={`/creatorsstore`}
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
             >
               View stores
@@ -131,7 +128,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay1(false)}
               onClick={() => handleImageClick("desktop")}
             >
-              {/* <Desktop activeView={"desktop"} data={data} /> */}
+              <Desktop activeView={"desktop"} data={data} />
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay1 ? "opacity-100" : "opacity-0"
@@ -157,7 +154,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay(false)}
               onClick={() => handleImageClick("mobile")}
             >
-              {/* <Desktop activeView={"mobile"} data={data} /> */}
+              <Desktop activeView={"mobile"} data={data} />
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay ? "opacity-100" : "opacity-0"

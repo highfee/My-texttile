@@ -85,7 +85,7 @@ const chartData = [
   { name: "Jul", stores: 4, sales: 4300 },
 ];
 
-const Stores = () => {
+const Stores = ({ onRowClick }) => {
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const storesPerPage = 5;
@@ -107,7 +107,7 @@ const Stores = () => {
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+      {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>New Stores Overview</CardTitle>
@@ -188,7 +188,7 @@ const Stores = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">

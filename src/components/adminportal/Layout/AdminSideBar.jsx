@@ -55,17 +55,17 @@ const AdminSideBar = ({ isMobile, onClose }) => {
       path: "creator",
     },
     {
-      name: "Product",
+      name: "Store & Product",
       icon: <PiStorefrontFill className="w-5 h-5" />,
       showOnMobile: true,
       path: "storeproduct",
     },
-    {
-      name: "Store ",
-      icon: <PiStorefrontFill className="w-5 h-5" />,
-      showOnMobile: true,
-      path: "viewStore",
-    },
+    // {
+    //   name: "Store ",
+    //   icon: <PiStorefrontFill className="w-5 h-5" />,
+    //   showOnMobile: true,
+    //   path: "viewStore",
+    // },
     {
       name: "Campaigns",
       icon: <HiOutlineMegaphone className="w-5 h-5" />,

@@ -20,9 +20,7 @@ const inter = Inter({
 export default function ShopPage() {
   const router = useRouter();
 
-  // const { id } = router.query;
-
-  // console.log(router.query);
+  const id = router.query.id;
 
   const [showCart, setShowCart] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
@@ -31,9 +29,7 @@ export default function ShopPage() {
     selectedProduct: null,
   });
 
-  const { data, isLoading, error, isError } = useGetShopByIdUser(
-    router.query.id
-  );
+  const { data, isLoading, error, isError } = useGetShopByIdUser(id);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -73,6 +69,9 @@ export default function ShopPage() {
     });
   };
 
+  if (!id) {
+    return "Loading.........";
+  }
   return (
     <div
       className={`${inter.className} tracking-[-1px] `}

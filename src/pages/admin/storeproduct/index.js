@@ -16,6 +16,7 @@ import Shipped from "@/components/adminportal/adminsidebar/productdetails/Shippe
 import ReturnRequest from "@/components/adminportal/adminsidebar/productdetails/ReturnRequest";
 import AllOrders from "@/components/adminportal/adminsidebar/productdetails/AllOrders";
 import PurchasesDetail from "@/components/dashboard/sidebarcomponents/Purchasesdetail";
+import Stores from "@/components/adminportal/stores/Stores";
 const barData = [
   { name: "Jan", value: 400 },
   { name: "Feb", value: 300 },
@@ -38,6 +39,8 @@ const lineData = [
 ];
 const tabs = [
   { id: "AllOrders", name: "All Orders" },
+  { id: "DesignApproval", name: "Design Approvals" },
+  { id: "ShopApproval", name: "Shop Approvals" },
   { id: "Pending", name: "Pending" },
   { id: "Delivered", name: "Delivered" },
   { id: "Shipped", name: "Shipped" },
@@ -72,7 +75,10 @@ const index = () => {
         return <Shipped onRowClick={handleRowClick} />;
       case "ReturnRequest":
         return <ReturnRequest onRowClick={handleRowClick} />;
-      case "AllOrders":
+      case "DesignApproval":
+        return <Stores onRowClick={handleRowClick} />;
+      case "ShopApproval":
+        return <Stores onRowClick={handleRowClick} />;
       default:
         return <AllOrders onRowClick={handleRowClick} />;
     }
@@ -182,7 +188,9 @@ const index = () => {
                 }`}
               >
                 {tab.name}
-                {tab.id === "ReturnRequest" && (
+                {["ReturnRequest", "ShopApproval", "DesignApproval"].includes(
+                  tab.id
+                ) && (
                   <span className="ml-2 bg-bluebutton text-white rounded-full px-2 py-0.5 text-xs">
                     20
                   </span>

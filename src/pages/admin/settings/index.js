@@ -19,20 +19,22 @@ const index = () => {
   const renderTab = () => {
     switch (activeTab) {
       case "subscription":
-        return <SubscriptionTiers/> ;
+        return <SubscriptionTiers />;
       case "campaign":
-        return <Campaignsettings/>;
+        return <Campaignsettings />;
       case "payments":
-        return <Payments/>;
+        return <Payments />;
       case "support":
-        return <Support/>;
+        return <Support />;
       default:
-        return <General/>;
+        return <General />;
     }
   };
 
   return (
-    <div className="lg:p-6 space-y-4 min-h-screen" style={{
+    <div
+      className="lg:p-6 space-y-4 min-h-screen"
+      style={{
         overflowY: "auto",
         scrollbarWidth: "none" /* Firefox */,
         msOverflowStyle: "none" /* IE and Edge */,
@@ -43,28 +45,27 @@ const index = () => {
           display: none;
         }
       `}</style>
-    {/* Horizontal scroll container */}
-    <div className="overflow-x-auto">
-      <div className="flex gap-4 bg-bluebutton p-1 rounded-md w-max lg:w-fit whitespace-nowrap">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`lg:px-4 py-2 rounded-md ${
-              activeTab === tab.key
-                ? 'bg-bluebutton text-white'
-                : 'text-white opacity-[0.55]'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Horizontal scroll container */}
+      <div className="overflow-x-auto">
+        <div className="flex gap-4 bg-bluebutton p-1 rounded-md w-max lg:w-fit whitespace-nowrap">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`lg:px-4 py-2 rounded-md ${
+                activeTab === tab.key
+                  ? "bg-bluebutton text-white"
+                  : "text-white opacity-[0.55]"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
+
+      <div className="bg-white p-4 rounded-md shadow-lg">{renderTab()}</div>
     </div>
-  
-    <div className="bg-white p-4 rounded-md shadow">{renderTab()}</div>
-  </div>
-  
   );
 };
 

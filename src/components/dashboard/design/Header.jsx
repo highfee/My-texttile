@@ -515,6 +515,7 @@ export const PublishOverlay = () => {
   } = useUpdateDesign();
 
   const router = useRouter();
+
   const {
     productName,
     productColors,

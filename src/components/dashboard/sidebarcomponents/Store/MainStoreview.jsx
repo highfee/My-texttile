@@ -52,9 +52,18 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <img src="/dashboard/appearance/Modelight.png" alt="Store model" />
           <div>
-            <Link href={`/creatorsstore`} className="text-bluebutton underline">
+            <div
+              className="text-bluebutton underline"
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  process.env.NEXT_PUBLIC_BASE_CLIENT_URL + `/shop/${data.id}`
+                );
+              }}
+              style={{ cursor: "pointer" }}
+              title="Copy store link"
+            >
               https://www.my-store-1029a69b.com
-            </Link>
+            </div>
             <h2 className="text-xl font-bold">my-store-1029a69b</h2>
             <p className="opacity-[0.44]">
               Welcome to your custom print-on-demand store! Here
@@ -70,6 +79,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
             <Link
               href={`/creatorsstore`}
               className="bg-[#016FDE1A] text-graycolor px-4 py-2 rounded"
+              target="_blank"
             >
               View stores
             </Link>
@@ -109,7 +119,7 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
         </div>
       </div>
 
-      {error || isLoading ? (
+      {error || isLoading || isError ? (
         <div className="w-[100%] flex justify-center items-center flex-col">
           <Empty
             icon={<FileX className="h-14 w-14 text-muted-foreground" />}
@@ -128,7 +138,11 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay1(false)}
               onClick={() => handleImageClick("desktop")}
             >
-              <Desktop activeView={"desktop"} data={data} />
+              {data ? (
+                <Desktop activeView={"desktop"} data={data} />
+              ) : (
+                "Loading"
+              )}
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay1 ? "opacity-100" : "opacity-0"
@@ -154,7 +168,8 @@ export default function MainStoreview({ setActiveComponent, onEditorOpen }) {
               onMouseLeave={() => setShowOverlay(false)}
               onClick={() => handleImageClick("mobile")}
             >
-              <Desktop activeView={"mobile"} data={data} />
+              {data ? <Desktop activeView={"mobile"} data={data} /> : "Loading"}
+
               <div
                 className={`absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 text-white text-center p-4 transition-opacity ${
                   showOverlay ? "opacity-100" : "opacity-0"

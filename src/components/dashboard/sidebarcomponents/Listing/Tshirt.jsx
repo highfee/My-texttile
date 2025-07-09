@@ -1,54 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { useDeleteDesign } from "@/store/apiCalls/useDesignStore";
+import { Loader } from "lucide-react";
 import { useState } from "react";
 
 const Tshirt = ({ data }) => {
-  // const tshirtData = [
-  //   {
-  //     id: 1,
-  //     name: "Girls Classic T-Shirts",
-  //     img: "/dashboard/img1.png",
-  //     sold: "120Pcs",
-  //     sizes: ["M", "L"],
-  //     genders: ["F", "M"],
-  //     colors: ["#ff69b4", "#fdd835"], // Pink, Yellow
-  //     price: "$25.99",
-  //     available: "80Pcs",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Girls Classic T-Shirts",
-  //     img: "/dashboard/temp6.png",
-  //     sold: "120Pcs",
-  //     sizes: ["M", "L"],
-  //     genders: ["F", "M"],
-  //     colors: ["#ff69b4", "#fdd835"],
-  //     price: "$25.99",
-  //     available: "80Pcs",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Girls Classic T-Shirts",
-  //     img: "/dashboard/img7.png",
-  //     sold: "120Pcs",
-  //     sizes: ["M", "L"],
-  //     genders: ["F", "M"],
-  //     colors: ["#ff69b4", "#fdd835"],
-  //     price: "$25.99",
-  //     available: "80Pcs",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Girls Classic T-Shirts",
-  //     img: "/dashboard/img4.png",
-  //     sold: "120Pcs",
-  //     sizes: ["M", "L"],
-  //     genders: ["F", "M"],
-  //     colors: ["#ff69b4", "#fdd835"],
-  //     price: "$25.99",
-  //     available: "80Pcs",
-  //   },
-  // ];
+  const { mutate, isPending } = useDeleteDesign();
 
   return (
     <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -148,10 +106,18 @@ const Tshirt = ({ data }) => {
 
               {/* Price & Availability */}
               <div className="flex items-center justify-between mt-3">
-                <p className="text-lg font-semibold">{shirt.price}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-lg font-semibold">{shirt.shop_price}</p>
+                {/* <p className="text-sm text-gray-500">
                   Avail. {shirt.available || 20} Pcs
-                </p>
+                </p> */}
+
+                <Button
+                  variant="destructive"
+                  className="h-6"
+                  onClick={() => mutate(shirt.id)}
+                >
+                  {isPending ? <Loader className="animate-spin" /> : "De-list"}
+                </Button>
               </div>
             </div>
           );

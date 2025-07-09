@@ -1,29 +1,30 @@
-import React from 'react';
-import { FaCheckSquare, FaRegTimesCircle } from 'react-icons/fa';
+import { Button } from "@/components/ui/button";
+import React from "react";
+import { FaCheckSquare, FaRegTimesCircle } from "react-icons/fa";
 
 const SubscriptionTiers = () => {
   const tiers = [
-    { name: 'Tier 1', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
+    { name: "Tier 1", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
   ];
 
   const features = [
     {
-      name: 'Advanced Analytics',
+      name: "Advanced Analytics",
       availability: [false, true, true, true],
     },
     {
-      name: 'Fast Payouts',
+      name: "Fast Payouts",
       availability: [true, false, false, true],
     },
     {
-      name: 'Campaign',
+      name: "Campaign",
       availability: [true, true, true, true],
     },
     {
-      name: 'Affiliate Program',
+      name: "Affiliate Program",
       availability: [true, true, true, true],
     },
   ];
@@ -31,8 +32,16 @@ const SubscriptionTiers = () => {
   return (
     <div className="lg:p-6 space-y-8">
       <div>
-        <h2 className="text-lg font-semibold">Tier pricing</h2>
-        <p className="text-sm text-gray-500">Help us know you better.</p>
+        <header className="flex items-center gap-20 w-[500px]">
+          <div>
+            <h2 className="text-lg font-semibold">Tier pricing</h2>
+            <p className="text-sm text-gray-500">Help us know you better.</p>
+          </div>
+
+          <Button variant="outline" className="rounded-full">
+            Manage
+          </Button>
+        </header>
         <div className="overflow-x-auto mt-4">
           <table className="min-w-[500px] border rounded-md table-auto">
             <thead className="">
@@ -67,7 +76,9 @@ const SubscriptionTiers = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Feature</th>
                 {tiers.map((_, index) => (
-                  <th key={index} className="px-4 py-2 text-left">Tier {index + 1}</th>
+                  <th key={index} className="px-4 py-2 text-left">
+                    Tier {index + 1}
+                  </th>
                 ))}
               </tr>
             </thead>

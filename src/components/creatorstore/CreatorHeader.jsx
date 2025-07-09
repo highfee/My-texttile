@@ -21,7 +21,6 @@ export default function CreatorHeader({ toggleCart, onHomeClick, data }) {
           onClick={onHomeClick}
         >
           <span className=" font-bold text-lg">{data?.shop_name}</span>
-          {/* <span className="text-sm text-gray-700">My-Store</span> */}
           <Image
             src={"http://23.88.47.163" + data?.shop_logo}
             alt="Logo"

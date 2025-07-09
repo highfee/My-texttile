@@ -42,7 +42,7 @@ const designApi = {
 
   // Delete a design
   deleteDesign: async (designId) => {
-    const response = await httpClient.delete(`/designs/${designId}`);
+    const response = await httpClient.delete(`/designs/delete/${designId}`);
     return response.data.response_data;
   },
 

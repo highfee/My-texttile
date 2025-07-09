@@ -16,9 +16,12 @@ const adminApi = {
 
   // Send admin notification
   sendAdminNotification: async ({ message }) => {
-    const response = await httpClient.post("/users/admin/send/shop/notifications/", {
-      message,
-    });
+    const response = await httpClient.post(
+      "/users/admin/send/shop/notifications/",
+      {
+        message,
+      }
+    );
     return response.data["response data"] || [];
   },
 
@@ -46,39 +49,57 @@ const adminApi = {
   },
 
   // Update shipping option
-  updateShippingOption: async ({ shipping_option_id, shipper_name, shipping_rate_per_kg }) => {
-    const response = await httpClient.put(`/orders/admin/shipping-options/update/${shipping_option_id}/`, {
-      shipper_name,
-      shipping_rate_per_kg,
-    });
+  updateShippingOption: async ({
+    shipping_option_id,
+    shipper_name,
+    shipping_rate_per_kg,
+  }) => {
+    const response = await httpClient.put(
+      `/orders/admin/shipping-options/update/${shipping_option_id}/`,
+      {
+        shipper_name,
+        shipping_rate_per_kg,
+      }
+    );
     return response.data["response data"] || [];
   },
 
   // Create shipping option
   createShippingOption: async ({ shipper_name, shipping_rate_per_kg }) => {
-    const response = await httpClient.post("/orders/admin/shipping-options/create/", {
-      shipper_name,
-      shipping_rate_per_kg,
-    });
+    const response = await httpClient.post(
+      "/orders/admin/shipping-options/create/",
+      {
+        shipper_name,
+        shipping_rate_per_kg,
+      }
+    );
     return response.data["response data"] || [];
   },
 
   // Get all orders
   getAllOrders: async () => {
-    const response = await httpClient.get('/orders/admin/view/');
+    const response = await httpClient.get("/orders/admin/view/");
     return response.data;
   },
 
   // Get all shops
   getAllShops: async () => {
-    const response = await httpClient.get('/shops/admin/view/');
-    return response.data;
+    const response = await httpClient.get("/shops/admin/view/");
+    return response.data["response data"].result;
   },
 
   // Get all designs
   getAllDesigns: async () => {
-    const response = await httpClient.get('/designs/admin/view/');
-    return response.data;
+    const response = await httpClient.get("/designs/admin/view/");
+    return response.data["response data"].result;
+  },
+
+  // get Single design
+  getSingleDesign: async (id) => {
+    const response = await httpClient.get(
+      `/designs/admin/view?design_id=${id}`
+    );
+    return response.data["response data"];
   },
 
   // Update tier subscription price
@@ -89,13 +110,15 @@ const adminApi = {
 
   // Create tier
   createTier: async (data) => {
-    const response = await httpClient.post('/shops/tiers/create/', data);
+    const response = await httpClient.post("/shops/tiers/create/", data);
     return response.data;
   },
 
   // Delete shipping option
   deleteShippingOption: async (shipping_option_id) => {
-    const response = await httpClient.delete(`/orders/shipping-options/${shipping_option_id}/delete/`);
+    const response = await httpClient.delete(
+      `/orders/shipping-options/${shipping_option_id}/delete/`
+    );
     return response.data;
   },
 
@@ -117,7 +140,12 @@ const adminApi = {
   },
 
   // Update tier price
-  updateTierPrice: async ({ tier, t_shirt_base_price, sweatshirt_base_price, hoodie_base_price }) => {
+  updateTierPrice: async ({
+    tier,
+    t_shirt_base_price,
+    sweatshirt_base_price,
+    hoodie_base_price,
+  }) => {
     const response = await httpClient.put("/designs/base/price/admin/update/", {
       tier,
       t_shirt_base_price,
@@ -128,7 +156,12 @@ const adminApi = {
   },
 
   // Create tier price
-  createTierPrice: async ({ tier, t_shirt_base_price, sweatshirt_base_price, hoodie_base_price }) => {
+  createTierPrice: async ({
+    tier,
+    t_shirt_base_price,
+    sweatshirt_base_price,
+    hoodie_base_price,
+  }) => {
     const response = await httpClient.post("/designs/admin/tiers/create/", {
       tier,
       t_shirt_base_price,
@@ -149,7 +182,9 @@ const adminApi = {
 
   // View all tiers
   viewAllTiers: async () => {
-    const response = await httpClient.get("/designs/admin/all/base/price/view/");
+    const response = await httpClient.get(
+      "/designs/admin/all/base/price/view/"
+    );
     return response.data["response data"].result || [];
   },
 
@@ -197,7 +232,7 @@ export const useAdminApproveStore = () => {
     },
     onSuccess: () => {
       toast("Store approval status updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["allStores"] });
+      queryClient.invalidateQueries({ queryKey: ["allShops"] });
       queryClient.invalidateQueries({ queryKey: ["shops", "admin"] });
     },
     onError: (error) => {
@@ -208,7 +243,7 @@ export const useAdminApproveStore = () => {
       setApproving(false);
     },
   });
-};
+}; // done
 
 // Hook to send admin notification
 export const useSendAdminNotification = () => {
@@ -393,7 +428,9 @@ export const useToggleUserStaffStatus = () => {
       setLoading(true);
     },
     onSuccess: (_, variables) => {
-      const action = variables.is_staff ? "promoted to staff" : "removed from staff";
+      const action = variables.is_staff
+        ? "promoted to staff"
+        : "removed from staff";
       toast(`User ${action} successfully`);
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["allUsers"] });
@@ -472,10 +509,12 @@ export const useUpdateDesignStatus = () => {
       setLoading(true);
     },
     onSuccess: (_, variables) => {
-      const action = variables.approval_status === "approved" ? "approved" : "declined";
+      const action =
+        variables.approval_status === "approved" ? "approved" : "declined";
       toast(`Design ${action} successfully`);
-      queryClient.invalidateQueries({ queryKey: ["designs"] });
+      queryClient.invalidateQueries({ queryKey: ["allDesigns"] });
       queryClient.invalidateQueries({ queryKey: ["adminDesigns"] });
+      queryClient.invalidateQueries({ queryKey: ["design"] });
     },
     onError: (error) => {
       setError(error.message || "Failed to update design status");
@@ -524,7 +563,7 @@ export const useGetAllUsers = () => {
 // TanStack Query hook for getting all orders
 export const useGetAllOrders = () => {
   return useQuery({
-    queryKey: ['allOrders'],
+    queryKey: ["allOrders"],
     queryFn: adminApi.getAllOrders,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
@@ -534,7 +573,7 @@ export const useGetAllOrders = () => {
 // TanStack Query hook for getting all shops
 export const useGetAllShops = () => {
   return useQuery({
-    queryKey: ['allShops'],
+    queryKey: ["allShops"],
     queryFn: adminApi.getAllShops,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
@@ -544,10 +583,20 @@ export const useGetAllShops = () => {
 // TanStack Query hook for getting all designs
 export const useGetAllDesigns = () => {
   return useQuery({
-    queryKey: ['allDesigns'],
+    queryKey: ["allDesigns"],
     queryFn: adminApi.getAllDesigns,
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+// TanStack Query hook for getting single design
+export const useGetSingleDesign = (id) => {
+  return useQuery({
+    queryKey: ["design", id],
+    queryFn: () => adminApi.getSingleDesign(id),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
+    enabled: !!id,
   });
 };
 
@@ -558,17 +607,20 @@ export const useUpdateTierSubscriptionPrice = () => {
   const setError = useAdminApiStore((state) => state.setError);
 
   return useMutation({
-    mutationFn: ({ id, ...data }) => adminApi.updateTierSubscriptionPrice(id, data),
+    mutationFn: ({ id, ...data }) =>
+      adminApi.updateTierSubscriptionPrice(id, data),
     onMutate: () => {
       setLoading(true);
     },
     onSuccess: () => {
-      toast('Tier subscription price updated successfully!');
-      queryClient.invalidateQueries({ queryKey: ['allTiers'] });
-      queryClient.invalidateQueries({ queryKey: ['allShops'] });
+      toast("Tier subscription price updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["allTiers"] });
+      queryClient.invalidateQueries({ queryKey: ["allShops"] });
     },
     onError: (error) => {
-      const errorMessage = error?.response?.data?.message || 'Failed to update tier subscription price';
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Failed to update tier subscription price";
       setError(errorMessage);
       toast(errorMessage);
     },
@@ -590,12 +642,13 @@ export const useCreateTier = () => {
       setLoading(true);
     },
     onSuccess: () => {
-      toast('Tier created successfully!');
-      queryClient.invalidateQueries({ queryKey: ['allTiers'] });
-      queryClient.invalidateQueries({ queryKey: ['allShops'] });
+      toast("Tier created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["allTiers"] });
+      queryClient.invalidateQueries({ queryKey: ["allShops"] });
     },
     onError: (error) => {
-      const errorMessage = error?.response?.data?.message || 'Failed to create tier';
+      const errorMessage =
+        error?.response?.data?.message || "Failed to create tier";
       setError(errorMessage);
       toast(errorMessage);
     },
@@ -617,12 +670,13 @@ export const useDeleteShippingOption = () => {
       setLoading(true);
     },
     onSuccess: () => {
-      toast('Shipping option deleted successfully!');
-      queryClient.invalidateQueries({ queryKey: ['shippingOptions'] });
-      queryClient.invalidateQueries({ queryKey: ['allOrders'] });
+      toast("Shipping option deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["shippingOptions"] });
+      queryClient.invalidateQueries({ queryKey: ["allOrders"] });
     },
     onError: (error) => {
-      const errorMessage = error?.response?.data?.message || 'Failed to delete shipping option';
+      const errorMessage =
+        error?.response?.data?.message || "Failed to delete shipping option";
       setError(errorMessage);
       toast(errorMessage);
     },

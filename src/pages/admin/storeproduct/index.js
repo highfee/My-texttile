@@ -16,6 +16,12 @@ import Shipped from "@/components/adminportal/adminsidebar/productdetails/Shippe
 import ReturnRequest from "@/components/adminportal/adminsidebar/productdetails/ReturnRequest";
 import AllOrders from "@/components/adminportal/adminsidebar/productdetails/AllOrders";
 import PurchasesDetail from "@/components/dashboard/sidebarcomponents/Purchasesdetail";
+import Stores from "@/components/adminportal/stores/Stores";
+import DesignDetails from "@/components/adminportal/stores/DesignDetails";
+import {
+  useGetAllDesigns,
+  useGetAllShops,
+} from "@/store/apiCalls/useAdminStore";
 const barData = [
   { name: "Jan", value: 400 },
   { name: "Feb", value: 300 },
@@ -38,6 +44,8 @@ const lineData = [
 ];
 const tabs = [
   { id: "AllOrders", name: "All Orders" },
+  { id: "DesignApproval", name: "Design Approvals" },
+  { id: "ShopApproval", name: "Shop Approvals" },
   { id: "Pending", name: "Pending" },
   { id: "Delivered", name: "Delivered" },
   { id: "Shipped", name: "Shipped" },
@@ -48,6 +56,20 @@ const index = () => {
   const [activeTab, setActiveTab] = useState("AllOrders");
   const [showDetail, setShowDetail] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const {
+    data: shops,
+    isLoading: shopIsLoading,
+    isError: getShopsError,
+    error: shopError,
+  } = useGetAllShops();
+
+  const {
+    data: designs,
+    isLoading: designsIsLoading,
+    isError: designsIsError,
+    error: designsError,
+  } = useGetAllDesigns();
 
   const handleRowClick = (order) => {
     setSelectedOrder(order);
@@ -60,6 +82,9 @@ const index = () => {
 
   const renderTabContent = () => {
     if (showDetail) {
+      if (["DesignApproval", "ShopApproval"].includes(activeTab))
+        return <DesignDetails onBack={handleBack} />;
+
       return <PurchasesDetail order={selectedOrder} onBack={handleBack} />;
     }
 
@@ -72,7 +97,10 @@ const index = () => {
         return <Shipped onRowClick={handleRowClick} />;
       case "ReturnRequest":
         return <ReturnRequest onRowClick={handleRowClick} />;
-      case "AllOrders":
+      case "DesignApproval":
+        return <Stores onRowClick={handleRowClick} activeTab={activeTab} />;
+      case "ShopApproval":
+        return <Stores onRowClick={handleRowClick} activeTab={activeTab} />;
       default:
         return <AllOrders onRowClick={handleRowClick} />;
     }
@@ -182,9 +210,14 @@ const index = () => {
                 }`}
               >
                 {tab.name}
-                {tab.id === "ReturnRequest" && (
+                {["ReturnRequest", "ShopApproval", "DesignApproval"].includes(
+                  tab.id
+                ) && (
                   <span className="ml-2 bg-bluebutton text-white rounded-full px-2 py-0.5 text-xs">
-                    20
+                    <Count
+                      data={tab.id === "DesignApproval" ? designs : shops}
+                      isLoading={designsIsLoading && shopIsLoading}
+                    />
                   </span>
                 )}
               </button>
@@ -200,3 +233,13 @@ const index = () => {
 };
 
 export default index;
+
+const Count = ({ data, isLoading }) => {
+  return (
+    <>
+      {(!isLoading &&
+        data?.filter((item) => item.approval_status !== "approved").length) ||
+        "0"}
+    </>
+  );
+};

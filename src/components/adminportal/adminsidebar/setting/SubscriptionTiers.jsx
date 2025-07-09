@@ -1,7 +1,21 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import { FaCheckSquare, FaRegTimesCircle } from "react-icons/fa";
+import TierModal from "../../TierModal";
 
 const SubscriptionTiers = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleManageClick = () => {
+    console.log('Opening Tier Management Modal');
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log('Closing Tier Management Modal');
+    setIsModalOpen(false);
+  };
+
   const tiers = [
     { name: "Tier 1", monthly: "$10", yearly: "$100", upgrade: "$5" },
     { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
@@ -31,8 +45,20 @@ const SubscriptionTiers = () => {
   return (
     <div className="lg:p-6 space-y-8">
       <div>
-        <h2 className="text-lg font-semibold">Tier pricing</h2>
-        <p className="text-sm text-gray-500">Help us know you better.</p>
+        <header className="flex items-center gap-20 w-[500px]">
+          <div>
+            <h2 className="text-lg font-semibold">Tier pricing</h2>
+            <p className="text-sm text-gray-500">Help us know you better.</p>
+          </div>
+
+          <Button 
+            variant="outline" 
+            className="rounded-full"
+            onClick={handleManageClick}
+          >
+            Manage
+          </Button>
+        </header>
         <div className="overflow-x-auto mt-4">
           <table className="min-w-[500px] border rounded-md table-auto">
             <thead className="">
@@ -110,6 +136,12 @@ const SubscriptionTiers = () => {
           </select>
         </div>
       </div>
+
+      {/* Tier Management Modal */}
+      <TierModal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+      />
     </div>
   );
 };

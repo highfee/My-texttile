@@ -1,29 +1,29 @@
-import React from 'react';
-import { FaCheckSquare, FaRegTimesCircle } from 'react-icons/fa';
+import React from "react";
+import { FaCheckSquare, FaRegTimesCircle } from "react-icons/fa";
 
 const SubscriptionTiers = () => {
   const tiers = [
-    { name: 'Tier 1', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
-    { name: 'Tier 2', monthly: '$10', yearly: '$100', upgrade: '$5' },
+    { name: "Tier 1", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
   ];
 
   const features = [
     {
-      name: 'Advanced Analytics',
+      name: "Advanced Analytics",
       availability: [false, true, true, true],
     },
     {
-      name: 'Fast Payouts',
+      name: "Fast Payouts",
       availability: [true, false, false, true],
     },
     {
-      name: 'Campaign',
+      name: "Campaign",
       availability: [true, true, true, true],
     },
     {
-      name: 'Affiliate Program',
+      name: "Affiliate Program",
       availability: [true, true, true, true],
     },
   ];
@@ -67,7 +67,9 @@ const SubscriptionTiers = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Feature</th>
                 {tiers.map((_, index) => (
-                  <th key={index} className="px-4 py-2 text-left">Tier {index + 1}</th>
+                  <th key={index} className="px-4 py-2 text-left">
+                    Tier {index + 1}
+                  </th>
                 ))}
               </tr>
             </thead>

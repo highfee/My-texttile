@@ -32,7 +32,7 @@ const SubscriptionTiers = () => {
   return (
     <div className="lg:p-6 space-y-8">
       <div>
-        <header className="flex items-center gap-20 w-[500px]">
+        <header className="flex items-center gap-20 w-[500px] justify-between">
           <div>
             <h2 className="text-lg font-semibold">Tier pricing</h2>
             <p className="text-sm text-gray-500">Help us know you better.</p>

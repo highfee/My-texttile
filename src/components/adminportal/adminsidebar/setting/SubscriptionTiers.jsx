@@ -2,26 +2,29 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { FaCheckSquare, FaRegTimesCircle } from "react-icons/fa";
 import TierModal from "../../TierModal";
+import { useViewAllTiers } from "@/store/apiCalls/useAdminStore";
 
 const SubscriptionTiers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleManageClick = () => {
-    console.log('Opening Tier Management Modal');
+    console.log("Opening Tier Management Modal");
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    console.log('Closing Tier Management Modal');
+    console.log("Closing Tier Management Modal");
     setIsModalOpen(false);
   };
 
-  const tiers = [
-    { name: "Tier 1", monthly: "$10", yearly: "$100", upgrade: "$5" },
-    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
-    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
-    { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
-  ];
+  const { data: tiers, isLoading } = useViewAllTiers();
+
+  // const tiers = [
+  //   { name: "Tier 1", monthly: "$10", yearly: "$100", upgrade: "$5" },
+  //   { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+  //   { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+  //   { name: "Tier 2", monthly: "$10", yearly: "$100", upgrade: "$5" },
+  // ];
 
   const features = [
     {
@@ -45,14 +48,14 @@ const SubscriptionTiers = () => {
   return (
     <div className="lg:p-6 space-y-8">
       <div>
-        <header className="flex items-center gap-20 w-[500px]">
+        <header className="flex items-center gap-20 w-[500px] justify-between">
           <div>
             <h2 className="text-lg font-semibold">Tier pricing</h2>
             <p className="text-sm text-gray-500">Help us know you better.</p>
           </div>
 
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="rounded-full"
             onClick={handleManageClick}
           >
@@ -66,16 +69,16 @@ const SubscriptionTiers = () => {
                 <th className="px-4 py-2 text-left">Tier Name</th>
                 <th className="px-4 py-2 text-left">Monthly price</th>
                 <th className="px-4 py-2 text-left">Yearly price</th>
-                <th className="px-4 py-2 text-left">Upgrade fee</th>
+                {/* <th className="px-4 py-2 text-left">Upgrade fee</th> */}
               </tr>
             </thead>
             <tbody>
               {tiers.map((tier, index) => (
                 <tr key={index} className="">
-                  <td className="px-4 py-2">{tier.name}</td>
-                  <td className="px-4 py-2">{tier.monthly}</td>
-                  <td className="px-4 py-2">{tier.yearly}</td>
-                  <td className="px-4 py-2">{tier.upgrade}</td>
+                  <td className="px-4 py-2">{tier.tier_name}</td>
+                  <td className="px-4 py-2">{tier.price}</td>
+                  <td className="px-4 py-2">{tier.price * 12}</td>
+                  {/* <td className="px-4 py-2">{tier.upgrade}</td> */}
                 </tr>
               ))}
             </tbody>
@@ -138,10 +141,7 @@ const SubscriptionTiers = () => {
       </div>
 
       {/* Tier Management Modal */}
-      <TierModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-      />
+      <TierModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

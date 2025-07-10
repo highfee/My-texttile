@@ -109,10 +109,10 @@ const adminApi = {
   },
 
   // Create tier
-  createTier: async (data) => {
-    const response = await httpClient.post("/shops/tiers/create/", data);
-    return response.data;
-  },
+  // createTier: async (data) => {
+  //   const response = await httpClient.post("/shops/tiers/create/", data);
+  //   return response.data;
+  // },
 
   // Delete shipping option
   deleteShippingOption: async (shipping_option_id) => {
@@ -171,6 +171,24 @@ const adminApi = {
     return response.data["response data"] || [];
   },
 
+  // create tier
+  createTier: async ({ tier_name, price }) => {
+    const response = await httpClient.post("/shops/tiers/create/", {
+      tier_name,
+      price,
+    });
+    return response.data["response data"] || [];
+  },
+
+  // update tier
+  updateTier: async ({ id, tier_name, price }) => {
+    const response = await httpClient.patch(`/shops/tiers/${id}/update/`, {
+      tier_name,
+      price,
+    });
+    return response.data["response data"] || [];
+  },
+
   // Update design status
   updateDesignStatus: async ({ design_id, approval_status }) => {
     const response = await httpClient.post("/designs/admin/approve/decline/", {
@@ -182,10 +200,8 @@ const adminApi = {
 
   // View all tiers
   viewAllTiers: async () => {
-    const response = await httpClient.get(
-      "/designs/admin/all/base/price/view/"
-    );
-    return response.data["response data"].result || [];
+    const response = await httpClient.get("/shops/tiers/list");
+    return response.data["response data"] || [];
   },
 
   // Get all users
@@ -452,7 +468,8 @@ export const useUpdateTierPrice = () => {
   const setError = useAdminApiStore((state) => state.setError);
 
   return useMutation({
-    mutationFn: adminApi.updateTierPrice,
+    mutationFn: ({ id, tier_name, price }) =>
+      adminApi.updateTier({ id, tier_name, price }),
     onMutate: () => {
       setLoading(true);
     },
@@ -463,6 +480,7 @@ export const useUpdateTierPrice = () => {
     },
     onError: (error) => {
       setError(error.message || "Failed to update tier price");
+      console.log(error);
       toast(error.message || "Error updating tier price");
     },
     onSettled: () => {
